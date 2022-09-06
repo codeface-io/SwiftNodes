@@ -1,7 +1,7 @@
 import OrderedCollections
 import SwiftyToolz
 
-extension Graph
+public extension Graph
 {
     /**
      Creates the acyclic condensation graph, contracting strongly connected components into single nodes.
@@ -62,6 +62,6 @@ extension Graph
             self.nodes = nodes
         }
         
-        let nodes: Set<Node>
+        public let nodes: Set<Node>
     }
 }

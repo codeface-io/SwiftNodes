@@ -1,6 +1,6 @@
 import SwiftyToolz
 
-extension Graph
+public extension Graph
 {
     func findComponents() -> Set<Set<Node>>
     {

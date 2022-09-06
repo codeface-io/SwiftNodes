@@ -2,7 +2,7 @@ import SwiftyToolz
 
 // TODO: for all algorithms: make use of possibility to mark nodes directly
 
-extension Graph
+public extension Graph
 {
     /**
      Find the total number of all ancestors (predecessors / sources) for every node of an **acyclic** graph.

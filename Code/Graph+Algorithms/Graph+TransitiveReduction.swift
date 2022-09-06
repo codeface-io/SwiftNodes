@@ -1,6 +1,6 @@
 import SwiftyToolz
 
-extension Graph
+public extension Graph
 {
     /**
      Finds the minumum equivalent graph of an **acyclic** graph.
