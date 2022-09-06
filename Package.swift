@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftNodes",
-    platforms: [.iOS(.v12), .tvOS(.v12), .macOS(.v10_14)],
+    platforms: [.iOS(.v12), .tvOS(.v12), .macOS(.v10_15)],
     products: [
         .library(
             name: "SwiftNodes",
