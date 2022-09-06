@@ -1,4 +1,3 @@
-import OrderedCollections
 import SwiftyToolz
 
 public extension Graph
