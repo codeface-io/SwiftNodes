@@ -12,7 +12,7 @@ public extension Graph
     {
         let sccNodeSets = findStronglyConnectedComponents()
         
-        // create condensation nodes and a hashmap
+        // create SCCs and a hashmap from nodes to their SCCs
         var sccs = OrderedSet<StronglyConnectedComponent>()
         var sccHash = [Node: StronglyConnectedComponent]()
         

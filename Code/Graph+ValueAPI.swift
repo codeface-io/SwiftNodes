@@ -36,25 +36,25 @@ public extension Graph
     
     func node(for valueID: NodeValue.ID) -> Node?
     {
-        nodesByID[valueID]
+        nodesByValueID[valueID]
     }
     
     // MARK: - Values
     
     init(values: OrderedSet<NodeValue>)
     {
-        self.init(orderedNodes: .init(uniqueKeysWithValues: values.map { ($0.id, Node(value: $0)) }))
+        self.nodesByValueID = .init(uniqueKeysWithValues: values.map { ($0.id, Node(value: $0)) })
     }
     
     mutating func sort(by valuesAreInOrder: (NodeValue, NodeValue) -> Bool)
     {
-        nodesByID.sort { valuesAreInOrder($0.value.value, $1.value.value) }
+        nodesByValueID.sort { valuesAreInOrder($0.value.value, $1.value.value) }
     }
     
     @discardableResult
     mutating func insert(_ value: NodeValue) -> Node
     {
-        if let node = nodesByID[value.id]
+        if let node = nodesByValueID[value.id]
         {
             node.value = value
             return node
@@ -62,10 +62,10 @@ public extension Graph
         else
         {
             let node = Node(value: value)
-            nodesByID[value.id] = node
+            nodesByValueID[value.id] = node
             return node
         }
     }
     
-    var values: [NodeValue] { nodes.map { $0.value } }
+    var values: OrderedSet<NodeValue> { OrderedSet(nodesByValueID.mapValues({ $0.value }).values) }
 }

@@ -5,14 +5,9 @@ public struct Graph<NodeValue: Identifiable & Hashable>
 {
     // MARK: - Initialize
     
-    public init(nodes: Nodes)
+    public init(nodes: OrderedNodes = [])
     {
-        self.init(orderedNodes: .init(uniqueKeysWithValues: nodes.map { ($0.id, $0) }))
-    }
-    
-    public init(orderedNodes: NodesHash = [:])
-    {
-        self.nodesByID = orderedNodes
+        self.nodesByValueID = .init(uniqueKeysWithValues: nodes.map { ($0.value.id, $0) })
     }
     
     // MARK: - Edges
@@ -66,14 +61,21 @@ public struct Graph<NodeValue: Identifiable & Hashable>
     
     // MARK: - Nodes
     
-    public var sources: [Node] { nodes.filter { $0.ancestors.count == 0 } }
-    public var sinks: [Node] { nodes.filter { $0.descendants.count == 0 } }
+    public var sources: OrderedNodes
+    {
+        OrderedNodes(nodesByValueID.values.filter { $0.ancestors.count == 0 })
+    }
     
-    public var nodes: [Node] { nodesByID.elements.map { $0.value } }
+    public var sinks: OrderedNodes
+    {
+        OrderedNodes(nodesByValueID.values.filter { $0.descendants.count == 0 })
+    }
     
-    public internal(set) var nodesByID = NodesHash()
+    public var nodes: OrderedNodes { OrderedSet(nodesByValueID.values) }
     
+    public internal(set) var nodesByValueID = OrderedDictionary<NodeValue.ID, Node>()
+    
+    public typealias OrderedNodes = OrderedSet<Node>
     public typealias Nodes = Set<Node>
-    public typealias NodesHash = OrderedDictionary<NodeValue.ID, Node>
     public typealias Node = GraphNode<NodeValue>
 }
