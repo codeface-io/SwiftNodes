@@ -43,8 +43,6 @@ public class GraphEdge<NodeValue: Identifiable>: Identifiable, Hashable
     
     // MARK: - Basic Data
     
-    var nodes: Set<Node> { [source, target] }
-    
     public var count: Int
     
     public let source: Node

@@ -1,24 +1,8 @@
 import SwiftyToolz
 
-public extension Set
-{
-    func values<Value>() -> [Value] where Element == GraphNode<Value>
-    {
-        map { $0.value }
-    }
-}
-
-public extension Array
-{
-    func values<Value>() -> [Value] where Element == GraphNode<Value>
-    {
-        map { $0.value }
-    }
-}
-
 public class GraphNode<Value: Identifiable>: Identifiable, Hashable
 {
-    // MARK: - Markings for Algorithms
+    // MARK: - Marking for Algorithms
     
     var marking: Marking?
     
@@ -33,15 +17,11 @@ public class GraphNode<Value: Identifiable>: Identifiable, Hashable
             self.flag2 = flag2
         }
         
-        var number1: Int
-        var number2: Int
-        var flag1: Bool
-        var flag2: Bool
+        var number1, number2: Int
+        var flag1, flag2: Bool
     }
     
     // MARK: - Caches for Accessing Neighbours Quickly
-    
-    public var neighbours: Set<Node> { ancestors + descendants }
     
     public internal(set) var ancestors = Set<Node>()
     public internal(set) var descendants = Set<Node>()
