@@ -24,10 +24,8 @@ public class GraphNode<Value: Identifiable>: Identifiable, Hashable
     
     public class Marking
     {
-        public init(number1: Int = 0,
-                    number2: Int = 0,
-                    flag1: Bool = false,
-                    flag2: Bool = false)
+        public init(number1: Int = 0, number2: Int = 0,
+                    flag1: Bool = false, flag2: Bool = false)
         {
             self.number1 = number1
             self.number2 = number2
@@ -35,10 +33,10 @@ public class GraphNode<Value: Identifiable>: Identifiable, Hashable
             self.flag2 = flag2
         }
         
-        var number1: Int = 0
-        var number2: Int = 0
-        var flag1: Bool = false
-        var flag2: Bool = false
+        var number1: Int
+        var number2: Int
+        var flag1: Bool
+        var flag2: Bool
     }
     
     // MARK: - Caches for Accessing Neighbours Quickly
@@ -60,5 +58,5 @@ public class GraphNode<Value: Identifiable>: Identifiable, Hashable
     
     public var id: Value.ID { value.id }
     
-    public internal(set) var value: Value
+    public private(set) var value: Value
 }

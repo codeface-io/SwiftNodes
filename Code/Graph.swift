@@ -1,6 +1,11 @@
 import OrderedCollections
 import SwiftyToolz
 
+/**
+ Holds values in nodes which can be connected through edges.
+ 
+ Nodes maintain an order, and the graph can be sorted. Values must be `Identifiable` and `Hashable`.
+ */
 public struct Graph<NodeValue: Identifiable & Hashable>
 {
     // MARK: - Initialize

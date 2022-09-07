@@ -51,12 +51,15 @@ public extension Graph
         nodesByValueID.sort { valuesAreInOrder($0.value.value, $1.value.value) }
     }
     
+    /**
+     Inserts a value into the graph and returns the `GraphNode` holding the value. If a value with the same identity already exists, the function returns the node holding that existing value. Note that graph node values are `Identifiable`.
+     */
     @discardableResult
     mutating func insert(_ value: NodeValue) -> Node
     {
         if let node = nodesByValueID[value.id]
         {
-            node.value = value
+            // a value with the same identity already exists
             return node
         }
         else
