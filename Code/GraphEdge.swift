@@ -4,20 +4,12 @@ public class GraphEdge<NodeValue: Identifiable>: Identifiable, Hashable
 {
     // MARK: - Initialize
     
-    init(from source: Node, to target: Node)
+    internal init(from source: Node, to target: Node)
     {
         self.source = source
         self.target = target
         
         count = 1
-        
-        addToNodeCaches()
-    }
-    
-    func addToNodeCaches()
-    {
-        source.descendants += target
-        target.ancestors += source
     }
     
     // MARK: - Hashability

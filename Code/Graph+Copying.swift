@@ -1,29 +1,24 @@
 import SwiftyToolz
+import OrderedCollections
 
 extension Graph
 {
-    public func copyReducing(to reducedNodes: Set<Node>) -> Graph<NodeValue>
+    public func copy(includedValues: [NodeValue]) -> Graph<NodeValue>
     {
-        let reducedNodesByIDKeysAndValues = reducedNodes.map { ($0.id, $0) }
-        let reducedNodesByID = NodesHash(uniqueKeysWithValues: reducedNodesByIDKeysAndValues)
-        
-        return copy(includedNodes: reducedNodesByID)
+        copy(includedValues: OrderedSet(includedValues))
     }
     
-    public func copyRemoving(_ otherEdges: Set<Edge>) -> Graph<NodeValue>
+    public func copy(excludedEdges: Set<Edge>) -> Graph<NodeValue>
     {
-        copy(includedEdges: Set(edgesByID.values) - otherEdges)
+        copy(includedEdges: Set(edgesByID.values) - excludedEdges)
     }
     
     /// Make a copy of (a subset of) the graph
-    public func copy(includedNodes: NodesHash? = nil,
+    public func copy(includedValues: OrderedSet<NodeValue>? = nil,
                      includedEdges: Set<Edge>? = nil) -> Graph<NodeValue>
     {
-        let nodesByIDOriginal = includedNodes ?? nodesByID
-        let nodesByIDKeysValuesCopy = nodesByIDOriginal.map { ($0.key, Node(value: $0.value.value)) }
-        let nodesByIDCopy = NodesHash(uniqueKeysWithValues: nodesByIDKeysValuesCopy)
-        
-        var graphCopy = Graph(orderedNodes: nodesByIDCopy)
+        let actualIncludedValues = includedValues ?? OrderedSet(nodes.map { $0.value } )
+        var graphCopy = Graph(values: actualIncludedValues)
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {

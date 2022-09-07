@@ -2,9 +2,9 @@ import SwiftyToolz
 
 extension Graph
 {
-    func findStronglyConnectedComponents() -> Set<Set<Node>>
+    func findStronglyConnectedComponents() -> Set<Nodes>
     {
-        var resultingSCCs = Set<Set<Node>>()
+        var resultingSCCs = Set<Nodes>()
         
         var markingsHash = [Node: NodeMarkings]()
         var index = 0
@@ -29,7 +29,7 @@ extension Graph
                                      index: inout Int,
                                      stack: inout [Node],
                                      markingsHash: inout [Node: NodeMarkings],
-                                     handleNewSCC: (Set<Node>) -> Void) -> NodeMarkings
+                                     handleNewSCC: (Nodes) -> Void) -> NodeMarkings
     {
         // Set the depth index for node to the smallest unused index
         assert(markingsHash[node] == nil, "there shouldn't be a markings object for this node yet")
@@ -67,7 +67,7 @@ extension Graph
         // If node is a root node, pop the stack and generate an SCC
         if nodeMarkings.lowLink == nodeMarkings.index
         {
-            var newSCC = Set<Node>()
+            var newSCC = Nodes()
             
             while !stack.isEmpty
             {

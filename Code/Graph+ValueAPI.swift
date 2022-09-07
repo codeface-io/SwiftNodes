@@ -1,3 +1,5 @@
+import OrderedCollections
+
 public extension Graph
 {
     // MARK: - Edges
@@ -39,7 +41,7 @@ public extension Graph
     
     // MARK: - Values
     
-    init(values: [NodeValue])
+    init(values: OrderedSet<NodeValue>)
     {
         self.init(orderedNodes: .init(uniqueKeysWithValues: values.map { ($0.id, Node(value: $0)) }))
     }

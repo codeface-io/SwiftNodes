@@ -1,4 +1,5 @@
 import SwiftyToolz
+import OrderedCollections
 
 public extension Graph
 {
@@ -12,37 +13,38 @@ public extension Graph
         let sccNodeSets = findStronglyConnectedComponents()
         
         // create condensation nodes and a hashmap
-        var condensationNodes = Set<CondensationNode>()
-        var condensationNodeHash = [Node: CondensationNode]()
+        var sccs = OrderedSet<StronglyConnectedComponent>()
+        var sccHash = [Node: StronglyConnectedComponent]()
         
         for sccNodes in sccNodeSets
         {
-            let condensationNode = CondensationNode(value: StronglyConnectedComponent(nodes: sccNodes))
+            let scc = StronglyConnectedComponent(nodes: sccNodes)
             
             for sccNode in sccNodes
             {
-                condensationNodeHash[sccNode] = condensationNode
+                sccHash[sccNode] = scc
             }
             
-            condensationNodes += condensationNode
+            sccs.append(scc)
         }
         
         // create condensation graph
-        var condensationGraph = CondensationGraph(nodes: condensationNodes)
+        var condensationGraph = CondensationGraph(values: sccs)
         
         // add condensation edges
         for edge in edges
         {
-            guard let sourceCN = condensationNodeHash[edge.source],
-                  let targetCN = condensationNodeHash[edge.target]
+            
+            guard let sourceSCC = sccHash[edge.source],
+                    let targetSCC = sccHash[edge.target]
             else
             {
                 fatalError("mising scc in hash map")
             }
             
-            if sourceCN !== targetCN
+            if sourceSCC !== targetSCC
             {
-                condensationGraph.addEdge(from: sourceCN, to: targetCN)
+                condensationGraph.addEdge(from: sourceSCC, to: targetSCC)
             }
         }
         
@@ -54,13 +56,18 @@ public extension Graph
     typealias CondensationNode = GraphNode<StronglyConnectedComponent>
     typealias CondensationEdge = GraphEdge<StronglyConnectedComponent>
     
-    class StronglyConnectedComponent: Identifiable
+    class StronglyConnectedComponent: Identifiable, Hashable
     {
+        public static func == (lhs: StronglyConnectedComponent,
+                               rhs: StronglyConnectedComponent) -> Bool { lhs.id == rhs.id }
+        
+        public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+        
         init(nodes: Set<Node>)
         {
             self.nodes = nodes
         }
         
-        public let nodes: Set<Node>
+        public let nodes: Nodes
     }
 }

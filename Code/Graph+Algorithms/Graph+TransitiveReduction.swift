@@ -12,7 +12,7 @@ public extension Graph
     func makeMinimumEquivalentGraph() -> Graph<NodeValue>
     {
         var indirectReachabilities = Set<Edge>()
-        var consideredAncestorsHash = [Node: Set<Node>]()
+        var consideredAncestorsHash = [Node: Nodes]()
         
         for sourceNode in sources
         {
@@ -25,14 +25,14 @@ public extension Graph
             indirectReachabilities += reachabilities
         }
         
-        return copyRemoving(indirectReachabilities)
+        return copy(excludedEdges: indirectReachabilities)
     }
     
     private func findIndirectReachabilities(around node: Node,
-                                            reachedAncestors: Set<Node>,
-                                            consideredAncestorsHash: inout [Node: Set<Node>]) -> Set<Edge>
+                                            reachedAncestors: Nodes,
+                                            consideredAncestorsHash: inout [Node: Nodes]) -> Set<Edge>
     {
-        let consideredAncestors = consideredAncestorsHash[node, default: Set<Node>()]
+        let consideredAncestors = consideredAncestorsHash[node, default: Nodes()]
         let ancestorsToConsider = reachedAncestors - consideredAncestors
         
         if !reachedAncestors.isEmpty && ancestorsToConsider.isEmpty

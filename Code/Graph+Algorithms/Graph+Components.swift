@@ -2,10 +2,10 @@ import SwiftyToolz
 
 public extension Graph
 {
-    func findComponents() -> Set<Set<Node>>
+    func findComponents() -> Set<Nodes>
     {
         var nodesToSearch = Set(nodes)
-        var components = Set<Set<Node>>()
+        var components = Set<Nodes>()
 
         while let nodeToSearch = nodesToSearch.first
         {
@@ -18,12 +18,12 @@ public extension Graph
         return components
     }
     
-    private func findLackingNodes(forComponent incompleteComponent: Set<Node>,
-                                  startingAt node: Node) -> Set<Node>
+    private func findLackingNodes(forComponent incompleteComponent: Nodes,
+                                  startingAt node: Node) -> Nodes
     {
         guard !incompleteComponent.contains(node) else { return [] }
         
-        var lackingNodes: Set<Node> = [node]
+        var lackingNodes: Nodes = [node]
         
         for neighbour in node.neighbours
         {

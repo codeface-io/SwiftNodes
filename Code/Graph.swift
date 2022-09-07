@@ -1,11 +1,11 @@
 import OrderedCollections
 import SwiftyToolz
 
-public struct Graph<NodeValue: Identifiable>
+public struct Graph<NodeValue: Identifiable & Hashable>
 {
     // MARK: - Initialize
     
-    public init(nodes: Set<Node>)
+    public init(nodes: Nodes)
     {
         self.init(orderedNodes: .init(uniqueKeysWithValues: nodes.map { ($0.id, $0) }))
     }
@@ -27,7 +27,8 @@ public struct Graph<NodeValue: Identifiable>
         edgesByID[edge.id] = nil
     }
     
-    public mutating func addEdge(from source: Node, to target: Node)
+    @discardableResult
+    public mutating func addEdge(from source: Node, to target: Node) -> Edge
     {
         let edgeID = Edge.ID(sourceValue: source.value, targetValue: target.value)
         
@@ -36,10 +37,19 @@ public struct Graph<NodeValue: Identifiable>
             edge.count += 1
             
             // TODO: maintain count in edge caches in nodes as well, for algorithms that take edge weight into account when traversing the graph, like dijkstra shortest path ...
+            
+            return edge
         }
         else
         {
-            edgesByID[edgeID] = Edge(from: source, to: target)
+            let edge = Edge(from: source, to: target)
+            edgesByID[edgeID] = edge
+            
+            // add to node caches
+            source.descendants += target
+            target.ancestors += source
+            
+            return edge
         }
     }
     
@@ -63,6 +73,7 @@ public struct Graph<NodeValue: Identifiable>
     
     public internal(set) var nodesByID = NodesHash()
     
+    public typealias Nodes = Set<Node>
     public typealias NodesHash = OrderedDictionary<NodeValue.ID, Node>
     public typealias Node = GraphNode<NodeValue>
 }

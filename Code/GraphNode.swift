@@ -1,5 +1,21 @@
 import SwiftyToolz
 
+public extension Set
+{
+    func values<Value>() -> [Value] where Element == GraphNode<Value>
+    {
+        map { $0.value }
+    }
+}
+
+public extension Array
+{
+    func values<Value>() -> [Value] where Element == GraphNode<Value>
+    {
+        map { $0.value }
+    }
+}
+
 public class GraphNode<Value: Identifiable>: Identifiable, Hashable
 {
     // MARK: - Caches for Accessing Neighbours Quickly
@@ -11,7 +27,7 @@ public class GraphNode<Value: Identifiable>: Identifiable, Hashable
     
     // MARK: - Basics: Value & Identity
     
-    init(value: Value) { self.value = value }
+    internal init(value: Value) { self.value = value }
     
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
     
