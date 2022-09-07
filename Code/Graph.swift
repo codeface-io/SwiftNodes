@@ -66,6 +66,11 @@ public struct Graph<NodeValue: Identifiable & Hashable>
     
     // MARK: - Nodes
     
+    public mutating func sort(by nodesAreInOrder: (Node, Node) -> Bool)
+    {
+        nodesByValueID.sort { nodesAreInOrder($0.value, $1.value) }
+    }
+    
     public var nodes: OrderedNodes { OrderedSet(nodesByValueID.values) }
     
     public internal(set) var nodesByValueID = OrderedDictionary<NodeValue.ID, Node>()

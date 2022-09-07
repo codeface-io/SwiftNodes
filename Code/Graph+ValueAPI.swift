@@ -46,11 +46,6 @@ public extension Graph
         self.nodesByValueID = .init(uniqueKeysWithValues: values.map { ($0.id, Node(value: $0)) })
     }
     
-    mutating func sort(by valuesAreInOrder: (NodeValue, NodeValue) -> Bool)
-    {
-        nodesByValueID.sort { valuesAreInOrder($0.value.value, $1.value.value) }
-    }
-    
     /**
      Inserts a value into the graph and returns the `GraphNode` holding the value. If a value with the same identity already exists, the function returns the node holding that existing value. Note that graph node values are `Identifiable`.
      */
