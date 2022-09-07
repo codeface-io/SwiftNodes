@@ -61,16 +61,6 @@ public struct Graph<NodeValue: Identifiable & Hashable>
     
     // MARK: - Nodes
     
-    public var sources: OrderedNodes
-    {
-        OrderedNodes(nodesByValueID.values.filter { $0.ancestors.count == 0 })
-    }
-    
-    public var sinks: OrderedNodes
-    {
-        OrderedNodes(nodesByValueID.values.filter { $0.descendants.count == 0 })
-    }
-    
     public var nodes: OrderedNodes { OrderedSet(nodesByValueID.values) }
     
     public internal(set) var nodesByValueID = OrderedDictionary<NodeValue.ID, Node>()

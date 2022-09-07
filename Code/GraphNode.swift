@@ -18,6 +18,29 @@ public extension Array
 
 public class GraphNode<Value: Identifiable>: Identifiable, Hashable
 {
+    // MARK: - Markings for Algorithms
+    
+    var marking: Marking?
+    
+    public class Marking
+    {
+        public init(number1: Int = 0,
+                    number2: Int = 0,
+                    flag1: Bool = false,
+                    flag2: Bool = false)
+        {
+            self.number1 = number1
+            self.number2 = number2
+            self.flag1 = flag1
+            self.flag2 = flag2
+        }
+        
+        var number1: Int = 0
+        var number2: Int = 0
+        var flag1: Bool = false
+        var flag2: Bool = false
+    }
+    
     // MARK: - Caches for Accessing Neighbours Quickly
     
     public var neighbours: Set<Node> { ancestors + descendants }

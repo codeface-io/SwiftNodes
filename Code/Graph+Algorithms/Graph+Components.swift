@@ -4,15 +4,19 @@ public extension Graph
 {
     func findComponents() -> Set<Nodes>
     {
-        var nodesToSearch = Set(nodes)
+        unmarkNodes()
+        
         var components = Set<Nodes>()
 
-        while let nodeToSearch = nodesToSearch.first
+        for node in nodesByValueID.values
         {
-            let nextComponent = findLackingNodes(forComponent: [],
-                                                 startingAt: nodeToSearch)
+            if node.isMarked { continue }
+            
+            let nextComponent = findLackingNodes(forComponent: [], startingAt: node)
+            
             components += nextComponent
-            nodesToSearch -= nextComponent
+            
+            node.mark()
         }
 
         return components
@@ -28,8 +32,7 @@ public extension Graph
         for neighbour in node.neighbours
         {
             let extendedComponent = incompleteComponent + lackingNodes
-            lackingNodes += findLackingNodes(forComponent: extendedComponent,
-                                             startingAt: neighbour)
+            lackingNodes += findLackingNodes(forComponent: extendedComponent, startingAt: neighbour)
         }
         
         return lackingNodes

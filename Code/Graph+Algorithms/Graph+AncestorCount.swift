@@ -1,7 +1,5 @@
 import SwiftyToolz
 
-// TODO: for all algorithms: make use of possibility to mark nodes directly
-
 public extension Graph
 {
     /**
@@ -9,23 +7,19 @@ public extension Graph
      */
     func findNumberOfNodeAncestors() -> [(Node, Int)]
     {
-        var ancestorCountsByNode = [Node: Int]()
+        unmarkNodes()
         
-        for sinkNode in sinks
-        {
-            getAncestorCount(for: sinkNode, results: &ancestorCountsByNode)
-        }
+        sinks.forEach { getAncestorCount(for: $0) }
 
-        return ancestorCountsByNode.map { ($0.key, $0.value) }
+        return nodesByValueID.values.map { ($0, $0.marking?.ancestorCount ?? 0) }
     }
 
     @discardableResult
-    private func getAncestorCount(for node: Node,
-                                  results: inout [Node: Int]) -> Int
+    private func getAncestorCount(for node: Node) -> Int
     {
-        if let ancestors = results[node] { return ancestors }
+        if let marking = node.marking { return marking.ancestorCount }
         
-        results[node] = 0 // marks the node as visited to avoid infinite loops in cyclic graphs
+        let marking = node.mark() // mark node as visited to avoid infinite loops in cyclic graphs
         
         let directAncestors = node.ancestors
         let ingoingEdges = directAncestors.compactMap { edge(from: $0, to: node) }
@@ -33,11 +27,20 @@ public extension Graph
         
         let ancestorCount = directAncestorCount + directAncestors.sum
         {
-            getAncestorCount(for: $0, results: &results)
+            getAncestorCount(for: $0)
         }
         
-        results[node] = ancestorCount
+        marking.ancestorCount = ancestorCount
         
         return ancestorCount
+    }
+}
+
+private extension GraphNode.Marking
+{
+    var ancestorCount: Int
+    {
+        get { number1 }
+        set { number1 = newValue }
     }
 }

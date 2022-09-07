@@ -4,20 +4,20 @@ extension Graph
 {
     func findStronglyConnectedComponents() -> Set<Nodes>
     {
+        unmarkNodes()
+        
         var resultingSCCs = Set<Nodes>()
         
-        var markingsHash = [Node: NodeMarkings]()
         var index = 0
         var stack = [Node]()
         
         for node in nodes
         {
-            if markingsHash[node] == nil
+            if !node.isMarked
             {
                 findSCCsRecursively(node: node,
                                     index: &index,
-                                    stack: &stack,
-                                    markingsHash: &markingsHash) { resultingSCCs += $0 }
+                                    stack: &stack) { resultingSCCs += $0 }
             }
         }
         
@@ -28,44 +28,41 @@ extension Graph
     private func findSCCsRecursively(node: Node,
                                      index: inout Int,
                                      stack: inout [Node],
-                                     markingsHash: inout [Node: NodeMarkings],
-                                     handleNewSCC: (Nodes) -> Void) -> NodeMarkings
+                                     handleNewSCC: (Nodes) -> Void) -> Node.Marking
     {
         // Set the depth index for node to the smallest unused index
-        assert(markingsHash[node] == nil, "there shouldn't be a markings object for this node yet")
-        let nodeMarkings = NodeMarkings(index: index, lowLink: index)
+        assert(!node.isMarked, "there shouldn't be a marking value on this node yet")
+        let nodeMarking = Node.Marking(index: index, lowLink: index, isOnStack: true)
+        node.mark(with: nodeMarking)
         index += 1
         stack.append(node)
-        nodeMarkings.isOnStack = true
-        markingsHash[node] = nodeMarkings
         
         // Consider descendants of node
         for target in node.descendants
         {
-            if let targetMarkings = markingsHash[target]
+            if let targetMarkings = target.marking
             {
                 // If target is not on stack, then edge (node, target) is pointing to an SCC already found and must be ignored
                 if targetMarkings.isOnStack
                 {
                     // Successor "target" is in stack and hence in the current SCC
-                    nodeMarkings.lowLink = min(nodeMarkings.lowLink, targetMarkings.index)
+                    nodeMarking.lowLink = min(nodeMarking.lowLink, targetMarkings.index)
                 }
             }
             else // if target index is undefined then
             {
                 // Successor "target" has not yet been visited; recurse on it
-                let targetMarkings = findSCCsRecursively(node: target,
-                                                   index: &index,
-                                                   stack: &stack,
-                                                   markingsHash: &markingsHash,
-                                                   handleNewSCC: handleNewSCC)
+                let targetMarking = findSCCsRecursively(node: target,
+                                                        index: &index,
+                                                        stack: &stack,
+                                                        handleNewSCC: handleNewSCC)
                 
-                nodeMarkings.lowLink = min(nodeMarkings.lowLink, targetMarkings.lowLink)
+                nodeMarking.lowLink = min(nodeMarking.lowLink, targetMarking.lowLink)
             }
         }
         
         // If node is a root node, pop the stack and generate an SCC
-        if nodeMarkings.lowLink == nodeMarkings.index
+        if nodeMarking.lowLink == nodeMarking.index
         {
             var newSCC = Nodes()
             
@@ -73,7 +70,7 @@ extension Graph
             {
                 let sccNode = stack.removeLast()
                 
-                guard let sccNodeMarkings = markingsHash[sccNode] else
+                guard let sccNodeMarkings = sccNode.marking else
                 {
                     fatalError("node that is on the stack should have a markings object")
                 }
@@ -83,23 +80,36 @@ extension Graph
                 
                 if node === sccNode { break }
             }
-
+            
             handleNewSCC(newSCC)
         }
         
-        return nodeMarkings
+        return nodeMarking
+    }
+}
+
+private extension GraphNode.Marking
+{
+    convenience init(index: Int, lowLink: Int, isOnStack: Bool)
+    {
+        self.init(number1: index, number2: lowLink, flag1: isOnStack)
     }
     
-    private class NodeMarkings
+    var index: Int
     {
-        init(index: Int, lowLink: Int)
-        {
-            self.index = index
-            self.lowLink = lowLink
-        }
-        
-        var index: Int
-        var lowLink: Int
-        var isOnStack = false
+        get { number1 }
+        set { number1 = newValue }
+    }
+    
+    var lowLink: Int
+    {
+        get { number2 }
+        set { number2 = newValue }
+    }
+    
+    var isOnStack: Bool
+    {
+        get { flag1 }
+        set { flag1 = newValue }
     }
 }

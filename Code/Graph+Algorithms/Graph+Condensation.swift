@@ -10,34 +10,27 @@ public extension Graph
      */
     func makeCondensation() -> CondensationGraph
     {
-        let sccNodeSets = findStronglyConnectedComponents()
+        // get SCCs
+        let sccs = findStronglyConnectedComponents().map { StronglyConnectedComponent(nodes: $0) }
         
-        // create SCCs and a hashmap from nodes to their SCCs
-        var sccs = OrderedSet<StronglyConnectedComponent>()
+        // create hashmap from nodes to their SCCs
         var sccHash = [Node: StronglyConnectedComponent]()
         
-        for sccNodes in sccNodeSets
+        for scc in sccs
         {
-            let scc = StronglyConnectedComponent(nodes: sccNodes)
-            
-            for sccNode in sccNodes
+            for sccNode in scc.nodes
             {
                 sccHash[sccNode] = scc
             }
-            
-            sccs.append(scc)
         }
         
         // create condensation graph
-        var condensationGraph = CondensationGraph(values: sccs)
+        var condensationGraph = CondensationGraph(values: OrderedSet(sccs))
         
         // add condensation edges
-        for edge in edges
+        for edge in edgesByID.values
         {
-            
-            guard let sourceSCC = sccHash[edge.source],
-                    let targetSCC = sccHash[edge.target]
-            else
+            guard let sourceSCC = sccHash[edge.source], let targetSCC = sccHash[edge.target] else
             {
                 fatalError("mising scc in hash map")
             }
