@@ -4,12 +4,12 @@ public extension Graph
 {
     // MARK: - Edges
     
-    mutating func addEdge(from sourceValue: NodeValue, to targetValue: NodeValue)
+    func addEdge(from sourceValue: NodeValue, to targetValue: NodeValue)
     {
         addEdge(from: sourceValue.id, to: targetValue.id)
     }
     
-    mutating func addEdge(from sourceValueID: NodeValue.ID, to targetValueID: NodeValue.ID)
+    func addEdge(from sourceValueID: NodeValue.ID, to targetValueID: NodeValue.ID)
     {
         guard let sourceNode = node(for: sourceValueID),
               let targetNode = node(for: targetValueID) else { return }
@@ -41,16 +41,11 @@ public extension Graph
     
     // MARK: - Values
     
-    init(values: OrderedSet<NodeValue>)
-    {
-        self.nodesByValueID = .init(uniqueKeysWithValues: values.map { ($0.id, Node(value: $0)) })
-    }
-    
     /**
      Inserts a value into the graph and returns the `GraphNode` holding the value. If a value with the same identity already exists, the function returns the node holding that existing value. Note that graph node values are `Identifiable`.
      */
     @discardableResult
-    mutating func insert(_ value: NodeValue) -> Node
+    func insert(_ value: NodeValue) -> Node
     {
         if let node = nodesByValueID[value.id]
         {

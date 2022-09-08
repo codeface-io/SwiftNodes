@@ -6,18 +6,23 @@ import SwiftyToolz
  
  Nodes maintain an order, and the graph can be sorted. Values must be `Identifiable` and `Hashable`.
  */
-public struct Graph<NodeValue: Identifiable & Hashable>
+public class Graph<NodeValue: Identifiable & Hashable>
 {
     // MARK: - Initialize
     
+    init(values: OrderedSet<NodeValue>)
+    {
+        nodesByValueID = .init(uniqueKeysWithValues: values.map { ($0.id, Node(value: $0)) })
+    }
+    
     public init(nodes: OrderedNodes = [])
     {
-        self.nodesByValueID = .init(uniqueKeysWithValues: nodes.map { ($0.value.id, $0) })
+        nodesByValueID = .init(uniqueKeysWithValues: nodes.map { ($0.value.id, $0) })
     }
     
     // MARK: - Edges
     
-    public mutating func remove(_ edge: Edge)
+    public func remove(_ edge: Edge)
     {
         // remove from node caches
         edge.source.descendants -= edge.target
@@ -28,7 +33,7 @@ public struct Graph<NodeValue: Identifiable & Hashable>
     }
     
     @discardableResult
-    public mutating func addEdge(from source: Node, to target: Node) -> Edge
+    public func addEdge(from source: Node, to target: Node) -> Edge
     {
         let edgeID = Edge.ID(sourceValue: source.value, targetValue: target.value)
         
@@ -66,7 +71,7 @@ public struct Graph<NodeValue: Identifiable & Hashable>
     
     // MARK: - Nodes
     
-    public mutating func sort(by nodesAreInOrder: (Node, Node) -> Bool)
+    public func sort(by nodesAreInOrder: (Node, Node) -> Bool)
     {
         nodesByValueID.sort { nodesAreInOrder($0.value, $1.value) }
     }

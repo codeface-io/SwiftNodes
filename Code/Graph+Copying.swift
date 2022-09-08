@@ -18,7 +18,7 @@ extension Graph
                      includedEdges: Set<Edge>? = nil) -> Graph<NodeValue>
     {
         let actualIncludedValues = includedValues ?? OrderedSet(nodesByValueID.values.map { $0.value } )
-        var graphCopy = Graph(values: actualIncludedValues)
+        let graphCopy = Graph(values: actualIncludedValues)
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {
