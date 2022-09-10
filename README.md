@@ -4,9 +4,9 @@ A Swift package providing a `Graph` data structure and various graph algorithms.
 
 It serves as critical infrastructure for [Codeface.io](https://www.codeface.io).
 
-## Overview
+## Architecture
 
-The codebase with its essential dependencies:
+Here is the internal composition with its essential dependencies:
 
 ![](Documentation/architecture.png)
 
