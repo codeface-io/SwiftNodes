@@ -45,20 +45,22 @@ public class Graph<NodeID: Hashable, NodeValue>
     }
     
     @discardableResult
-    public func addEdge(from sourceID: NodeID, to targetID: NodeID) -> Edge?
+    public func addEdge(from sourceID: NodeID,
+                        to targetID: NodeID,
+                        count: Int = 1) -> Edge?
     {
         guard let source = node(for: sourceID), let target = node(for: targetID) else { return nil }
-        return addEdge(from: source, to: target)
+        return addEdge(from: source, to: target, count: count)
     }
     
     @discardableResult
-    public func addEdge(from source: Node, to target: Node) -> Edge
+    public func addEdge(from source: Node, to target: Node, count: Int = 1) -> Edge
     {
         let edgeID = Edge.ID(source: source, target: target)
         
         if let edge = edgesByID[edgeID]
         {
-            edge.count += 1
+            edge.count += count
             
             // TODO: maintain count in edge caches in nodes as well, for algorithms that take edge weight into account when traversing the graph, like dijkstra shortest path ...
             
@@ -66,7 +68,7 @@ public class Graph<NodeID: Hashable, NodeValue>
         }
         else
         {
-            let edge = Edge(from: source, to: target)
+            let edge = Edge(from: source, to: target, count: count)
             edgesByID[edgeID] = edge
             
             // add to node caches
@@ -77,14 +79,15 @@ public class Graph<NodeID: Hashable, NodeValue>
         }
     }
     
+    public func edge(from source: Node, to target: Node) -> Edge?
+    {
+        guard contains(source), contains(target) else { return nil }
+        return edge(from: source.id, to: target.id)
+    }
+    
     public func edge(from sourceID: NodeID, to targetID: NodeID) -> Edge?
     {
         edgesByID[.init(sourceID: sourceID, targetID: targetID)]
-    }
-    
-    public func edge(from source: Node, to target: Node) -> Edge?
-    {
-        edgesByID[.init(source: source, target: target)]
     }
     
     public var edges: Dictionary<Edge.ID, Edge>.Values
@@ -133,6 +136,11 @@ public class Graph<NodeID: Hashable, NodeValue>
     public var sinks: [Node]
     {
         nodesByID.values.filter { $0.isSink }
+    }
+    
+    public func contains(_ node: Node) -> Bool
+    {
+        self.node(for: node.id) === node
     }
     
     public func node(for nodeID: NodeID) -> Node?

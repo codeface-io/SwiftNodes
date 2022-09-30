@@ -18,13 +18,16 @@ extension Graph
                      includedEdges: Set<Edge>? = nil) -> Graph<NodeID, NodeValue>
     {
         let actualIncludedNodes = includedNodes ?? OrderedSet(nodesByID.values)
+        let copiesOfIncludedNodes = actualIncludedNodes.map { Node(id: $0.id, value: $0.value) }
         
-        let graphCopy = Graph(nodes: actualIncludedNodes,
+        let graphCopy = Graph(nodes: OrderedSet(copiesOfIncludedNodes),
                               makeNodeIDForValue: self.makeNodeIDForValue)
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {
-            graphCopy.addEdge(from: originalEdge.source, to: originalEdge.target)
+            graphCopy.addEdge(from: originalEdge.source.id,
+                              to: originalEdge.target.id,
+                              count: originalEdge.count)
         }
         
         return graphCopy

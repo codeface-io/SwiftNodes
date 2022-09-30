@@ -31,12 +31,12 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     
     // MARK: - Basics
     
-    internal init(from source: Node, to target: Node)
+    internal init(from source: Node, to target: Node, count: Int = 1)
     {
         self.source = source
         self.target = target
         
-        count = 1
+        self.count = count
     }
     
     public internal(set) var count: Int
