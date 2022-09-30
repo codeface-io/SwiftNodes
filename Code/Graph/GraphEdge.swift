@@ -2,16 +2,6 @@ import SwiftyToolz
 
 public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
 {
-    // MARK: - Initialize
-    
-    internal init(from source: Node, to target: Node)
-    {
-        self.source = source
-        self.target = target
-        
-        count = 1
-    }
-    
     // MARK: - Hashability
     
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
@@ -41,7 +31,15 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     
     // MARK: - Basics
     
-    public var count: Int
+    internal init(from source: Node, to target: Node)
+    {
+        self.source = source
+        self.target = target
+        
+        count = 1
+    }
+    
+    public internal(set) var count: Int
     
     public let source: Node
     public let target: Node

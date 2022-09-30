@@ -34,7 +34,7 @@ public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
     
     // MARK: - Identity & Value
     
-    public init(id: ID, value: Value)
+    internal init(id: ID, value: Value)
     {
         self.id = id
         self.value = value

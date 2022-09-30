@@ -27,11 +27,18 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     // MARK: - Edges
     
+    public func removeEdge(with id: Edge.ID)
+    {
+        guard let edge = edgesByID[id] else { return }
+        remove(edge)
+    }
+    
     public func remove(_ edge: Edge)
     {
         // remove from node caches
         edge.source.descendants -= edge.target
         edge.target.ancestors -= edge.source
+        edge.count = 0
         
         // remove edge itself
         edgesByID[edge.id] = nil
