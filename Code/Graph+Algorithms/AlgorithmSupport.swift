@@ -47,8 +47,8 @@ public extension GraphNode
         return marking
     }
     
-    var isSink: Bool { descendants.count == 0 }
-    var isSource: Bool { ancestors.count == 0 }
+    var isSink: Bool { descendants.isEmpty }
+    var isSource: Bool { ancestors.isEmpty }
     
     var neighbours: Set<Node> { ancestors + descendants }
 }

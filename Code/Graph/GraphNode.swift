@@ -41,5 +41,5 @@ public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
     }
     
     public let id: ID
-    public var value: Value
+    public let value: Value
 }

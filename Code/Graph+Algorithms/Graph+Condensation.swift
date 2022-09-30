@@ -26,7 +26,7 @@ public extension Graph
         
         // create condensation graph
         let condensationNodes = sccs.map { CondensationNode(id: $0.id, value: $0) }
-        let condensationGraph = CondensationGraph(nodes: OrderedSet(condensationNodes))
+        let condensationGraph = CondensationGraph(nodes: OrderedSet(condensationNodes)) { $0.id }
         
         // add condensation edges
         for edge in edgesByID.values

@@ -19,7 +19,8 @@ extension Graph
     {
         let actualIncludedNodes = includedNodes ?? OrderedSet(nodesByID.values)
         
-        let graphCopy = Graph(nodes: actualIncludedNodes)
+        let graphCopy = Graph(nodes: actualIncludedNodes,
+                              makeNodeIDForValue: self.makeNodeIDForValue)
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {

@@ -8,9 +8,16 @@ public class Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
     
-    public init(nodes: OrderedNodes = [])
+    public convenience init(nodes: OrderedNodes = []) where NodeID == NodeValue
+    {
+        self.init(nodes: nodes) { $0 }
+    }
+    
+    public init(nodes: OrderedNodes = [],
+                makeNodeIDForValue: @escaping (NodeValue) -> NodeID)
     {
         nodesByID = .init(uniqueKeysWithValues: nodes.map { ($0.id, $0) })
+        self.makeNodeIDForValue = makeNodeIDForValue
     }
     
     // MARK: - Edges
@@ -80,23 +87,19 @@ public class Graph<NodeID: Hashable, NodeValue>
     // MARK: - Node Values
     
     /**
-     Inserts a value into the graph and returns the `GraphNode` holding the value. If a node with the same id already exists, the function stores the values into that existing node and returns it.
+     Inserts a new node with the given value into the graph and returns the new node. If a node with the same generated node id already exists, the function returns the existing node.
      */
     @discardableResult
-    public func insert(_ value: NodeValue, forNodeID nodeID: NodeID) -> Node
+    public func insert(_ value: NodeValue) -> Node
     {
-        if let node = nodesByID[nodeID]
-        {
-            node.value = value
-            return node
-        }
-        else
-        {
-            let node = Node(id: nodeID, value: value)
-            nodesByID[nodeID] = node
-            return node
-        }
+        let nodeID = makeNodeIDForValue(value)
+        if let existingNode = nodesByID[nodeID] { return existingNode }
+        let node = Node(id: nodeID, value: value)
+        nodesByID[nodeID] = node
+        return node
     }
+    
+    internal let makeNodeIDForValue: (NodeValue) -> NodeID
     
     public func value(for nodeID: NodeID) -> NodeValue?
     {
@@ -118,6 +121,11 @@ public class Graph<NodeID: Hashable, NodeValue>
     public func sort(by nodesAreInOrder: (Node, Node) -> Bool)
     {
         nodesByID.values.sort(by: nodesAreInOrder)
+    }
+    
+    public var nodesIDs: OrderedSet<NodeID>
+    {
+        nodesByID.keys
     }
     
     public var nodes: OrderedDictionary<NodeID, Node>.Values
