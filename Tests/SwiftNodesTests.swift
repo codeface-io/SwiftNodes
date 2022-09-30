@@ -83,4 +83,6 @@ class SwiftNodesTests: XCTestCase {
         XCTAssertNotIdentical(graphCopy.edge(from: "id1", to: "id2"), edge1)
         XCTAssertEqual(graphCopy.edge(from: "id2", to: "id3")?.count, 2)
     }
+    
+    // TODO: Test algorithms
 }
