@@ -8,6 +8,11 @@ public class Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
     
+    public convenience init(nodes: OrderedNodes = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
+    {
+        self.init(nodes: nodes) { $0.id }
+    }
+    
     public convenience init(nodes: OrderedNodes = []) where NodeID == NodeValue
     {
         self.init(nodes: nodes) { $0 }
