@@ -3,26 +3,27 @@ import OrderedCollections
 
 extension Graph
 {
-    public func copy(includedValues: [NodeValue]) -> Graph<NodeValue>
+    public func copy(includedNodes: [Node]) -> Graph<NodeID, NodeValue>
     {
-        copy(includedValues: OrderedSet(includedValues))
+        copy(includedNodes: OrderedSet(includedNodes))
     }
     
-    public func copy(excludedEdges: Set<Edge>) -> Graph<NodeValue>
+    public func copy(excludedEdges: Set<Edge>) -> Graph<NodeID, NodeValue>
     {
         copy(includedEdges: Set(edgesByID.values) - excludedEdges)
     }
     
     /// Make a copy of (a subset of) the graph
-    public func copy(includedValues: OrderedSet<NodeValue>? = nil,
-                     includedEdges: Set<Edge>? = nil) -> Graph<NodeValue>
+    public func copy(includedNodes: OrderedSet<Node>? = nil,
+                     includedEdges: Set<Edge>? = nil) -> Graph<NodeID, NodeValue>
     {
-        let actualIncludedValues = includedValues ?? OrderedSet(nodesByValueID.values.map { $0.value } )
-        let graphCopy = Graph(values: actualIncludedValues)
+        let actualIncludedNodes = includedNodes ?? OrderedSet(nodesByID.values)
+        
+        let graphCopy = Graph(nodes: actualIncludedNodes)
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {
-            graphCopy.addEdge(from: originalEdge.source.value, to: originalEdge.target.value)
+            graphCopy.addEdge(from: originalEdge.source, to: originalEdge.target)
         }
         
         return graphCopy

@@ -25,7 +25,8 @@ public extension Graph
         }
         
         // create condensation graph
-        let condensationGraph = CondensationGraph(values: OrderedSet(sccs))
+        let condensationNodes = sccs.map { CondensationNode(id: $0.id, value: $0) }
+        let condensationGraph = CondensationGraph(nodes: OrderedSet(condensationNodes))
         
         // add condensation edges
         for edge in edgesByID.values
@@ -37,7 +38,7 @@ public extension Graph
             
             if sourceSCC !== targetSCC
             {
-                condensationGraph.addEdge(from: sourceSCC, to: targetSCC)
+                condensationGraph.addEdge(from: sourceSCC.id, to: targetSCC.id)
             }
         }
         
@@ -45,9 +46,11 @@ public extension Graph
         return condensationGraph
     }
     
-    typealias CondensationGraph = Graph<StronglyConnectedComponent>
-    typealias CondensationNode = GraphNode<StronglyConnectedComponent>
-    typealias CondensationEdge = GraphEdge<StronglyConnectedComponent>
+    typealias CondensationNode = CondensationGraph.Node
+    typealias CondensationEdge = CondensationGraph.Edge
+    
+    // TODO: use NodeID as condensation node id type and require client to pass a closure for creating new ids of that type. use ids of contained node for StronglyConnectedComponents that contain only 1 node
+    typealias CondensationGraph = Graph<String, StronglyConnectedComponent>
     
     class StronglyConnectedComponent: Identifiable, Hashable
     {
@@ -55,6 +58,8 @@ public extension Graph
                                rhs: StronglyConnectedComponent) -> Bool { lhs.id == rhs.id }
         
         public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+        
+        public let id: String = .randomID()
         
         init(nodes: Set<Node>)
         {

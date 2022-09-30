@@ -9,7 +9,7 @@ public extension Graph
      
      See <https://en.wikipedia.org/wiki/Transitive_reduction>
      */
-    func makeMinimumEquivalentGraph() -> Graph<NodeValue>
+    func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
     {
         var indirectReachabilities = Set<Edge>()
         var consideredAncestorsHash = [Node: Nodes]()

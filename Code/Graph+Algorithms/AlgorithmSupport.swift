@@ -9,7 +9,7 @@ public extension Graph
     
     func setNodeMarkings(to marking: Node.Marking?)
     {
-        for node in nodesByValueID.values
+        for node in nodesByID.values
         {
             node.marking = marking
         }
@@ -17,12 +17,12 @@ public extension Graph
     
     var sources: OrderedNodes
     {
-        OrderedNodes(nodesByValueID.values.filter { $0.isSource })
+        OrderedNodes(nodesByID.values.filter { $0.isSource })
     }
     
     var sinks: OrderedNodes
     {
-        OrderedNodes(nodesByValueID.values.filter { $0.isSink })
+        OrderedNodes(nodesByID.values.filter { $0.isSink })
     }
 }
 
@@ -58,9 +58,10 @@ public extension GraphNode.Marking
     static var zero: GraphNode.Marking { .init() }
 }
 
+// TODO: why must we specialize the GraphNode ID type when we don't need to know the ID type here? are their new Swift 5.7 features to writes this better??
 public extension Set
 {
-    func values<Value>() -> [Value] where Element == GraphNode<Value>
+    func values<ID, Value>() -> [Value] where Element == GraphNode<ID, Value>
     {
         map { $0.value }
     }
@@ -68,7 +69,7 @@ public extension Set
 
 public extension Array
 {
-    func values<Value>() -> [Value] where Element == GraphNode<Value>
+    func values<ID, Value>() -> [Value] where Element == GraphNode<ID, Value>
     {
         map { $0.value }
     }

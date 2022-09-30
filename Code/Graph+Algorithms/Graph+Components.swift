@@ -8,7 +8,7 @@ public extension Graph
         
         var components = Set<Nodes>()
 
-        for node in nodesByValueID.values
+        for node in nodesByID.values
         {
             if node.isMarked { continue }
             

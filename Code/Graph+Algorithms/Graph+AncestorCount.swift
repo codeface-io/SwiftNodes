@@ -11,7 +11,7 @@ public extension Graph
         
         sinks.forEach { getAncestorCount(for: $0) }
 
-        return nodesByValueID.values.map { ($0, $0.marking?.ancestorCount ?? 0) }
+        return nodesByID.values.map { ($0, $0.marking?.ancestorCount ?? 0) }
     }
 
     @discardableResult

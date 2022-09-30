@@ -1,10 +1,10 @@
 import SwiftyToolz
 
-public class GraphNode<Value: Identifiable>: Identifiable, Hashable
+public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
 {
     // MARK: - Marking for Algorithms
     
-    var marking: Marking?
+    public var marking: Marking?
     
     public class Marking
     {
@@ -26,17 +26,20 @@ public class GraphNode<Value: Identifiable>: Identifiable, Hashable
     public internal(set) var ancestors = Set<Node>()
     public internal(set) var descendants = Set<Node>()
     
-    // MARK: - Basics: Value & Identity
-    
-    internal init(value: Value) { self.value = value }
+    // MARK: - Hashability
     
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    public static func == (lhs: Node, rhs: Node) -> Bool { lhs === rhs }
+    public typealias Node = GraphNode<ID, Value>
     
-    public static func == (lhs: Node, rhs: Node) -> Bool { lhs.id == rhs.id }
+    // MARK: - Identity & Value
     
-    public typealias Node = GraphNode<Value>
+    public init(id: ID, value: Value)
+    {
+        self.id = id
+        self.value = value
+    }
     
-    public var id: Value.ID { value.id }
-    
-    public private(set) var value: Value
+    public let id: ID
+    public var value: Value
 }
