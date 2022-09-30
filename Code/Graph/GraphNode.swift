@@ -23,6 +23,11 @@ public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
     
     // MARK: - Caches for Accessing Neighbours Quickly
     
+    public var isSink: Bool { descendants.isEmpty }
+    public var isSource: Bool { ancestors.isEmpty }
+    
+    var neighbours: Set<Node> { ancestors + descendants }
+    
     public internal(set) var ancestors = Set<Node>()
     public internal(set) var descendants = Set<Node>()
     

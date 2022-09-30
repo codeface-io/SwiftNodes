@@ -125,6 +125,16 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     // MARK: - Nodes
     
+    public var sources: [Node]
+    {
+        nodesByID.values.filter { $0.isSource }
+    }
+    
+    public var sinks: [Node]
+    {
+        nodesByID.values.filter { $0.isSink }
+    }
+    
     public func node(for nodeID: NodeID) -> Node?
     {
         nodesByID[nodeID]
