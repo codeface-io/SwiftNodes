@@ -54,7 +54,9 @@ public class Graph<NodeID: Hashable, NodeValue>
     }
     
     @discardableResult
-    public func addEdge(from source: Node, to target: Node, count: Int = 1) -> Edge
+    public func addEdge(from source: Node,
+                        to target: Node,
+                        count: Int = 1) -> Edge
     {
         let edgeID = Edge.ID(source: source, target: target)
         
