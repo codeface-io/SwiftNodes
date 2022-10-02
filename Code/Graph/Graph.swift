@@ -145,6 +145,11 @@ public class Graph<NodeID: Hashable, NodeValue>
         nodesByID.values.filter { $0.isSink }
     }
     
+    public func contains(_ nodeID: NodeID) -> Bool
+    {
+        node(for: nodeID) != nil
+    }
+    
     public func contains(_ node: Node) -> Bool
     {
         self.node(for: node.id) === node
