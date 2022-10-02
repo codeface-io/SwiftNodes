@@ -17,7 +17,14 @@ extension Graph
     public func copy(includedNodes: OrderedSet<Node>? = nil,
                      includedEdges: Set<Edge>? = nil) -> Graph<NodeID, NodeValue>
     {
-        let actualIncludedNodes = includedNodes ?? OrderedSet(nodesByID.values)
+        let myNodes = OrderedSet(nodesByID.values)
+        
+        if !(includedNodes?.isSubset(of: myNodes) ?? true)
+        {
+            log(warning: "Some nodes to include in the Graph copy are not in the graph.")
+        }
+        
+        let actualIncludedNodes = includedNodes ?? myNodes
         let copiesOfIncludedNodes = actualIncludedNodes.map { Node(id: $0.id, value: $0.value) }
         
         let graphCopy = Graph(nodes: OrderedSet(copiesOfIncludedNodes),

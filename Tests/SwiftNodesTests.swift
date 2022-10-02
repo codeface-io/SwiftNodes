@@ -84,5 +84,28 @@ class SwiftNodesTests: XCTestCase {
         XCTAssertEqual(graphCopy.edge(from: "id2", to: "id3")?.count, 2)
     }
     
-    // TODO: Test algorithms
+    func testMinimumEquivalentGraph() {
+        // make original graph
+        let graph = Graph<String, Int> { "id\($0)" }
+        
+        let node1 = graph.insert(1)
+        let node2 = graph.insert(2)
+        let node3 = graph.insert(3)
+        
+        graph.addEdge(from: node1, to: node2)
+        graph.addEdge(from: node2, to: node3)
+        graph.addEdge(from: node1, to: node3)
+        
+        XCTAssertEqual(graph.edges.count, 3)
+        
+        // make MEG
+        let meg = graph.makeMinimumEquivalentGraph()
+        
+        XCTAssertEqual(meg.edges.count, 2)
+        XCTAssertNotNil(meg.edge(from: "id1", to: "id2"))
+        XCTAssertNotNil(meg.edge(from: "id2", to: "id3"))
+        XCTAssertNil(meg.edge(from: "id1", to: "id3"))
+    }
+    
+    // TODO: Test more algorithms
 }

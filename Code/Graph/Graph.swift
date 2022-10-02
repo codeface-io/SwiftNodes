@@ -49,7 +49,12 @@ public class Graph<NodeID: Hashable, NodeValue>
                         to targetID: NodeID,
                         count: Int = 1) -> Edge?
     {
-        guard let source = node(for: sourceID), let target = node(for: targetID) else { return nil }
+        guard let source = node(for: sourceID), let target = node(for: targetID) else
+        {
+            log(warning: "Tried to add edge between non-existing node IDs:\nsource ID = \(sourceID)\ntarget ID = \(targetID)")
+            return nil
+        }
+        
         return addEdge(from: source, to: target, count: count)
     }
     

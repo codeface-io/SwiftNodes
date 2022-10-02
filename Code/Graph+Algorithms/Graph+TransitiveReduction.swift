@@ -11,26 +11,24 @@ public extension Graph
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
     {
-        var indirectReachabilities = Set<Edge>()
+        var nonEssentialEdges = Set<Edge>()
         var consideredAncestorsHash = [Node: Nodes]()
         
         for sourceNode in sources
         {
             // TODO: keep track of visited nodes within each traversal from a source and ignore already visited nodes so we can't get hung up in cycles
             
-            let reachabilities = findIndirectReachabilities(around: sourceNode,
-                                                            reachedAncestors: [],
-                                                            consideredAncestorsHash: &consideredAncestorsHash)
-            
-            indirectReachabilities += reachabilities
+            nonEssentialEdges += findNonEssentialEdges(around: sourceNode,
+                                                       reachedAncestors: [],
+                                                       consideredAncestorsHash: &consideredAncestorsHash)
         }
         
-        return copy(excludedEdges: indirectReachabilities)
+        return copy(excludedEdges: nonEssentialEdges)
     }
     
-    private func findIndirectReachabilities(around node: Node,
-                                            reachedAncestors: Nodes,
-                                            consideredAncestorsHash: inout [Node: Nodes]) -> Set<Edge>
+    private func findNonEssentialEdges(around node: Node,
+                                       reachedAncestors: Nodes,
+                                       consideredAncestorsHash: inout [Node: Nodes]) -> Set<Edge>
     {
         let consideredAncestors = consideredAncestorsHash[node, default: Nodes()]
         let ancestorsToConsider = reachedAncestors - consideredAncestors
@@ -43,7 +41,7 @@ public extension Graph
         
         consideredAncestorsHash[node, default: Set<Node>()] += ancestorsToConsider
         
-        var indirectReachabilities = Set<Edge>()
+        var nonEssentialEdges = Set<Edge>()
         
         // base case: add edges from all reached ancestors to all reachable neighbours of node
         
@@ -53,7 +51,10 @@ public extension Graph
         {
             for ancestor in ancestorsToConsider
             {
-                indirectReachabilities += Edge(from: ancestor, to: descendant)
+                if let nonEssentialEdge = edge(from: ancestor, to: descendant)
+                {
+                    nonEssentialEdges += nonEssentialEdge
+                }
             }
         }
         
@@ -61,11 +62,11 @@ public extension Graph
         
         for descendant in descendants
         {
-            indirectReachabilities += findIndirectReachabilities(around: descendant,
-                                                                 reachedAncestors: ancestorsToConsider + node,
-                                                                 consideredAncestorsHash: &consideredAncestorsHash)
+            nonEssentialEdges += findNonEssentialEdges(around: descendant,
+                                                       reachedAncestors: ancestorsToConsider + node,
+                                                       consideredAncestorsHash: &consideredAncestorsHash)
         }
         
-        return indirectReachabilities
+        return nonEssentialEdges
     }
 }
