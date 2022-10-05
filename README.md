@@ -96,11 +96,11 @@ graph.removeEdge(from: node1.id, to: node2.id)
 `Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition,  `GraphNode` has caches that enable quick access to its neighbours:
 
 ```swift
-node.descendants              // all nodes to which there is an edge from node
-node.ancestors                // all nodes from which there is an edge to node
-node.neighbours               // all descendants and ancestors
-node.isSink										// whether node has no descendants
-node.isSource									// whether node has no ancestors
+node.descendants  // all nodes to which there is an edge from node
+node.ancestors    // all nodes from which there is an edge to node
+node.neighbours   // all descendants and ancestors
+node.isSink       // whether node has no descendants
+node.isSource     // whether node has no ancestors
 ```
 
 ### Sort Nodes
@@ -116,7 +116,7 @@ graph.sort { $0.id < $1.id }   // graph.values == [3, 5]
 
 ### Copy a Graph
 
-Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to make a copy.
+Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it.
 
 A `graph.copy()` is identical to the original `graph` in IDs, values and structure but contains its own new node- and edge objects. You may also copy just a subset of a graph and limit the included edges and/or nodes:
 
@@ -145,7 +145,7 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Condensation Graph
 
-`graph.makeCondensationGraph()` creates the [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `graph`, which is the graph in which all [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the original graph have been collapsed into single nodes, so the resulting condensation graph is acyclic.
+`graph.makeCondensationGraph()` creates the [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `graph`, which is the graph in which all [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the original `graph` have been collapsed into single nodes, so the resulting condensation graph is acyclic.
 
 ### Minimum Equivalent Graph
 
@@ -153,9 +153,9 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Ancestor Counts
 
-`graph.findNumberOfNodeAncestors()` returns a `[(Node, Int)]` containing each node of the graph associated with its ancestor count. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached. 
+`graph.findNumberOfNodeAncestors()` returns a `[(Node, Int)]` containing each node of the `graph` together with its ancestor count. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached. 
 
-This only works on acyclic graphs right now and might return incorrect results for some nodes in cyclic graphs.
+This only works on acyclic graphs right now and might return incorrect results for nodes in cycles.
 
 Ancestor counts can serve as a proxy for [topological sorting](https://en.wikipedia.org/wiki/Topological_sorting).
 
@@ -165,7 +165,7 @@ Here is the internal architecture (composition and essential dependencies) of th
 
 ![](Documentation/architecture.png)
 
-The above image was created with the [Codeface](https://www.codeface.io) app.
+The above image was created with [Codeface](https://www.codeface.io).
 
 ## Development Status
 
