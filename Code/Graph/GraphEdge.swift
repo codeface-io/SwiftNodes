@@ -10,16 +10,16 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     
     // MARK: - Identity
     
-    public var id: ID { ID(source: source, target: target) }
+    public var id: ID { ID(source, target) }
     
     public struct ID: Hashable
     {   
-        internal init(source: Node, target: Node)
+        internal init(_ source: Node, _ target: Node)
         {
-            self.init(sourceID: source.id, targetID: target.id)
+            self.init(source.id, target.id)
         }
         
-        internal init(sourceID: NodeID, targetID: NodeID)
+        internal init(_ sourceID: NodeID, _ targetID: NodeID)
         {
             self.sourceID = sourceID
             self.targetID = targetID

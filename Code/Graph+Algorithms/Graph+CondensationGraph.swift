@@ -8,7 +8,7 @@ public extension Graph
      
      See <https://en.wikipedia.org/wiki/Strongly_connected_component>
      */
-    func makeCondensation() -> CondensationGraph
+    func makeCondensationGraph() -> CondensationGraph
     {
         // get SCCs
         let sccs = findStronglyConnectedComponents().map { StronglyConnectedComponent(nodes: $0) }

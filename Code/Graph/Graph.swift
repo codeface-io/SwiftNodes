@@ -27,6 +27,16 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     // MARK: - Edges
     
+    public func removeEdge(from sourceID: NodeID, to targetID: NodeID)
+    {
+        removeEdge(with: .init(sourceID, targetID))
+    }
+    
+    public func removeEdge(from source: Node, to target: Node)
+    {
+        removeEdge(with: .init(source, target))
+    }
+    
     public func removeEdge(with id: Edge.ID)
     {
         guard let edge = edgesByID[id] else { return }
@@ -63,7 +73,7 @@ public class Graph<NodeID: Hashable, NodeValue>
                         to target: Node,
                         count: Int = 1) -> Edge
     {
-        let edgeID = Edge.ID(source: source, target: target)
+        let edgeID = Edge.ID(source, target)
         
         if let edge = edgesByID[edgeID]
         {
@@ -94,7 +104,7 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     public func edge(from sourceID: NodeID, to targetID: NodeID) -> Edge?
     {
-        edgesByID[.init(sourceID: sourceID, targetID: targetID)]
+        edgesByID[.init(sourceID, targetID)]
     }
     
     public var edges: Dictionary<Edge.ID, Edge>.Values
