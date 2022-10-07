@@ -4,7 +4,7 @@
 
 ## What?
 
-SwiftNodes provides a `Graph` data structure and graph algorithms. A `Graph` stores values in nodes which can be connected by edges. SwiftNodes was first used in production by [Codeface](https://www.codeface.io).
+SwiftNodes provides a `Graph` data structure and graph algorithms. A `Graph` stores values in nodes which can be connected by edges. SwiftNodes was first used in production by [Codeface](https://codeface.io).
 
 ## How to Edit, Query and Copy Graphs
 
@@ -165,7 +165,7 @@ Here is the internal architecture (composition and essential dependencies) of th
 
 ![](Documentation/architecture.png)
 
-The above image was created with [Codeface](https://www.codeface.io).
+The above image was created with [Codeface](https://codeface.io).
 
 ## Development Status
 
