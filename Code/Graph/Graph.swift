@@ -2,22 +2,35 @@ import OrderedCollections
 import SwiftyToolz
 
 /**
- Holds values in nodes which can be connected through edges. Nodes maintain an order, and so the graph can be sorted.
+ Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
+ 
+ You create `GraphNode`s by inserting `NodeValue`s into the `Graph`, whereby the `Graph` generates the IDs for new nodes according to the closure passed to- or implied by its initializer, see ``Graph/init(nodes:makeNodeIDForValue:)`` and the convenience initializers.
+ 
+ Nodes maintain an order, and so the graph can be sorted, see ``Graph/sort(by:)``.
  */
 public class Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
     
+    /**
+     Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
+     */
     public convenience init(nodes: OrderedNodes = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
         self.init(nodes: nodes) { $0.id }
     }
     
+    /**
+     Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
+     */
     public convenience init(nodes: OrderedNodes = []) where NodeID == NodeValue
     {
         self.init(nodes: nodes) { $0 }
     }
     
+    /**
+     Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
+     */
     public init(nodes: OrderedNodes = [],
                 makeNodeIDForValue: @escaping (NodeValue) -> NodeID)
     {
@@ -27,22 +40,35 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     // MARK: - Edges
     
+    /**
+     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
+     */
     public func removeEdge(from sourceID: NodeID, to targetID: NodeID)
     {
         removeEdge(with: .init(sourceID, targetID))
     }
     
+    /**
+     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
+     */
     public func removeEdge(from source: Node, to target: Node)
     {
         removeEdge(with: .init(source, target))
     }
     
+    /**
+     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
+     */
     public func removeEdge(with id: Edge.ID)
     {
         guard let edge = edgesByID[id] else { return }
         remove(edge)
     }
     
+    /**
+     Removes the ``GraphEdge``, also removing it from the caches of its ``GraphEdge/source`` and ``GraphEdge/target``
+     
+     */
     public func remove(_ edge: Edge)
     {
         // remove from node caches
@@ -54,6 +80,11 @@ public class Graph<NodeID: Hashable, NodeValue>
         edgesByID[edge.id] = nil
     }
     
+    /**
+     Adds a ``GraphEdge`` from one ``GraphNode`` to another, see ``Graph/addEdge(from:to:count:)-mz60``
+     
+     - Returns: `nil` if no ``GraphNode`` exists for `sourceID` or `targetID`
+     */
     @discardableResult
     public func addEdge(from sourceID: NodeID,
                         to targetID: NodeID,
@@ -68,6 +99,13 @@ public class Graph<NodeID: Hashable, NodeValue>
         return addEdge(from: source, to: target, count: count)
     }
     
+    /**
+     Adds a ``GraphEdge`` from one ``GraphNode`` to another
+     
+     This also adds `source` and `target` to each other's neighbour caches, see ``GraphNode``
+     
+     - Returns: The new ``GraphEdge`` if none existed from `source` to `target`, otherwise the existing ``GraphEdge`` with its ``GraphEdge/count`` increased by the given `count`
+     */
     @discardableResult
     public func addEdge(from source: Node,
                         to target: Node,
@@ -96,30 +134,47 @@ public class Graph<NodeID: Hashable, NodeValue>
         }
     }
     
+    /**
+     The ``GraphEdge`` from `source` to `target` if it exists, otherwise `nil`
+     */
     public func edge(from source: Node, to target: Node) -> Edge?
     {
         guard contains(source), contains(target) else { return nil }
         return edge(from: source.id, to: target.id)
     }
     
+    /**
+     The ``GraphEdge`` between the corresponding nodes if it exists, otherwise `nil`
+     */
     public func edge(from sourceID: NodeID, to targetID: NodeID) -> Edge?
     {
         edgesByID[.init(sourceID, targetID)]
     }
     
+    /**
+     All ``GraphEdge``s of the `Graph`
+     */
     public var edges: Dictionary<Edge.ID, Edge>.Values
     {
         edgesByID.values
     }
     
+    /**
+     All ``GraphEdge``s of the `Graph` hashable by their ``GraphEdge/id-swift.property``
+     */
     public private(set) var edgesByID = [Edge.ID: Edge]()
     
+    /**
+     Shorthand for the full generic type name `GraphEdge<NodeID, NodeValue>`
+     */
     public typealias Edge = GraphEdge<NodeID, NodeValue>
     
     // MARK: - Node Values
     
     /**
-     Inserts a new node with the given value into the graph and returns the new node. If a node with the same generated node id already exists, the function returns the existing node.
+     Insert a `NodeValue` and get the (new) ``GraphNode`` that stores it
+     
+     - Returns: The existing ``GraphNode`` if one with the generated ``GraphNode/id`` already exists (see ``Graph/init(nodes:makeNodeIDForValue:)``), otherwise a newly created ``GraphNode``.
      */
     @discardableResult
     public func insert(_ value: NodeValue) -> Node
@@ -133,11 +188,17 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     internal let makeNodeIDForValue: (NodeValue) -> NodeID
     
+    /**
+     ``GraphNode/value`` of the ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`
+     */
     public func value(for nodeID: NodeID) -> NodeValue?
     {
         node(for: nodeID)?.value
     }
     
+    /**
+     All `NodeValue`s of the `Graph`
+     */
     public var values: [NodeValue]
     {
         nodes.map { $0.value }
@@ -145,49 +206,87 @@ public class Graph<NodeID: Hashable, NodeValue>
     
     // MARK: - Nodes
     
+    /**
+     All source nodes of the `Graph`, see ``GraphNode/isSource``
+     */
     public var sources: [Node]
     {
         nodesByID.values.filter { $0.isSource }
     }
     
+    /**
+     All sink nodes of the `Graph`, see ``GraphNode/isSink``
+     */
     public var sinks: [Node]
     {
         nodesByID.values.filter { $0.isSink }
     }
     
+    /**
+     Whether the `Graph` contains a ``GraphNode`` with the given ``GraphNode/id``
+     */
     public func contains(_ nodeID: NodeID) -> Bool
     {
         node(for: nodeID) != nil
     }
     
+    /**
+     Whether the `Graph` contains the given ``GraphNode``
+     */
     public func contains(_ node: Node) -> Bool
     {
         self.node(for: node.id) === node
     }
     
+    /**
+     ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`
+     */
     public func node(for nodeID: NodeID) -> Node?
     {
         nodesByID[nodeID]
     }
     
+    /**
+     Sort the ``GraphNode``s of the `Graph` with the given closure
+     */
     public func sort(by nodesAreInOrder: (Node, Node) -> Bool)
     {
         nodesByID.values.sort(by: nodesAreInOrder)
     }
     
+    /**
+     The ``GraphNode/id``s of all ``GraphNode``s of the `Graph`
+     */
     public var nodesIDs: OrderedSet<NodeID>
     {
         nodesByID.keys
     }
     
+    /**
+     All ``GraphNode``s of the `Graph`
+     */
     public var nodes: OrderedDictionary<NodeID, Node>.Values
     {
         nodesByID.values
     }
     
+    /**
+     All ``GraphNode``s of the `Graph` hashable by their ``GraphNode/id``s
+     */
     public private(set) var nodesByID = OrderedDictionary<NodeID, Node>()
     
+    /**
+     Shorthand for `OrderedSet<Node>`
+     */
     public typealias OrderedNodes = OrderedSet<Node>
+    
+    /**
+     Shorthand for `Set<Node>`
+     */
     public typealias Nodes = Set<Node>
+    
+    /**
+     Shorthand for the `Graph`'s full generic node type `GraphNode<NodeID, NodeValue>`
+     */
     public typealias Node = GraphNode<NodeID, NodeValue>
 }

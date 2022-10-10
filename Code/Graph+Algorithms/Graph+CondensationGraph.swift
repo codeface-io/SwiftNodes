@@ -4,9 +4,9 @@ import OrderedCollections
 public extension Graph
 {
     /**
-     Creates the acyclic condensation graph, contracting strongly connected components into single nodes.
+     Creates the acyclic [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `Graph`
      
-     See <https://en.wikipedia.org/wiki/Strongly_connected_component>
+     The condensation graph is the graph in which the [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the original graph have been collapsed into single nodes, so the resulting condensation graph is acyclic.
      */
     func makeCondensationGraph() -> CondensationGraph
     {

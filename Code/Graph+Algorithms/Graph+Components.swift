@@ -2,6 +2,11 @@ import SwiftyToolz
 
 public extension Graph
 {
+    /**
+     Find the [components](https://en.wikipedia.org/wiki/Component_(graph_theory)) of the `Graph`
+     
+     - Returns: Multiple sets of nodes which represent the components of the graph
+     */
     func findComponents() -> Set<Nodes>
     {
         unmarkNodes()

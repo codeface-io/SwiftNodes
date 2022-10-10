@@ -3,7 +3,13 @@ import SwiftyToolz
 public extension Graph
 {
     /**
-     Find the total number of all ancestors (predecessors / sources) for every node of an **acyclic** graph.
+     Find the total (recursive) number of ancestors for each ``GraphNode`` of an **acyclic** `Graph`
+     
+     The ancestor count of a node is basically the number of other nodes from which the node can be reached. This only works on acyclic graphs right now and might return incorrect results for nodes in cycles.
+     
+     Ancestor counts can serve as a proxy for [topological sorting](https://en.wikipedia.org/wiki/Topological_sorting).
+     
+     - Returns: Every ``GraphNode`` of the `Graph` together with its ancestor count
      */
     func findNumberOfNodeAncestors() -> [(Node, Int)]
     {

@@ -76,15 +76,24 @@ class SwiftNodesTests: XCTestCase {
         graph.removeEdge(from: node1.id, to: node2.id)
     }
     
-    func testWaysToRemoveAnEdgeCompile() {
+    func testSixWaysToRemoveAnEdgeDoCompile() {
         let graph = Graph<Int, Int>()
-        graph.insert(5)
-        graph.insert(3)
+        let node1 = graph.insert(5)
+        let node2 = graph.insert(3)
+        let edge = graph.addEdge(from: node1, to: node2)
+        
+        XCTAssertNotNil(edge)
+        XCTAssertIdentical(edge, graph.edge(from: node1, to: node2))
         
         graph.remove(edge)
+        
+        XCTAssertNil(graph.edge(from: node1, to: node2))
+        
+        graph.removeEdge(with: edge.id)
+        graph.removeEdge(with: .init(node1, node2))
+        graph.removeEdge(with: .init(node1.id, node2.id))
         graph.removeEdge(from: node1, to: node2)
         graph.removeEdge(from: node1.id, to: node2.id)
-        graph.removeEdge(with: edge.id)
     }
     
     func testInsertingConnectingAndDisconnectingValues() throws {

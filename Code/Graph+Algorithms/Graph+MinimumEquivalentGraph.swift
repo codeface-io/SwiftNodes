@@ -3,11 +3,9 @@ import SwiftyToolz
 public extension Graph
 {
     /**
-     Finds the minumum equivalent graph of an **acyclic** graph.
+     Find the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
      
-     🛑 If the graph is cyclic, this algorithm might hang or crash!
-     
-     See <https://en.wikipedia.org/wiki/Transitive_reduction>
+     🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
     {
