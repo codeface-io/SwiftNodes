@@ -31,14 +31,16 @@ public extension Graph
         // add condensation edges
         for edge in edgesByID.values
         {
-            guard let sourceSCC = sccHash[edge.source], let targetSCC = sccHash[edge.target] else
+            guard let originSCC = sccHash[edge.origin],
+                  let destinationSCC = sccHash[edge.destination] else
             {
                 fatalError("mising scc in hash map")
             }
             
-            if sourceSCC !== targetSCC
+            if originSCC !== destinationSCC
             {
-                condensationGraph.addEdge(from: sourceSCC.id, to: targetSCC.id)
+                condensationGraph.addEdge(from: originSCC.id,
+                                          to: destinationSCC.id)
             }
         }
         

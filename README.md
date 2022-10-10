@@ -56,8 +56,12 @@ let node = graph.insert(IdentifiableValue())  // node.id == node.value.id
 let graph = Graph<String, Int> { "id\($0)" }
 let node1 = graph.insert(1)
 let node2 = graph.insert(2)
-let edge = graph.addEdge(from: node1, 
-                         to: node2)  // edge.source === node1, edge.target === node2
+
+// two ways to add an edge:
+let edge = graph.addEdge(from: node1,  to: node2)
+let edge = graph.addEdge(from: node1.id,  to: node2.id)
+  
+// same result: edge.origin === node1, edge.destination === node2
 ```
 
 ### Specify Edge Counts
@@ -71,7 +75,7 @@ graph.addEdge(from: node1, to: node2, count: 2)   // edge count is 42
 
 ### Remove Edges
 
-A `GraphEdge<NodeID: Hashable, NodeValue>` has its own `ID` type which combines the `NodeID`s of the edge's source- and target nodes. In the context of a `Graph` or `GraphEdge`, you can create edge IDs easily in two ways:
+A `GraphEdge<NodeID: Hashable, NodeValue>` has its own `ID` type which combines the `NodeID`s of the edge's origin- and destination nodes. In the context of a `Graph` or `GraphEdge`, you can create edge IDs easily in two ways:
 
 ```swift
 let edgeID_A = Edge.ID(node1, node2)

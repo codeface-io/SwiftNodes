@@ -32,11 +32,11 @@ extension Graph
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {
-            guard graphCopy.contains(originalEdge.source.id),
-                  graphCopy.contains(originalEdge.target.id) else { continue }
+            guard graphCopy.contains(originalEdge.origin.id),
+                  graphCopy.contains(originalEdge.destination.id) else { continue }
             
-            graphCopy.addEdge(from: originalEdge.source.id,
-                              to: originalEdge.target.id,
+            graphCopy.addEdge(from: originalEdge.origin.id,
+                              to: originalEdge.destination.id,
                               count: originalEdge.count)
         }
         

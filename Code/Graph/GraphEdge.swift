@@ -3,9 +3,9 @@ import SwiftyToolz
 /**
  Directed connection of two ``GraphNode``s in a ``Graph``
  
- A `GraphEdge` has a direction and goes from its ``GraphEdge/source`` to its ``GraphEdge/target``
+ A `GraphEdge` has a direction and goes from its ``GraphEdge/origin`` to its ``GraphEdge/destination``
  
- A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of the ``GraphNode/id``s of ``GraphEdge/source`` and ``GraphEdge/target``.
+ A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``.
  
  Edges are owned and managed by a ``Graph``. You create, query and destroy them via a given ``Graph``:
  
@@ -35,36 +35,36 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     // MARK: - Identity
     
     /**
-     The edge's `ID` combines the ``GraphNode/id``s of ``GraphEdge/source`` and ``GraphEdge/target``
+     The edge's `ID` combines the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
-    public var id: ID { ID(source, target) }
+    public var id: ID { ID(origin, destination) }
     
     /**
-     An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/source`` and ``GraphEdge/target``
+     An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
     public struct ID: Hashable
     {   
-        internal init(_ source: Node, _ target: Node)
+        internal init(_ origin: Node, _ destination: Node)
         {
-            self.init(source.id, target.id)
+            self.init(origin.id, destination.id)
         }
         
-        internal init(_ sourceID: NodeID, _ targetID: NodeID)
+        internal init(_ originID: NodeID, _ destinationID: NodeID)
         {
-            self.sourceID = sourceID
-            self.targetID = targetID
+            self.originID = originID
+            self.destinationID = destinationID
         }
         
-        public let sourceID: NodeID
-        public let targetID: NodeID
+        public let originID: NodeID
+        public let destinationID: NodeID
     }
     
     // MARK: - Basics
     
-    internal init(from source: Node, to target: Node, count: Int = 1)
+    internal init(from origin: Node, to destination: Node, count: Int = 1)
     {
-        self.source = source
-        self.target = target
+        self.origin = origin
+        self.destination = destination
         
         self.count = count
     }
@@ -77,17 +77,17 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     public internal(set) var count: Int
     
     /**
-     The origin ``GraphNode`` at which the edge starts / goes out
+     The origin ``GraphNode`` at which the edge starts / from which it goes out
      */
-    public let source: Node
+    public let origin: Node
     
     /**
-     The destination ``GraphNode`` at which the edge ends / goes in
+     The destination ``GraphNode`` at which the edge ends / to which it goes in
      */
-    public let target: Node
+    public let destination: Node
     
     /**
-     A shorthand for the `source`- and `target` type `GraphNode<NodeID, NodeValue>`
+     A shorthand for the `origin`- and `destination` type `GraphNode<NodeID, NodeValue>`
      */
     public typealias Node = GraphNode<NodeID, NodeValue>
 }

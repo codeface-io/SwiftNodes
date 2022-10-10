@@ -126,8 +126,8 @@ class SwiftNodesTests: XCTestCase {
         XCTAssertEqual(edge12.count, 1)
         XCTAssertIdentical(edge12, graph.addEdge(from: "id1", to: "id2"))
         XCTAssertEqual(edge12.count, 2)
-        XCTAssertIdentical(edge12.source, node1)
-        XCTAssertIdentical(edge12.target, node2)
+        XCTAssertIdentical(edge12.origin, node1)
+        XCTAssertIdentical(edge12.destination, node2)
         
         XCTAssertFalse(node1.isSink)
         XCTAssert(node1.descendants.contains(node2))

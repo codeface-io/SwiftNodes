@@ -43,17 +43,17 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
-    public func removeEdge(from sourceID: NodeID, to targetID: NodeID)
+    public func removeEdge(from originID: NodeID, to destinationID: NodeID)
     {
-        removeEdge(with: .init(sourceID, targetID))
+        removeEdge(with: .init(originID, destinationID))
     }
     
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
-    public func removeEdge(from source: Node, to target: Node)
+    public func removeEdge(from origin: Node, to destination: Node)
     {
-        removeEdge(with: .init(source, target))
+        removeEdge(with: .init(origin, destination))
     }
     
     /**
@@ -66,14 +66,14 @@ public class Graph<NodeID: Hashable, NodeValue>
     }
     
     /**
-     Removes the ``GraphEdge``, also removing it from the caches of its ``GraphEdge/source`` and ``GraphEdge/target``
+     Removes the ``GraphEdge``, also removing it from the caches of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      
      */
     public func remove(_ edge: Edge)
     {
         // remove from node caches
-        edge.source.descendants -= edge.target
-        edge.target.ancestors -= edge.source
+        edge.origin.descendants -= edge.destination
+        edge.destination.ancestors -= edge.origin
         edge.count = 0
         
         // remove edge itself
@@ -83,35 +83,36 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Adds a ``GraphEdge`` from one ``GraphNode`` to another, see ``Graph/addEdge(from:to:count:)-mz60``
      
-     - Returns: `nil` if no ``GraphNode`` exists for `sourceID` or `targetID`
+     - Returns: `nil` if no ``GraphNode`` exists for `originID` or `destinationID`
      */
     @discardableResult
-    public func addEdge(from sourceID: NodeID,
-                        to targetID: NodeID,
+    public func addEdge(from originID: NodeID,
+                        to destinationID: NodeID,
                         count: Int = 1) -> Edge?
     {
-        guard let source = node(for: sourceID), let target = node(for: targetID) else
+        guard let origin = node(for: originID),
+              let destination = node(for: destinationID) else
         {
-            log(warning: "Tried to add edge between non-existing node IDs:\nsource ID = \(sourceID)\ntarget ID = \(targetID)")
+            log(warning: "Tried to add edge between non-existing node IDs:\norigin ID = \(originID)\ndestination ID = \(destinationID)")
             return nil
         }
         
-        return addEdge(from: source, to: target, count: count)
+        return addEdge(from: origin, to: destination, count: count)
     }
     
     /**
      Adds a ``GraphEdge`` from one ``GraphNode`` to another
      
-     This also adds `source` and `target` to each other's neighbour caches, see ``GraphNode``
+     This also adds `origin` and `destination` to each other's neighbour caches, see ``GraphNode``
      
-     - Returns: The new ``GraphEdge`` if none existed from `source` to `target`, otherwise the existing ``GraphEdge`` with its ``GraphEdge/count`` increased by the given `count`
+     - Returns: The new ``GraphEdge`` if none existed from `origin` to `destination`, otherwise the existing ``GraphEdge`` with its ``GraphEdge/count`` increased by the given `count`
      */
     @discardableResult
-    public func addEdge(from source: Node,
-                        to target: Node,
+    public func addEdge(from origin: Node,
+                        to destination: Node,
                         count: Int = 1) -> Edge
     {
-        let edgeID = Edge.ID(source, target)
+        let edgeID = Edge.ID(origin, destination)
         
         if let edge = edgesByID[edgeID]
         {
@@ -123,32 +124,32 @@ public class Graph<NodeID: Hashable, NodeValue>
         }
         else
         {
-            let edge = Edge(from: source, to: target, count: count)
+            let edge = Edge(from: origin, to: destination, count: count)
             edgesByID[edgeID] = edge
             
             // add to node caches
-            source.descendants += target
-            target.ancestors += source
+            origin.descendants += destination
+            destination.ancestors += origin
             
             return edge
         }
     }
     
     /**
-     The ``GraphEdge`` from `source` to `target` if it exists, otherwise `nil`
+     The ``GraphEdge`` from `origin` to `destination` if it exists, otherwise `nil`
      */
-    public func edge(from source: Node, to target: Node) -> Edge?
+    public func edge(from origin: Node, to destination: Node) -> Edge?
     {
-        guard contains(source), contains(target) else { return nil }
-        return edge(from: source.id, to: target.id)
+        guard contains(origin), contains(destination) else { return nil }
+        return edge(from: origin.id, to: destination.id)
     }
     
     /**
      The ``GraphEdge`` between the corresponding nodes if it exists, otherwise `nil`
      */
-    public func edge(from sourceID: NodeID, to targetID: NodeID) -> Edge?
+    public func edge(from originID: NodeID, to destinationID: NodeID) -> Edge?
     {
-        edgesByID[.init(sourceID, targetID)]
+        edgesByID[.init(originID, destinationID)]
     }
     
     /**

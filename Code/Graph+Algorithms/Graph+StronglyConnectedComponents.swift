@@ -43,26 +43,26 @@ extension Graph
         stack.append(node)
         
         // Consider descendants of node
-        for target in node.descendants
+        for descendant in node.descendants
         {
-            if let targetMarkings = target.marking
+            if let descendantMarking = descendant.marking
             {
-                // If target is not on stack, then edge (node, target) is pointing to an SCC already found and must be ignored
-                if targetMarkings.isOnStack
+                // If descendant is not on stack, then edge (node, descendant) is pointing to an SCC already found and must be ignored
+                if descendantMarking.isOnStack
                 {
-                    // Successor "target" is in stack and hence in the current SCC
-                    nodeMarking.lowLink = min(nodeMarking.lowLink, targetMarkings.index)
+                    // Successor "descendant" is in stack and hence in the current SCC
+                    nodeMarking.lowLink = min(nodeMarking.lowLink, descendantMarking.index)
                 }
             }
-            else // if target index is undefined then
+            else // if descendant index is undefined then
             {
-                // Successor "target" has not yet been visited; recurse on it
-                let targetMarking = findSCCsRecursively(node: target,
-                                                        index: &index,
-                                                        stack: &stack,
-                                                        handleNewSCC: handleNewSCC)
+                // Successor "descendant" has not yet been visited; recurse on it
+                let descendantMarking = findSCCsRecursively(node: descendant,
+                                                            index: &index,
+                                                            stack: &stack,
+                                                            handleNewSCC: handleNewSCC)
                 
-                nodeMarking.lowLink = min(nodeMarking.lowLink, targetMarking.lowLink)
+                nodeMarking.lowLink = min(nodeMarking.lowLink, descendantMarking.lowLink)
             }
         }
         
