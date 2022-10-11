@@ -60,15 +60,17 @@ let node1 = graph.insert(1)
 let node2 = graph.insert(2)
 
 // two ways to add an edge:
-let edge = graph.addEdge(from: node1,  to: node2)
-let edge = graph.addEdge(from: node1.id,  to: node2.id)
+let edge = graph.addEdge(from: node1,  to: node2)        // by nodes
+       _ = graph.addEdge(from: node1.id,  to: node2.id)  // by node IDs
   
 // same result: edge.origin === node1, edge.destination === node2
 ```
 
+An `edge` is directed and goes from its `edge.origin` node to its `edge.destination` node.
+
 ### Specify Edge Counts
 
-Every `edge` has an integer count accessible via `edge.count`. It is more specifically a "count" rather than a "weight", as it inceases when the same edge is added again. By default, a new edge has count 1 and adding it again increases the count by 1. But you can specify different counts when adding an edge:
+Every `edge` has an integer count accessible via `edge.count`. It is more specifically a "count" rather than a "weight", as it increases when the same edge is added again. By default, a new edge has `count` 1 and adding it again increases the `count` by 1. But you can specify different counts when adding an edge:
 
 ```swift
 graph.addEdge(from: node1, to: node2, count: 40)  // edge count is 40
@@ -77,7 +79,7 @@ graph.addEdge(from: node1, to: node2, count: 2)   // edge count is 42
 
 ### Remove Edges
 
-A `GraphEdge<NodeID: Hashable, NodeValue>` has its own `ID` type which combines the `NodeID`s of the edge's origin- and destination nodes. In the context of a `Graph` or `GraphEdge`, you can create edge IDs easily in two ways:
+A `GraphEdge<NodeID: Hashable, NodeValue>` has its own `ID` type which combines the `NodeID`s of the edge's `origin`- and `destination` nodes. In the context of a `Graph` or `GraphEdge`, you can create edge IDs easily in two ways:
 
 ```swift
 let edgeID_A = Edge.ID(node1, node2)
@@ -124,16 +126,18 @@ graph.sort { $0.id < $1.id }   // graph.values == [3, 5]
 
 Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it.
 
-A `graph.copy()` is identical to the original `graph` in IDs, values and structure but contains its own new node- and edge objects. You may also copy just a subset of a graph and limit the included edges and/or nodes:
+A `graph.copy()` is identical to the original `graph` in IDs, values and structure but contains its own new node- and edge objects. You may also copy just a subset of a `graph` and limit the included edges and/or nodes:
 
 ```swift
 let subsetCopy = graph.copy(includedNodes: [node2, node3], 
                             includedEdges: [edge23])
 ```
 
-## How to Write Graph Algorithms
+## How Algorithms Mark Nodes 
 
-To support algorithms, every `node` has an optional property `node.marking` which can store a `GraphNode.Marking` object. A marking can be used to generally mark a node, but it also has two integers and two boolean flags that algorithms can use in whatever way they need.
+Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
+
+To be able to achieve optimal performance (time- and space efficiency) in practice, algorithms must be able to mark nodes directly instead of implementing node markings via hash maps. So in SwiftNodes, every `node` has an optional property `node.marking` which can store a `GraphNode.Marking` object. The marking itself can be used to generally mark a node, but it also contains four general-purpose properties (two integer numbers and two boolean flags) that algorithms can use in whatever way they need.
 
 [Graph+Node.Marking.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph%2BAlgorithms/Graph%2BNode.Marking.swift) contains some conveniences for marking and unmarking nodes. Also have a look at how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) make use of node markings.
 
