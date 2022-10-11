@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftNodes",
-    platforms: [.iOS(.v12), .tvOS(.v12), .macOS(.v10_15)],
+    platforms: [.iOS(.v13), .tvOS(.v13), .macOS(.v10_15), .watchOS(.v6)],
     products: [
         .library(
             name: "SwiftNodes",
@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            exact: "0.1.0"
+            exact: "0.1.1"
         ),
         .package(
             url: "https://github.com/apple/swift-collections.git",
