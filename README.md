@@ -6,11 +6,11 @@
 
 ## What?
 
-SwiftNodes provides a `Graph` data structure and graph algorithms. A `Graph` stores values in nodes which can be connected by edges. SwiftNodes was first used in production by [Codeface](https://codeface.io).
+SwiftNodes provides a [`Graph` data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A `Graph` stores values in nodes which can be connected via edges. SwiftNodes was first used in production by [Codeface](https://codeface.io).
 
 ## How to Edit, Query and Copy Graphs
 
-The following explanations only touch parts of the SwiftNodes API. We recommend exploring the comments, code and unit tests of SwiftNodes. The code in particular is actually very small and easy to grasp.
+The following explanations touch only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](https://github.com/codeface-io/SwiftNodes/tree/master/Tests) and [production code](https://github.com/codeface-io/SwiftNodes/tree/master/Code). The code in particular is actually small and easy to grasp.
 
 ### Insert Values
 
@@ -24,11 +24,11 @@ let nodeForID1 = graph.node(for: "id1")       // nodeForID1 === node
 let valueForID1 = graph.value(for: "id1")     // valueForID1 == 1
 ```
 
-When inserting a value, a `Graph` must know how to generate the ID of the node that would store the value. So the initializer takes a closure returning a `NodeID` given a `NodeValue`.
+When inserting a value, a `Graph` must know how to generate the ID of the node that would store the value. So the `Graph` initializer takes a closure returning a `NodeID` given a `NodeValue`.
 
 ### Generate Node IDs
 
-You may generate the `NodeID` independent of the `NodeValue`:
+You may generate `NodeID`s independent of `NodeValue`s:
 
 ```swift
 let graph = Graph<UUID, Int> { _ in UUID() }  // NodeID == UUID, NodeValue == Int
@@ -44,7 +44,7 @@ let node1 = graph.insert(42)   // node1.value == node1.id == 42
 let node2 = graph.insert(42)   // node1 === node2 because 42 implies the same ID
 ```
 
-And if your `NodeValue` is itself `Identifiable` by IDs of type `NodeID`, then you can also omit the closure and `Graph` will use the `ID` of a `NodeValue` for the node holding that value:
+And if your `NodeValue` is itself `Identifiable` by IDs of type `NodeID`, then you can also omit the closure and `Graph` will use the `ID` of a `NodeValue` as the `NodeID` of the node holding that value:
 
 ```swift
 struct IdentifiableValue: Identifiable { let id = UUID() }
@@ -70,7 +70,7 @@ An `edge` is directed and goes from its `edge.origin` node to its `edge.destinat
 
 ### Specify Edge Counts
 
-Every `edge` has an integer count accessible via `edge.count`. It is more specifically a "count" rather than a "weight", as it increases when the same edge is added again. By default, a new edge has `count` 1 and adding it again increases the `count` by 1. But you can specify different counts when adding an edge:
+Every `edge` has an integer count accessible via `edge.count`. It is more specifically a "count" rather than a "weight", as it increases when the same edge is added again. By default, a new edge has `count` 1 and adding it again increases its `count` by 1. But you can specify a custom count when adding an edge:
 
 ```swift
 graph.addEdge(from: node1, to: node2, count: 40)  // edge count is 40
@@ -101,7 +101,7 @@ graph.removeEdge(from: node1.id, to: node2.id)
 
 ### Query and Traverse a Graph
 
-`Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition,  `GraphNode` has caches that enable quick access to its neighbours:
+`Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition, a `GraphNode` has caches that enable quick access to its neighbours:
 
 ```swift
 node.descendants  // all nodes to which there is an edge from node
@@ -137,7 +137,7 @@ let subsetCopy = graph.copy(includedNodes: [node2, node3],
 
 Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
 
-To be able to achieve optimal performance (time- and space efficiency) in practice, algorithms must be able to mark nodes directly instead of implementing node markings via hash maps. So in SwiftNodes, every `node` has an optional property `node.marking` which can store a `GraphNode.Marking` object. The marking itself can be used to generally mark a node, but it also contains four general-purpose properties (two integer numbers and two boolean flags) that algorithms can use in whatever way they need.
+To be able to achieve optimal performance (time- and space efficiency) in practice, algorithms must be able to mark nodes directly instead of implementing node markings via hash maps. So in SwiftNodes, every `node` has an optional property `node.marking` which can store a `GraphNode.Marking` object. The marking can itself be used to generally mark a node, but it also contains four general-purpose properties (two integer numbers and two boolean flags) that algorithms can use in whatever way they need.
 
 [Graph+Node.Marking.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph%2BAlgorithms/Graph%2BNode.Marking.swift) contains some conveniences for marking and unmarking nodes. Also have a look at how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) make use of node markings.
 
@@ -159,7 +159,7 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Minimum Equivalent Graph
 
-`graph.makeMinimumEquivalentGraph()` creates the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. This only works on acyclic graphs and might even hang or crash on cyclic ones.
+`graph.makeMinimumEquivalentGraph()` creates the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. Right now, this only works on acyclic graphs and might even hang or crash on cyclic ones.
 
 ### Ancestor Counts
 
@@ -171,7 +171,7 @@ Ancestor counts can serve as a proxy for [topological sorting](https://en.wikipe
 
 ## Architecture
 
-Here is the internal architecture (composition and essential dependencies) of the SwiftNodes code folder:
+Here is the internal architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the SwiftNodes code folder:
 
 ![](Documentation/architecture.png)
 
