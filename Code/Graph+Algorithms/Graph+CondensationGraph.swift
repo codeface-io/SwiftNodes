@@ -3,6 +3,8 @@ import OrderedCollections
 
 public extension Graph
 {
+    // TODO: this can be accelerated a bit by only working with- and returning Node IDs instead of Nodes. Nowhere here do we need neighbour IDs. First, findStronglyConnectedComponents() would need to be transformed in that manner ...
+    
     /**
      Creates the acyclic [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `Graph`
      
@@ -14,25 +16,24 @@ public extension Graph
         let sccs = findStronglyConnectedComponents().map { StronglyConnectedComponent(nodes: $0) }
         
         // create hashmap from nodes to their SCCs
-        var sccHash = [Node.ID: StronglyConnectedComponent]()
+        var sccByNodeID = [Node.ID: StronglyConnectedComponent]()
         
         for scc in sccs
         {
-            for sccNode in scc.nodes
+            for node in scc.nodes
             {
-                sccHash[sccNode.id] = scc
+                sccByNodeID[node.id] = scc
             }
         }
         
         // create condensation graph
-        let condensationNodes = sccs.map { CondensationNode(id: $0.id, value: $0) }
-        var condensationGraph = CondensationGraph(nodes: OrderedSet(condensationNodes)) { $0.id }
+        var condensationGraph = CondensationGraph(values: sccs)
         
         // add condensation edges
-        for edge in edgesByID.values
+        for edgeID in edgesByID.keys
         {
-            guard let originSCC = sccHash[edge.originID],
-                  let destinationSCC = sccHash[edge.destinationID] else
+            guard let originSCC = sccByNodeID[edgeID.originID],
+                  let destinationSCC = sccByNodeID[edgeID.destinationID] else
             {
                 fatalError("mising scc in hash map")
             }
@@ -52,7 +53,7 @@ public extension Graph
     typealias CondensationEdge = CondensationGraph.Edge
     
     // TODO: use NodeID as condensation node id type and require client to pass a closure for creating new ids of that type. use ids of contained node for StronglyConnectedComponents that contain only 1 node
-    typealias CondensationGraph = Graph<String, StronglyConnectedComponent>
+    typealias CondensationGraph = Graph<StronglyConnectedComponent.ID, StronglyConnectedComponent>
     
     class StronglyConnectedComponent: Identifiable, Hashable
     {
@@ -61,9 +62,11 @@ public extension Graph
         
         public func hash(into hasher: inout Hasher) { hasher.combine(id) }
         
-        public let id: String = .randomID()
+        public let id: ID = .randomID()
         
-        init(nodes: Set<Node>)
+        public typealias ID = String
+        
+        init(nodes: Nodes)
         {
             self.nodes = nodes
         }

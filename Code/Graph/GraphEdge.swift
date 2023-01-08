@@ -61,10 +61,10 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     
     // MARK: - Basics
     
-    internal init(from origin: NodeID, to destination: NodeID, count: Int = 1)
+    internal init(from originID: NodeID, to destinationID: NodeID, count: Int = 1)
     {
-        self.originID = origin
-        self.destinationID = destination
+        self.originID = originID
+        self.destinationID = destinationID
         
         self.count = count
     }
@@ -79,12 +79,12 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     /**
      The origin ``GraphNode/id`` at which the edge starts / from which it goes out
      */
-    public internal(set) var originID: NodeID
+    public let originID: NodeID
     
     /**
      The destination ``GraphNode/id`` at which the edge ends / to which it goes in
      */
-    public internal(set) var destinationID: NodeID
+    public let destinationID: NodeID
     
     /**
      A shorthand for the `origin`- and `destination` type `GraphNode<NodeID, NodeValue>`

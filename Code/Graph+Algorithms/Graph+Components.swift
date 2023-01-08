@@ -2,6 +2,8 @@ import SwiftyToolz
 
 public extension Graph
 {
+    // TODO: this can be accelerated a bit by only working with- and returning Node IDs instead of Nodes. Only for where we actually need the neighbour IDs do we need to hash the Node itself. The client can then decide whether it actually needs the nodes or whether the IDs suffice ...
+    
     /**
      Find the [components](https://en.wikipedia.org/wiki/Component_(graph_theory)) of the `Graph`
      
@@ -13,13 +15,11 @@ public extension Graph
         
         var components = Set<Nodes>()
 
-        for node in nodesByID.values
+        for node in nodes
         {
             if markedNodes.contains(node) { continue }
             
-            let nextComponent = findLackingNodes(forComponent: [], startingAt: node)
-            
-            components += nextComponent
+            components += findLackingNodes(forComponent: [], startingAt: node)
             
             markedNodes.insert(node)
         }

@@ -12,6 +12,12 @@ public struct Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
     
+    public init(values: [NodeValue]) where NodeValue: Identifiable, NodeValue.ID == NodeID
+    {
+        let nodeArray = values.map { GraphNode(id: $0.id, value: $0) }
+        self.init(nodes: OrderedSet(nodeArray))
+    }
+    
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
@@ -43,6 +49,14 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
+    public mutating func removeEdge(from origin: Node, to destination: Node)
+    {
+        removeEdge(from: origin.id, to: destination.id)
+    }
+    
+    /**
+     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
+     */
     public mutating func removeEdge(from originID: NodeID, to destinationID: NodeID)
     {
         removeEdge(with: .init(originID, destinationID))
@@ -51,32 +65,22 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
-    public mutating func removeEdge(from origin: Node, to destination: Node)
-    {
-        removeEdge(with: .init(origin, destination))
-    }
-    
-    /**
-     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
-     */
-    public mutating func removeEdge(with id: Edge.ID)
-    {
-        guard let edge = edgesByID[id] else { return }
-        remove(edge)
-    }
-    
-    /**
-     Removes the ``GraphEdge``, also removing it from the caches of its ``GraphEdge/origin`` and ``GraphEdge/destination``
-     
-     */
     public mutating func remove(_ edge: Edge)
     {
+        removeEdge(with: edge.id)
+    }
+    
+    /**
+     Removes the ``GraphEdge`` with the given ID, also removing it from the caches of its ``GraphEdge/origin`` and ``GraphEdge/destination``
+     */
+    public mutating func removeEdge(with edgeID: Edge.ID)
+    {
         // remove from node caches
-        nodesByID[edge.originID]?.descendantIDs -= edge.destinationID
-        nodesByID[edge.destinationID]?.ancestorIDs -= edge.originID
+        nodesByID[edgeID.originID]?.descendantIDs -= edgeID.destinationID
+        nodesByID[edgeID.destinationID]?.ancestorIDs -= edgeID.originID
         
         // remove edge itself
-        edgesByID[edge.id] = nil
+        edgesByID[edgeID] = nil
     }
     
     @discardableResult
@@ -128,8 +132,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
      */
     public func edge(from origin: Node, to destination: Node) -> Edge?
     {
-        guard contains(origin), contains(destination) else { return nil }
-        return edge(from: origin.id, to: destination.id)
+        edge(from: origin.id, to: destination.id)
     }
     
     /**
@@ -137,7 +140,8 @@ public struct Graph<NodeID: Hashable, NodeValue>
      */
     public func edge(from originID: NodeID, to destinationID: NodeID) -> Edge?
     {
-        edgesByID[.init(originID, destinationID)]
+        guard contains(originID), contains(destinationID) else { return nil }
+        return edgesByID[.init(originID, destinationID)]
     }
     
     /**
@@ -212,19 +216,19 @@ public struct Graph<NodeID: Hashable, NodeValue>
     }
     
     /**
+     Whether the `Graph` contains the given ``GraphNode``
+     */
+    public func contains(_ node: Node) -> Bool
+    {
+        contains(node.id)
+    }
+    
+    /**
      Whether the `Graph` contains a ``GraphNode`` with the given ``GraphNode/id``
      */
     public func contains(_ nodeID: NodeID) -> Bool
     {
         node(for: nodeID) != nil
-    }
-    
-    /**
-     Whether the `Graph` contains the given ``GraphNode``
-     */
-    public func contains(_ node: Node) -> Bool
-    {
-        self.node(for: node.id) != nil
     }
     
     /**

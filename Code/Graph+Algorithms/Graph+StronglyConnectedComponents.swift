@@ -2,6 +2,8 @@ import SwiftyToolz
 
 extension Graph
 {
+    // TODO: this can be accelerated a bit by only working with- and returning Node IDs instead of Nodes. Only for where we actually need the descendant IDs do we need to hash the Node itself. The client can then decide whether it actually needs the nodes or whether the IDs suffice ...
+    
     /**
      Find the [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `Graph`
      
