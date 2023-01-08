@@ -27,16 +27,16 @@ extension Graph
         let actualIncludedNodes = includedNodes ?? myNodes
         let copiesOfIncludedNodes = actualIncludedNodes.map { Node(id: $0.id, value: $0.value) }
         
-        let graphCopy = Graph(nodes: OrderedSet(copiesOfIncludedNodes),
+        var graphCopy = Graph(nodes: OrderedSet(copiesOfIncludedNodes),
                               makeNodeIDForValue: self.makeNodeIDForValue)
         
         for originalEdge in includedEdges ?? Set(edgesByID.values)
         {
-            guard graphCopy.contains(originalEdge.origin.id),
-                  graphCopy.contains(originalEdge.destination.id) else { continue }
+            guard graphCopy.contains(originalEdge.originID),
+                  graphCopy.contains(originalEdge.destinationID) else { continue }
             
-            graphCopy.addEdge(from: originalEdge.origin.id,
-                              to: originalEdge.destination.id,
+            graphCopy.addEdge(from: originalEdge.originID,
+                              to: originalEdge.destinationID,
                               count: originalEdge.count)
         }
         

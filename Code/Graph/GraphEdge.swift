@@ -20,12 +20,12 @@ import SwiftyToolz
   - ``Graph/removeEdge(from:to:)-55efs``
   - ``Graph/removeEdge(from:to:)-1gqeh``
  */
-public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
+public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
 {
     // MARK: - Hashability
     
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    public static func == (lhs: Edge, rhs: Edge) -> Bool { lhs === rhs }
+    public static func == (lhs: Edge, rhs: Edge) -> Bool { lhs.id == rhs.id }
     
     /**
      A shorthand for the edge's full generic type name `GraphEdge<NodeID, NodeValue>`
@@ -37,7 +37,7 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     /**
      The edge's `ID` combines the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
-    public var id: ID { ID(origin, destination) }
+    public var id: ID { ID(originID, destinationID) }
     
     /**
      An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/origin`` and ``GraphEdge/destination``
@@ -61,10 +61,10 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     
     // MARK: - Basics
     
-    internal init(from origin: Node, to destination: Node, count: Int = 1)
+    internal init(from origin: NodeID, to destination: NodeID, count: Int = 1)
     {
-        self.origin = origin
-        self.destination = destination
+        self.originID = origin
+        self.destinationID = destination
         
         self.count = count
     }
@@ -77,14 +77,14 @@ public class GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     public internal(set) var count: Int
     
     /**
-     The origin ``GraphNode`` at which the edge starts / from which it goes out
+     The origin ``GraphNode/id`` at which the edge starts / from which it goes out
      */
-    public let origin: Node
+    public internal(set) var originID: NodeID
     
     /**
-     The destination ``GraphNode`` at which the edge ends / to which it goes in
+     The destination ``GraphNode/id`` at which the edge ends / to which it goes in
      */
-    public let destination: Node
+    public internal(set) var destinationID: NodeID
     
     /**
      A shorthand for the `origin`- and `destination` type `GraphNode<NodeID, NodeValue>`

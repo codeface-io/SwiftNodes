@@ -8,14 +8,14 @@ import SwiftyToolz
  
  Nodes maintain an order, and so the graph can be sorted, see ``Graph/sort(by:)``.
  */
-public class Graph<NodeID: Hashable, NodeValue>
+public struct Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
     
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
-    public convenience init(nodes: OrderedNodes = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
+    public init(nodes: OrderedNodes = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
         self.init(nodes: nodes) { $0.id }
     }
@@ -23,7 +23,7 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
      */
-    public convenience init(nodes: OrderedNodes = []) where NodeID == NodeValue
+    public init(nodes: OrderedNodes = []) where NodeID == NodeValue
     {
         self.init(nodes: nodes) { $0 }
     }
@@ -43,7 +43,7 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
-    public func removeEdge(from originID: NodeID, to destinationID: NodeID)
+    public mutating func removeEdge(from originID: NodeID, to destinationID: NodeID)
     {
         removeEdge(with: .init(originID, destinationID))
     }
@@ -51,7 +51,7 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
-    public func removeEdge(from origin: Node, to destination: Node)
+    public mutating func removeEdge(from origin: Node, to destination: Node)
     {
         removeEdge(with: .init(origin, destination))
     }
@@ -59,7 +59,7 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
      */
-    public func removeEdge(with id: Edge.ID)
+    public mutating func removeEdge(with id: Edge.ID)
     {
         guard let edge = edgesByID[id] else { return }
         remove(edge)
@@ -69,67 +69,55 @@ public class Graph<NodeID: Hashable, NodeValue>
      Removes the ``GraphEdge``, also removing it from the caches of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      
      */
-    public func remove(_ edge: Edge)
+    public mutating func remove(_ edge: Edge)
     {
         // remove from node caches
-        edge.origin.descendantIDs -= edge.destination.id
-        edge.destination.ancestorIDs -= edge.origin.id
-        edge.count = 0
+        nodesByID[edge.originID]?.descendantIDs -= edge.destinationID
+        nodesByID[edge.destinationID]?.ancestorIDs -= edge.originID
         
         // remove edge itself
         edgesByID[edge.id] = nil
     }
     
-    /**
-     Adds a ``GraphEdge`` from one ``GraphNode`` to another, see ``Graph/addEdge(from:to:count:)-mz60``
-     
-     - Returns: `nil` if no ``GraphNode`` exists for `originID` or `destinationID`
-     */
     @discardableResult
-    public func addEdge(from originID: NodeID,
-                        to destinationID: NodeID,
-                        count: Int = 1) -> Edge?
+    public mutating func addEdge(from origin: Node,
+                                 to destination: Node,
+                                 count: Int = 1) -> Edge
     {
-        guard let origin = node(for: originID),
-              let destination = node(for: destinationID) else
-        {
-            log(warning: "Tried to add edge between non-existing node IDs:\norigin ID = \(originID)\ndestination ID = \(destinationID)")
-            return nil
-        }
-        
-        return addEdge(from: origin, to: destination, count: count)
+        addEdge(from: origin.id, to: destination.id, count: count)
     }
     
     /**
      Adds a ``GraphEdge`` from one ``GraphNode`` to another
      
-     This also adds `origin` and `destination` to each other's neighbour caches, see ``GraphNode``
+     This also adds the `originID` and `destinationID` to the corresponding node's neighbour caches, see ``GraphNode``
      
-     - Returns: The new ``GraphEdge`` if none existed from `origin` to `destination`, otherwise the existing ``GraphEdge`` with its ``GraphEdge/count`` increased by the given `count`
+     - Returns: The new ``GraphEdge`` if none existed from `originID` to `destinationID`, otherwise the existing ``GraphEdge`` with its ``GraphEdge/count`` increased by the given `count`
      */
     @discardableResult
-    public func addEdge(from origin: Node,
-                        to destination: Node,
-                        count: Int = 1) -> Edge
+    public mutating func addEdge(from originID: NodeID,
+                                 to destinationID: NodeID,
+                                 count: Int = 1) -> Edge
     {
-        let edgeID = Edge.ID(origin, destination)
+        let edgeID = Edge.ID(originID, destinationID)
         
-        if let edge = edgesByID[edgeID]
+        if var existingEdge = edgesByID[edgeID]
         {
-            edge.count += count
+            edgesByID[edgeID]?.count += count
+            existingEdge.count += count
             
             // TODO: maintain count in edge caches in nodes as well, for algorithms that take edge weight into account when traversing the graph, like dijkstra shortest path ...
             
-            return edge
+            return existingEdge
         }
         else
         {
-            let edge = Edge(from: origin, to: destination, count: count)
+            let edge = Edge(from: originID, to: destinationID, count: count)
             edgesByID[edgeID] = edge
             
             // add to node caches
-            origin.descendantIDs += destination.id
-            destination.ancestorIDs += origin.id
+            nodesByID[originID]?.descendantIDs += destinationID
+            nodesByID[destinationID]?.ancestorIDs += originID
             
             return edge
         }
@@ -178,7 +166,7 @@ public class Graph<NodeID: Hashable, NodeValue>
      - Returns: The existing ``GraphNode`` if one with the generated ``GraphNode/id`` already exists (see ``Graph/init(nodes:makeNodeIDForValue:)``), otherwise a newly created ``GraphNode``.
      */
     @discardableResult
-    public func insert(_ value: NodeValue) -> Node
+    public mutating func insert(_ value: NodeValue) -> Node
     {
         let nodeID = makeNodeIDForValue(value)
         if let existingNode = nodesByID[nodeID] { return existingNode }
@@ -236,7 +224,7 @@ public class Graph<NodeID: Hashable, NodeValue>
      */
     public func contains(_ node: Node) -> Bool
     {
-        self.node(for: node.id) === node
+        self.node(for: node.id) != nil
     }
     
     /**
@@ -250,7 +238,7 @@ public class Graph<NodeID: Hashable, NodeValue>
     /**
      Sort the ``GraphNode``s of the `Graph` with the given closure
      */
-    public func sort(by nodesAreInOrder: (Node, Node) -> Bool)
+    public mutating func sort(by nodesAreInOrder: (Node, Node) -> Bool)
     {
         nodesByID.values.sort(by: nodesAreInOrder)
     }

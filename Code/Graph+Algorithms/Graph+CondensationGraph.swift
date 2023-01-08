@@ -14,25 +14,25 @@ public extension Graph
         let sccs = findStronglyConnectedComponents().map { StronglyConnectedComponent(nodes: $0) }
         
         // create hashmap from nodes to their SCCs
-        var sccHash = [Node: StronglyConnectedComponent]()
+        var sccHash = [Node.ID: StronglyConnectedComponent]()
         
         for scc in sccs
         {
             for sccNode in scc.nodes
             {
-                sccHash[sccNode] = scc
+                sccHash[sccNode.id] = scc
             }
         }
         
         // create condensation graph
         let condensationNodes = sccs.map { CondensationNode(id: $0.id, value: $0) }
-        let condensationGraph = CondensationGraph(nodes: OrderedSet(condensationNodes)) { $0.id }
+        var condensationGraph = CondensationGraph(nodes: OrderedSet(condensationNodes)) { $0.id }
         
         // add condensation edges
         for edge in edgesByID.values
         {
-            guard let originSCC = sccHash[edge.origin],
-                  let destinationSCC = sccHash[edge.destination] else
+            guard let originSCC = sccHash[edge.originID],
+                  let destinationSCC = sccHash[edge.destinationID] else
             {
                 fatalError("mising scc in hash map")
             }

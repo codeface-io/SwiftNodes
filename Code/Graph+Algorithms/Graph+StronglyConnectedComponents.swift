@@ -79,15 +79,15 @@ extension Graph
             {
                 let sccNode = stack.removeLast()
                 
-                guard let sccNodeMarking = markings[sccNode] else
+                guard markings[sccNode] != nil else
                 {
                     fatalError("node that is on the stack should have a markings object")
                 }
                 
-                sccNodeMarking.isOnStack = false
+                markings[sccNode]?.isOnStack = false
                 newSCC += sccNode
                 
-                if node === sccNode { break }
+                if node.id == sccNode.id { break }
             }
             
             handleNewSCC(newSCC)

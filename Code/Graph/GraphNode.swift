@@ -9,9 +9,9 @@ import SwiftyToolz
  
  You may also create `GraphNode`s independent of a ``Graph`` in order to create a new ``Graph`` with them, see ``GraphNode/init(id:value:)`` and ``Graph/init(nodes:makeNodeIDForValue:)``.
  
- A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestors``, ``GraphNode/descendants`` and related properties.
+ A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestorIDs``, ``GraphNode/descendantIDs`` and related properties.
  */
-public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
+public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable
 {
     // MARK: - Caches for Accessing Neighbours Quickly
     
@@ -43,7 +43,7 @@ public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
     // MARK: - Hashability
     
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    public static func == (lhs: Node, rhs: Node) -> Bool { lhs === rhs }
+    public static func == (lhs: Node, rhs: Node) -> Bool { lhs.id == rhs.id }
     
     /**
      A shorthand for the node's full generic type name `GraphNode<ID, Value>`

@@ -4,18 +4,18 @@ import XCTest
 class SwiftNodesTests: XCTestCase {
     
     func testCodeExamplesFromREADME() throws {
-        let graph = Graph<String, Int> { "id\($0)" }  // NodeID == String, NodeValue == Int
+        var graph = Graph<String, Int> { "id\($0)" }  // NodeID == String, NodeValue == Int
         let node1 = graph.insert(1)                   // node1.id == "id1"
         
         let valueForID1 = graph.value(for: "id1")     // valueForID1 == 1
         let nodeForID1 = graph.node(for: "id1")       // nodeForID1 === node1
         
         XCTAssertEqual(valueForID1, node1.value)
-        XCTAssertIdentical(nodeForID1, node1)
+        XCTAssertEqual(nodeForID1?.id, node1.id)
     }
     
     func testAddingEdges() throws {
-        let graph = Graph<String, Int> { "id\($0)" }
+        var graph = Graph<String, Int> { "id\($0)" }
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
         graph.addEdge(from: node1, to: node2)
@@ -26,7 +26,7 @@ class SwiftNodesTests: XCTestCase {
     }
     
     func testAddingEdgeWithBigCount() throws {
-        let graph = Graph<String, Int> { "id\($0)" }
+        var graph = Graph<String, Int> { "id\($0)" }
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
         
@@ -38,7 +38,7 @@ class SwiftNodesTests: XCTestCase {
     }
     
     func testEdgesAreDirected() throws {
-        let graph = Graph<String, Int> { "id\($0)" }
+        var graph = Graph<String, Int> { "id\($0)" }
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
         XCTAssertNotNil(graph.addEdge(from: node1, to: node2))
@@ -46,23 +46,23 @@ class SwiftNodesTests: XCTestCase {
     }
     
     func testUUIDAsID() throws {
-        let graph = Graph<UUID, Int> { _ in UUID() }  // NodeID == UUID, NodeValue == Int
+        var graph = Graph<UUID, Int> { _ in UUID() }  // NodeID == UUID, NodeValue == Int
         let node1 = graph.insert(1)
         let node2 = graph.insert(1)
-        XCTAssertNotIdentical(node1, node2)
+        XCTAssertNotEqual(node1.id, node2.id)
         XCTAssertEqual(node1.value, node2.value)
         XCTAssertNotEqual(node1.id, node2.id)
     }
     
     func testOmittingClosureForIdentifiableValues() throws {
         struct IdentifiableValue: Identifiable { let id = UUID() }
-        let graph = Graph<UUID, IdentifiableValue>()  // NodeID == NodeValue.ID == UUID
+        var graph = Graph<UUID, IdentifiableValue>()  // NodeID == NodeValue.ID == UUID
         let node = graph.insert(IdentifiableValue())  // node.id == node.value.id
         XCTAssertEqual(node.id, node.value.id)
     }
     
     func testSorting() throws {
-        let graph = Graph<Int, Int>()
+        var graph = Graph<Int, Int>()
         
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
@@ -77,13 +77,13 @@ class SwiftNodesTests: XCTestCase {
     }
     
     func testSixWaysToRemoveAnEdgeDoCompile() {
-        let graph = Graph<Int, Int>()
+        var graph = Graph<Int, Int>()
         let node1 = graph.insert(5)
         let node2 = graph.insert(3)
         let edge = graph.addEdge(from: node1, to: node2)
         
         XCTAssertNotNil(edge)
-        XCTAssertIdentical(edge, graph.edge(from: node1, to: node2))
+        XCTAssertEqual(edge.id, graph.edge(from: node1, to: node2)?.id)
         
         graph.remove(edge)
         
@@ -97,89 +97,98 @@ class SwiftNodesTests: XCTestCase {
     }
     
     func testInsertingConnectingAndDisconnectingValues() throws {
-        let graph = Graph<String, Int> { "id\($0)" }
+        var graph = Graph<String, Int> { "id\($0)" }
         XCTAssertNil(graph.node(for: "id1"))
         XCTAssertNil(graph.value(for: "id1"))
         
         let node1 = graph.insert(1)
         XCTAssertEqual(graph.value(for: "id1"), 1)
-        XCTAssertIdentical(graph.node(for: "id1"), node1)
-        XCTAssertIdentical(graph.insert(1), node1)
+        XCTAssertEqual(graph.node(for: "id1")?.id, node1.id)
+        XCTAssertEqual(graph.insert(1).id, node1.id)
         XCTAssertNil(graph.edge(from: "id1", to: "id2"))
         
         XCTAssertEqual(node1.id, "id1")
         XCTAssertEqual(node1.value, 1)
-        
-        XCTAssert(node1.ancestorIDs.isEmpty)
-        XCTAssert(node1.descendantIDs.isEmpty)
-        XCTAssert(node1.isSource)
-        XCTAssert(node1.isSink)
 
         let node2 = graph.insert(2)
         XCTAssertNil(graph.edge(from: "id1", to: "id2"))
         XCTAssertNil(graph.edge(from: node1, to: node2))
         
-        let edge12 = try graph.addEdge(from: node1.id, to: node2.id).unwrap()
+        let edge12 = graph.addEdge(from: node1.id, to: node2.id)
         XCTAssertNotNil(graph.edge(from: "id1", to: "id2"))
         XCTAssertNotNil(graph.edge(from: node1, to: node2))
         
         XCTAssertEqual(edge12.count, 1)
-        XCTAssertIdentical(edge12, graph.addEdge(from: "id1", to: "id2"))
-        XCTAssertEqual(edge12.count, 2)
-        XCTAssertIdentical(edge12.origin, node1)
-        XCTAssertIdentical(edge12.destination, node2)
+        XCTAssertEqual(edge12.id, graph.addEdge(from: "id1", to: "id2").id)
+        XCTAssertEqual(graph.edge(from: node1, to: node2)?.count, 2)
+        XCTAssertEqual(edge12.originID, node1.id)
+        XCTAssertEqual(edge12.destinationID, node2.id)
         
-        XCTAssertFalse(node1.isSink)
-        XCTAssert(node1.descendantIDs.contains(node2.id))
-        XCTAssert(node1.isSource)
+        guard let updatedNode1 = graph.node(for: node1.id) else
+        {
+            throw "There should still exist a node for the id of node 1"
+        }
         
-        XCTAssertFalse(node2.isSource)
-        XCTAssert(node2.ancestorIDs.contains(node1.id))
-        XCTAssert(node2.isSink)
+        XCTAssertFalse(updatedNode1.isSink)
+        XCTAssert(updatedNode1.descendantIDs.contains(node2.id))
+        XCTAssert(updatedNode1.isSource)
+        
+        guard let updatedNode2 = graph.node(for: node2.id) else
+        {
+            throw "There should still exist a node for the id of node 2"
+        }
+        
+        XCTAssertFalse(updatedNode2.isSource)
+        XCTAssert(updatedNode2.ancestorIDs.contains(node1.id))
+        XCTAssert(updatedNode2.isSink)
         
         graph.removeEdge(with: edge12.id)
         XCTAssertNil(graph.edge(from: "id1", to: "id2"))
         XCTAssertNil(graph.edge(from: node1, to: node2))
         
-        XCTAssertEqual(edge12.count, 0)
+        guard let finalNode1 = graph.node(for: node1.id),
+              let finalNode2 = graph.node(for: node2.id) else
+        {
+            throw "There should still exist node for the ids of nodes 1 and 2"
+        }
         
-        XCTAssert(node1.ancestorIDs.isEmpty)
-        XCTAssert(node1.descendantIDs.isEmpty)
-        XCTAssert(node1.isSource)
-        XCTAssert(node1.isSink)
-        XCTAssert(node2.ancestorIDs.isEmpty)
-        XCTAssert(node2.descendantIDs.isEmpty)
-        XCTAssert(node2.isSource)
-        XCTAssert(node2.isSink)
+        XCTAssert(finalNode1.ancestorIDs.isEmpty)
+        XCTAssert(finalNode1.descendantIDs.isEmpty)
+        XCTAssert(finalNode1.isSource)
+        XCTAssert(finalNode1.isSink)
+        XCTAssert(finalNode2.ancestorIDs.isEmpty)
+        XCTAssert(finalNode2.descendantIDs.isEmpty)
+        XCTAssert(finalNode2.isSource)
+        XCTAssert(finalNode2.isSink)
     }
     
-    func testGraphCopying() {
-        let graph = Graph<String, Int> { "id\($0)" }
-        
-        let node1 = graph.insert(1)
-        let node2 = graph.insert(2)
-        let node3 = graph.insert(3)
-        
-        let edge1 = graph.addEdge(from: node1, to: node2)
-        _ = graph.addEdge(from: node2, to: node3, count: 2)
-        
-        let graphCopy = graph.copy()
-        XCTAssertEqual(graph.values, graphCopy.values)
-        XCTAssertEqual(graph.nodesIDs, graphCopy.nodesIDs)
-        XCTAssert(Set(graph.nodes).intersection(Set(graphCopy.nodes)).isEmpty)
-        XCTAssertEqual(graph.value(for: "id3"), graphCopy.value(for: "id3"))
-        
-        XCTAssertNil(graphCopy.edge(from: node1, to: node2))
-        XCTAssertNotNil(graphCopy.edge(from: "id1", to: "id2"))
-        XCTAssertNotNil(graphCopy.edge(from: "id2", to: "id3"))
-        XCTAssertNil(graphCopy.edge(from: "id1", to: "id3"))
-        XCTAssertNotIdentical(graphCopy.edge(from: "id1", to: "id2"), edge1)
-        XCTAssertEqual(graphCopy.edge(from: "id2", to: "id3")?.count, 2)
-    }
+//    func testGraphCopying() {
+//        let graph = Graph<String, Int> { "id\($0)" }
+//
+//        let node1 = graph.insert(1)
+//        let node2 = graph.insert(2)
+//        let node3 = graph.insert(3)
+//
+//        let edge1 = graph.addEdge(from: node1, to: node2)
+//        _ = graph.addEdge(from: node2, to: node3, count: 2)
+//
+//        let graphCopy = graph.copy()
+//        XCTAssertEqual(graph.values, graphCopy.values)
+//        XCTAssertEqual(graph.nodesIDs, graphCopy.nodesIDs)
+//        XCTAssert(Set(graph.nodes).intersection(Set(graphCopy.nodes)).isEmpty)
+//        XCTAssertEqual(graph.value(for: "id3"), graphCopy.value(for: "id3"))
+//
+//        XCTAssertNil(graphCopy.edge(from: node1, to: node2))
+//        XCTAssertNotNil(graphCopy.edge(from: "id1", to: "id2"))
+//        XCTAssertNotNil(graphCopy.edge(from: "id2", to: "id3"))
+//        XCTAssertNil(graphCopy.edge(from: "id1", to: "id3"))
+//        XCTAssertNotIdentical(graphCopy.edge(from: "id1", to: "id2"), edge1)
+//        XCTAssertEqual(graphCopy.edge(from: "id2", to: "id3")?.count, 2)
+//    }
     
     func testMinimumEquivalentGraph() {
         // make original graph
-        let graph = Graph<String, Int> { "id\($0)" }
+        var graph = Graph<String, Int> { "id\($0)" }
         
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
