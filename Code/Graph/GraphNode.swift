@@ -11,7 +11,8 @@ import SwiftyToolz
  
  A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestorIDs``, ``GraphNode/descendantIDs`` and related properties.
  */
-public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable
+public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable, Sendable
+    where ID: Sendable, Value: Sendable
 {
     // MARK: - Caches for Accessing Neighbours Quickly
     

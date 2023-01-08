@@ -8,7 +8,8 @@ import SwiftyToolz
  
  Nodes maintain an order, and so the graph can be sorted, see ``Graph/sort(by:)``.
  */
-public struct Graph<NodeID: Hashable, NodeValue>
+public struct Graph<NodeID, NodeValue>: Sendable
+    where NodeID: Sendable, NodeID: Hashable, NodeValue: Sendable
 {
     // MARK: - Initialize
     
@@ -38,7 +39,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
      Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
      */
     public init(nodes: OrderedNodes = [],
-                makeNodeIDForValue: @escaping (NodeValue) -> NodeID)
+                makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
         nodesByID = .init(uniqueKeysWithValues: nodes.map { ($0.id, $0) })
         self.makeNodeIDForValue = makeNodeIDForValue
@@ -179,7 +180,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         return node
     }
     
-    internal let makeNodeIDForValue: (NodeValue) -> NodeID
+    internal let makeNodeIDForValue: @Sendable (NodeValue) -> NodeID
     
     /**
      ``GraphNode/value`` of the ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`
@@ -263,6 +264,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         nodesByID.values
     }
     
+    // FIXME: To avoid the warning, update to https://github.com/apple/swift-collections 1.1.0 as soo an that's officially released. It's unclear (to me) how that hasn't happened yet: https://github.com/apple/swift-collections/pull/191#issuecomment-1374861077
     /**
      All ``GraphNode``s of the `Graph` hashable by their ``GraphNode/id``s
      */

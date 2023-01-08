@@ -18,7 +18,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/apple/swift-collections.git",
-            from: "1.0.2"
+            exact: "1.0.4"
         )
     ],
     targets: [

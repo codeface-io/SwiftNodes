@@ -20,7 +20,8 @@ import SwiftyToolz
   - ``Graph/removeEdge(from:to:)-55efs``
   - ``Graph/removeEdge(from:to:)-1gqeh``
  */
-public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
+public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable, Sendable
+    where NodeID: Sendable, NodeValue: Sendable
 {
     // MARK: - Hashability
     
@@ -42,7 +43,7 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     /**
      An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
-    public struct ID: Hashable
+    public struct ID: Hashable, Sendable
     {   
         internal init(_ origin: Node, _ destination: Node)
         {
