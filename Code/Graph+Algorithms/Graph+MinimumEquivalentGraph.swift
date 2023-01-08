@@ -21,7 +21,9 @@ public extension Graph
                                                        consideredAncestorsHash: &consideredAncestorsHash)
         }
         
-        return copy(excludedEdges: nonEssentialEdges)
+        var minimumEquivalentGraph = self
+        nonEssentialEdges.forEach { minimumEquivalentGraph.remove($0) }
+        return minimumEquivalentGraph
     }
     
     private func findNonEssentialEdges(around node: Node,
