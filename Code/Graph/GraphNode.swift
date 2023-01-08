@@ -10,53 +10,9 @@ import SwiftyToolz
  You may also create `GraphNode`s independent of a ``Graph`` in order to create a new ``Graph`` with them, see ``GraphNode/init(id:value:)`` and ``Graph/init(nodes:makeNodeIDForValue:)``.
  
  A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestors``, ``GraphNode/descendants`` and related properties.
- 
- A `GraphNode` can be marked with a ``GraphNode/Marking-swift.class``, which supports optimal graph algorithm performance, as algorithms don't need to remember and hash nodes to "mark" them but can rather mark them directly.
  */
 public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
 {
-    // MARK: - Marking for Algorithms
-    
-    /**
-     Supports optimal algorithm performance by allowing algorithms to mark nodes directly
-     
-     Algorithms don't need to remember and hash nodes to "mark" them but can rather mark them directly via this property.
-     
-     See ``GraphNode/Marking-swift.class``, ``GraphNode/mark(with:)``, ``GraphNode/isMarked``, ``Graph/setNodeMarkings(to:)`` and ``Graph/unmarkNodes()``.
-     */
-    public var marking: Marking?
-    
-    /**
-     A general-purpose node marking to support optimal graph algorithm performance
-     
-     Algorithms don't need to remember and then hash nodes to "mark" them but can rather mark them directly via their ``GraphNode/marking-swift.property`` property.
-     
-     See , ``GraphNode/mark(with:)``, ``GraphNode/isMarked``, ``Graph/setNodeMarkings(to:)`` and ``Graph/unmarkNodes()``.
-     
-     You can use a ``GraphNode/Marking-swift.class/zero`` `Marking` to generally mark a ``GraphNode``, see ``GraphNode/mark(with:)``. But you can also leverage the `Int` and `Bool` properties on `Marking` when your algorithm needs to mark nodes in multiple different ways.
-     */
-    public class Marking
-    {
-        public init(number1: Int = 0, number2: Int = 0,
-                    flag1: Bool = false, flag2: Bool = false)
-        {
-            self.number1 = number1
-            self.number2 = number2
-            self.flag1 = flag1
-            self.flag2 = flag2
-        }
-        
-        /**
-         General purpose helper number that graph algorithms can write to ``GraphNode/marking-swift.property``
-         */
-        var number1, number2: Int
-        
-        /**
-         General purpose helper flag that graph algorithms can write to ``GraphNode/marking-swift.property``
-         */
-        var flag1, flag2: Bool
-    }
-    
     // MARK: - Caches for Accessing Neighbours Quickly
     
     /**

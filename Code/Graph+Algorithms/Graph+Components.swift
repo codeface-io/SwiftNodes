@@ -9,19 +9,19 @@ public extension Graph
      */
     func findComponents() -> Set<Nodes>
     {
-        unmarkNodes()
+        var markedNodes = Nodes()
         
         var components = Set<Nodes>()
 
         for node in nodesByID.values
         {
-            if node.isMarked { continue }
+            if markedNodes.contains(node) { continue }
             
             let nextComponent = findLackingNodes(forComponent: [], startingAt: node)
             
             components += nextComponent
             
-            node.mark()
+            markedNodes.insert(node)
         }
 
         return components

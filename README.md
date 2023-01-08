@@ -137,9 +137,7 @@ let subsetCopy = graph.copy(includedNodes: [node2, node3],
 
 Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
 
-To be able to achieve optimal performance (time- and space efficiency) in practice, algorithms must be able to mark nodes directly instead of implementing node markings via hash maps. So in SwiftNodes, every `node` has an optional property `node.marking` which can store a `GraphNode.Marking` object. The marking can itself be used to generally mark a node, but it also contains four general-purpose properties (two integer numbers and two boolean flags) that algorithms can use in whatever way they need.
-
-[Graph+Node.Marking.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph%2BAlgorithms/Graph%2BNode.Marking.swift) contains some conveniences for marking and unmarking nodes. Also have a look at how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) make use of node markings.
+In an effort to make SwiftNodes concurrency safe and play well with the new Swift concurrency features, we removed the possibility to mark nodes directly. See how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) now associate markings with nodes via hashing.
 
 ## Included Algorithms
 

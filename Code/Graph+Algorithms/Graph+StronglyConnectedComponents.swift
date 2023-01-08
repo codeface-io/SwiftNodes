@@ -9,20 +9,20 @@ extension Graph
      */
     func findStronglyConnectedComponents() -> Set<Nodes>
     {
-        unmarkNodes()
-        
         var resultingSCCs = Set<Nodes>()
         
         var index = 0
         var stack = [Node]()
+        var markings = [Node: Marking]()
         
         for node in nodes
         {
-            if !node.isMarked
+            if markings[node] == nil
             {
                 findSCCsRecursively(node: node,
                                     index: &index,
-                                    stack: &stack) { resultingSCCs += $0 }
+                                    stack: &stack,
+                                    markings: &markings) { resultingSCCs += $0 }
             }
         }
         
@@ -33,21 +33,22 @@ extension Graph
     private func findSCCsRecursively(node: Node,
                                      index: inout Int,
                                      stack: inout [Node],
-                                     handleNewSCC: (Nodes) -> Void) -> Node.Marking
+                                     markings: inout [Node: Marking],
+                                     handleNewSCC: (Nodes) -> Void) -> Marking
     {
         // Set the depth index for node to the smallest unused index
-        assert(!node.isMarked, "there shouldn't be a marking value on this node yet")
-        let nodeMarking = Node.Marking(index: index, lowLink: index, isOnStack: true)
-        node.mark(with: nodeMarking)
+        assert(markings[node] == nil, "there shouldn't be a marking value for this node yet")
+        let nodeMarking = Marking(index: index, lowLink: index, isOnStack: true)
+        markings[node] = nodeMarking
         index += 1
         stack.append(node)
         
         // Consider descendants of node
         for descendant in node.descendants
         {
-            if let descendantMarking = descendant.marking
+            if let descendantMarking = markings[descendant]
             {
-                // If descendant is not on stack, then edge (node, descendant) is pointing to an SCC already found and must be ignored
+                // If descendant is not on stack, then edge (from node to descendant) is pointing to an SCC already found and must be ignored
                 if descendantMarking.isOnStack
                 {
                     // Successor "descendant" is in stack and hence in the current SCC
@@ -60,6 +61,7 @@ extension Graph
                 let descendantMarking = findSCCsRecursively(node: descendant,
                                                             index: &index,
                                                             stack: &stack,
+                                                            markings: &markings,
                                                             handleNewSCC: handleNewSCC)
                 
                 nodeMarking.lowLink = min(nodeMarking.lowLink, descendantMarking.lowLink)
@@ -75,12 +77,12 @@ extension Graph
             {
                 let sccNode = stack.removeLast()
                 
-                guard let sccNodeMarkings = sccNode.marking else
+                guard let sccNodeMarking = markings[sccNode] else
                 {
                     fatalError("node that is on the stack should have a markings object")
                 }
                 
-                sccNodeMarkings.isOnStack = false
+                sccNodeMarking.isOnStack = false
                 newSCC += sccNode
                 
                 if node === sccNode { break }
@@ -93,28 +95,16 @@ extension Graph
     }
 }
 
-private extension GraphNode.Marking
+private class Marking
 {
-    convenience init(index: Int, lowLink: Int, isOnStack: Bool)
+    init(index: Int, lowLink: Int, isOnStack: Bool)
     {
-        self.init(number1: index, number2: lowLink, flag1: isOnStack)
+        self.index = index
+        self.lowLink = lowLink
+        self.isOnStack = isOnStack
     }
     
     var index: Int
-    {
-        get { number1 }
-        set { number1 = newValue }
-    }
-    
     var lowLink: Int
-    {
-        get { number2 }
-        set { number2 = newValue }
-    }
-    
     var isOnStack: Bool
-    {
-        get { flag1 }
-        set { flag1 = newValue }
-    }
 }

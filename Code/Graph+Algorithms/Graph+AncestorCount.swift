@@ -13,19 +13,23 @@ public extension Graph
      */
     func findNumberOfNodeAncestors() -> [(Node, Int)]
     {
-        unmarkNodes()
+        var ancestorCountByNode = [Node: Int]()
         
-        sinks.forEach { getAncestorCount(for: $0) }
+        sinks.forEach
+        {
+            getAncestorCount(for: $0, ancestorCountByNode: &ancestorCountByNode)
+        }
 
-        return nodesByID.values.map { ($0, $0.marking?.ancestorCount ?? 0) }
+        return nodesByID.values.map { ($0, ancestorCountByNode[$0] ?? 0) }
     }
 
     @discardableResult
-    private func getAncestorCount(for node: Node) -> Int
+    private func getAncestorCount(for node: Node,
+                                  ancestorCountByNode: inout [Node: Int]) -> Int
     {
-        if let marking = node.marking { return marking.ancestorCount }
+        if let ancestorCount = ancestorCountByNode[node] { return ancestorCount }
         
-        let marking = node.mark() // mark node as visited to avoid infinite loops in cyclic graphs
+        ancestorCountByNode[node] = 0 // mark node as visited to avoid infinite loops in cyclic graphs
         
         let directAncestors = node.ancestors
         let ingoingEdges = directAncestors.compactMap { edge(from: $0, to: node) }
@@ -33,20 +37,11 @@ public extension Graph
         
         let ancestorCount = directAncestorCount + directAncestors.sum
         {
-            getAncestorCount(for: $0)
+            getAncestorCount(for: $0, ancestorCountByNode: &ancestorCountByNode)
         }
         
-        marking.ancestorCount = ancestorCount
+        ancestorCountByNode[node] = ancestorCount
         
         return ancestorCount
-    }
-}
-
-private extension GraphNode.Marking
-{
-    var ancestorCount: Int
-    {
-        get { number1 }
-        set { number1 = newValue }
     }
 }
