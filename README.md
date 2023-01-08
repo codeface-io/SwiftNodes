@@ -104,11 +104,11 @@ graph.removeEdge(from: node1.id, to: node2.id)
 `Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition, a `GraphNode` has caches that enable quick access to its neighbours:
 
 ```swift
-node.descendants  // all nodes to which there is an edge from node
-node.ancestors    // all nodes from which there is an edge to node
-node.neighbours   // all descendants and ancestors
-node.isSink       // whether node has no descendants
-node.isSource     // whether node has no ancestors
+node.descendantIDs  // IDs of all nodes to which there is an edge from node
+node.ancestorIDs    // IDs of all nodes from which there is an edge to node
+node.neighbourIDs   // all descendant- and ancestor IDs
+node.isSink         // whether node has no descendants
+node.isSource       // whether node has no ancestors
 ```
 
 ### Sort Nodes

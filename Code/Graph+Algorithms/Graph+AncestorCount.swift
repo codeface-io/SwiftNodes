@@ -31,7 +31,7 @@ public extension Graph
         
         ancestorCountByNode[node] = 0 // mark node as visited to avoid infinite loops in cyclic graphs
         
-        let directAncestors = node.ancestors
+        let directAncestors = node.ancestorIDs.compactMap { self.node(for: $0) }
         let ingoingEdges = directAncestors.compactMap { edge(from: $0, to: node) }
         let directAncestorCount = ingoingEdges.sum { $0.count }
         

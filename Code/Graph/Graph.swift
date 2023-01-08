@@ -72,8 +72,8 @@ public class Graph<NodeID: Hashable, NodeValue>
     public func remove(_ edge: Edge)
     {
         // remove from node caches
-        edge.origin.descendants -= edge.destination
-        edge.destination.ancestors -= edge.origin
+        edge.origin.descendantIDs -= edge.destination.id
+        edge.destination.ancestorIDs -= edge.origin.id
         edge.count = 0
         
         // remove edge itself
@@ -128,8 +128,8 @@ public class Graph<NodeID: Hashable, NodeValue>
             edgesByID[edgeID] = edge
             
             // add to node caches
-            origin.descendants += destination
-            destination.ancestors += origin
+            origin.descendantIDs += destination.id
+            destination.ancestorIDs += origin.id
             
             return edge
         }

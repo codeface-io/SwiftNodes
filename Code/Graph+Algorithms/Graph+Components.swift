@@ -34,10 +34,12 @@ public extension Graph
         
         var lackingNodes: Nodes = [node]
         
-        for neighbour in node.neighbours
+        for neighbourID in node.neighbourIDs
         {
+            guard let neighbour = self.node(for: neighbourID) else { continue }
             let extendedComponent = incompleteComponent + lackingNodes
-            lackingNodes += findLackingNodes(forComponent: extendedComponent, startingAt: neighbour)
+            lackingNodes += findLackingNodes(forComponent: extendedComponent,
+                                             startingAt: neighbour)
         }
         
         return lackingNodes

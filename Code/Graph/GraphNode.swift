@@ -18,27 +18,27 @@ public class GraphNode<ID: Hashable, Value>: Identifiable, Hashable
     /**
      Indicates whether the node has no descendants (no outgoing edges)
      */
-    public var isSink: Bool { descendants.isEmpty }
+    public var isSink: Bool { descendantIDs.isEmpty }
     
     /**
      Indicates whether the node has no ancestors (no ingoing edges)
      */
-    public var isSource: Bool { ancestors.isEmpty }
+    public var isSource: Bool { ancestorIDs.isEmpty }
     
     /**
      The node's neighbours (nodes connected via in- or outgoing edges)
      */
-    public var neighbours: Set<Node> { ancestors + descendants }
+    public var neighbourIDs: Set<ID> { ancestorIDs + descendantIDs }
     
     /**
      The node's ancestors (nodes connected via ingoing edges)
      */
-    public internal(set) var ancestors = Set<Node>()
+    public internal(set) var ancestorIDs = Set<ID>()
     
     /**
      The node's descendants (nodes connected via outgoing edges)
      */
-    public internal(set) var descendants = Set<Node>()
+    public internal(set) var descendantIDs = Set<ID>()
     
     // MARK: - Hashability
     

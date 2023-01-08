@@ -44,7 +44,9 @@ extension Graph
         stack.append(node)
         
         // Consider descendants of node
-        for descendant in node.descendants
+        let nodeDescendants = node.descendantIDs.compactMap { self.node(for: $0) }
+        
+        for descendant in nodeDescendants
         {
             if let descendantMarking = markings[descendant]
             {

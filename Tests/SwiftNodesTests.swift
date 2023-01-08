@@ -110,8 +110,8 @@ class SwiftNodesTests: XCTestCase {
         XCTAssertEqual(node1.id, "id1")
         XCTAssertEqual(node1.value, 1)
         
-        XCTAssert(node1.ancestors.isEmpty)
-        XCTAssert(node1.descendants.isEmpty)
+        XCTAssert(node1.ancestorIDs.isEmpty)
+        XCTAssert(node1.descendantIDs.isEmpty)
         XCTAssert(node1.isSource)
         XCTAssert(node1.isSink)
 
@@ -130,11 +130,11 @@ class SwiftNodesTests: XCTestCase {
         XCTAssertIdentical(edge12.destination, node2)
         
         XCTAssertFalse(node1.isSink)
-        XCTAssert(node1.descendants.contains(node2))
+        XCTAssert(node1.descendantIDs.contains(node2.id))
         XCTAssert(node1.isSource)
         
         XCTAssertFalse(node2.isSource)
-        XCTAssert(node2.ancestors.contains(node1))
+        XCTAssert(node2.ancestorIDs.contains(node1.id))
         XCTAssert(node2.isSink)
         
         graph.removeEdge(with: edge12.id)
@@ -143,12 +143,12 @@ class SwiftNodesTests: XCTestCase {
         
         XCTAssertEqual(edge12.count, 0)
         
-        XCTAssert(node1.ancestors.isEmpty)
-        XCTAssert(node1.descendants.isEmpty)
+        XCTAssert(node1.ancestorIDs.isEmpty)
+        XCTAssert(node1.descendantIDs.isEmpty)
         XCTAssert(node1.isSource)
         XCTAssert(node1.isSink)
-        XCTAssert(node2.ancestors.isEmpty)
-        XCTAssert(node2.descendants.isEmpty)
+        XCTAssert(node2.ancestorIDs.isEmpty)
+        XCTAssert(node2.descendantIDs.isEmpty)
         XCTAssert(node2.isSource)
         XCTAssert(node2.isSink)
     }

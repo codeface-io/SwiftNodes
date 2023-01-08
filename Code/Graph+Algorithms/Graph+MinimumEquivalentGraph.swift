@@ -43,7 +43,7 @@ public extension Graph
         
         // base case: add edges from all reached ancestors to all reachable neighbours of node
         
-        let descendants = node.descendants
+        let descendants = node.descendantIDs.compactMap { self.node(for: $0) }
         
         for descendant in descendants
         {
