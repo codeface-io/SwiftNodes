@@ -13,85 +13,64 @@ public struct Graph<NodeID, NodeValue>: Sendable
 {
     // MARK: - Initialize
     
-    public init(values: [NodeValue]) where NodeValue: Identifiable, NodeValue.ID == NodeID
-    {
-        let nodeArray = values.map { GraphNode(id: $0.id, value: $0) }
-        self.init(nodes: OrderedSet(nodeArray))
-    }
-    
-    // TODO: nowhere should the client be required to provide nodes, since nodes contain edge caches. only the graph should create nodes. the client only reads them.
-    
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
-    public init(nodes: OrderedNodes = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
+    public init(values: [NodeValue] = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
-        self.init(nodes: nodes) { $0.id }
+        self.init(values: values) { $0.id }
     }
     
     /**
      Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
      */
-    public init(nodes: OrderedNodes = []) where NodeID == NodeValue
+    public init(values: [NodeValue] = []) where NodeID == NodeValue
     {
-        self.init(nodes: nodes) { $0 }
+        self.init(values: values) { $0 }
     }
     
     /**
      Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
      */
-    public init(nodes: OrderedNodes = [],
+    public init(values: [NodeValue] = [],
                 makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
-        nodesByID = .init(uniqueKeysWithValues: nodes.map { ($0.id, $0) })
+        let idsWithNodes = values.map
+        {
+            let id = makeNodeIDForValue($0)
+            return (id, Node(id: id, value: $0))
+        }
+        
+        nodesByID = .init(uniqueKeysWithValues: idsWithNodes)
         self.makeNodeIDForValue = makeNodeIDForValue
     }
     
     // MARK: - Edges
     
     /**
-     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
+     Removes the corresponding ``GraphEdge``, see ``Graph/removeEdge(with:)``
      */
-    public mutating func removeEdge(from origin: Node, to destination: Node)
-    {
-        removeEdge(from: origin.id, to: destination.id)
-    }
-    
-    /**
-     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
-     */
-    public mutating func removeEdge(from originID: NodeID, to destinationID: NodeID)
+    @discardableResult
+    public mutating func removeEdge(from originID: NodeID,
+                                    to destinationID: NodeID) -> Edge?
     {
         removeEdge(with: .init(originID, destinationID))
     }
     
     /**
-     Removes the corresponding ``GraphEdge``, see ``Graph/remove(_:)``
-     */
-    public mutating func remove(_ edge: Edge)
-    {
-        removeEdge(with: edge.id)
-    }
-    
-    /**
      Removes the ``GraphEdge`` with the given ID, also removing it from the caches of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
-    public mutating func removeEdge(with edgeID: Edge.ID)
+    @discardableResult
+    public mutating func removeEdge(with edgeID: Edge.ID) -> Edge?
     {
         // remove from node caches
         nodesByID[edgeID.originID]?.descendantIDs -= edgeID.destinationID
         nodesByID[edgeID.destinationID]?.ancestorIDs -= edgeID.originID
         
         // remove edge itself
+        let edge = edgesByID[edgeID]
         edgesByID[edgeID] = nil
-    }
-    
-    @discardableResult
-    public mutating func addEdge(from origin: Node,
-                                 to destination: Node,
-                                 count: Int = 1) -> Edge
-    {
-        addEdge(from: origin.id, to: destination.id, count: count)
+        return edge
     }
     
     /**
@@ -128,14 +107,6 @@ public struct Graph<NodeID, NodeValue>: Sendable
             
             return edge
         }
-    }
-    
-    /**
-     The ``GraphEdge`` from `origin` to `destination` if it exists, otherwise `nil`
-     */
-    public func edge(from origin: Node, to destination: Node) -> Edge?
-    {
-        edge(from: origin.id, to: destination.id)
     }
     
     /**
@@ -182,7 +153,7 @@ public struct Graph<NodeID, NodeValue>: Sendable
         return node
     }
     
-    internal let makeNodeIDForValue: @Sendable (NodeValue) -> NodeID
+    public let makeNodeIDForValue: @Sendable (NodeValue) -> NodeID
     
     /**
      ``GraphNode/value`` of the ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`
@@ -216,14 +187,6 @@ public struct Graph<NodeID, NodeValue>: Sendable
     public var sinks: [Node]
     {
         nodesByID.values.filter { $0.isSink }
-    }
-    
-    /**
-     Whether the `Graph` contains the given ``GraphNode``
-     */
-    public func contains(_ node: Node) -> Bool
-    {
-        contains(node.id)
     }
     
     /**

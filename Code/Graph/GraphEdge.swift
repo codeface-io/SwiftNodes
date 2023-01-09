@@ -44,12 +44,7 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable, Se
      An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
     public struct ID: Hashable, Sendable
-    {   
-        internal init(_ origin: Node, _ destination: Node)
-        {
-            self.init(origin.id, destination.id)
-        }
-        
+    {
         internal init(_ originID: NodeID, _ destinationID: NodeID)
         {
             self.originID = originID

@@ -24,7 +24,7 @@ public extension Graph
         }
         
         var minimumEquivalentGraph = self
-        nonEssentialEdges.forEach { minimumEquivalentGraph.remove($0) }
+        nonEssentialEdges.forEach { minimumEquivalentGraph.removeEdge(with: $0.id) }
         return minimumEquivalentGraph
     }
     
@@ -53,7 +53,7 @@ public extension Graph
         {
             for ancestor in ancestorsToConsider
             {
-                if let nonEssentialEdge = edge(from: ancestor, to: descendant)
+                if let nonEssentialEdge = edge(from: ancestor.id, to: descendant.id)
                 {
                     nonEssentialEdges += nonEssentialEdge
                 }

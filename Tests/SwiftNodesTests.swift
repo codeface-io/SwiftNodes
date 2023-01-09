@@ -18,11 +18,11 @@ class SwiftNodesTests: XCTestCase {
         var graph = Graph<String, Int> { "id\($0)" }
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
-        graph.addEdge(from: node1, to: node2)
+        graph.addEdge(from: node1.id, to: node2.id)
         
-        XCTAssertNotNil(graph.edge(from: node1, to: node2))
-        XCTAssertNil(graph.edge(from: node2, to: node1))
-        XCTAssertEqual(graph.edge(from: node1, to: node2)?.count, 1)
+        XCTAssertNotNil(graph.edge(from: node1.id, to: node2.id))
+        XCTAssertNil(graph.edge(from: node2.id, to: node1.id))
+        XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.count, 1)
     }
     
     func testAddingEdgeWithBigCount() throws {
@@ -30,19 +30,19 @@ class SwiftNodesTests: XCTestCase {
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
         
-        graph.addEdge(from: node1, to: node2, count: 42)
-        XCTAssertEqual(graph.edge(from: node1, to: node2)?.count, 42)
+        graph.addEdge(from: node1.id, to: node2.id, count: 42)
+        XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.count, 42)
         
-        graph.addEdge(from: node1, to: node2, count: 58)
-        XCTAssertEqual(graph.edge(from: node1, to: node2)?.count, 100)
+        graph.addEdge(from: node1.id, to: node2.id, count: 58)
+        XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.count, 100)
     }
     
     func testEdgesAreDirected() throws {
         var graph = Graph<String, Int> { "id\($0)" }
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
-        XCTAssertNotNil(graph.addEdge(from: node1, to: node2))
-        XCTAssertNil(graph.edge(from: node2, to: node1))
+        XCTAssertNotNil(graph.addEdge(from: node1.id, to: node2.id))
+        XCTAssertNil(graph.edge(from: node2.id, to: node1.id))
     }
     
     func testUUIDAsID() throws {
@@ -66,13 +66,10 @@ class SwiftNodesTests: XCTestCase {
         
         let node1 = graph.insert(1)
         let node2 = graph.insert(2)
-        let edge = graph.addEdge(from: node1, to: node2)
+        let edge = graph.addEdge(from: node1.id, to: node2.id)
         
-        graph.remove(edge)
         graph.removeEdge(with: edge.id)
-        graph.removeEdge(with: .init(node1, node2))
         graph.removeEdge(with: .init(node1.id, node2.id))
-        graph.removeEdge(from: node1, to: node2)
         graph.removeEdge(from: node1.id, to: node2.id)
     }
     
@@ -80,19 +77,16 @@ class SwiftNodesTests: XCTestCase {
         var graph = Graph<Int, Int>()
         let node1 = graph.insert(5)
         let node2 = graph.insert(3)
-        let edge = graph.addEdge(from: node1, to: node2)
+        let edge = graph.addEdge(from: node1.id, to: node2.id)
         
         XCTAssertNotNil(edge)
-        XCTAssertEqual(edge.id, graph.edge(from: node1, to: node2)?.id)
-        
-        graph.remove(edge)
-        
-        XCTAssertNil(graph.edge(from: node1, to: node2))
+        XCTAssertEqual(edge.id, graph.edge(from: node1.id, to: node2.id)?.id)
         
         graph.removeEdge(with: edge.id)
-        graph.removeEdge(with: .init(node1, node2))
+        
+        XCTAssertNil(graph.edge(from: node1.id, to: node2.id))
+        
         graph.removeEdge(with: .init(node1.id, node2.id))
-        graph.removeEdge(from: node1, to: node2)
         graph.removeEdge(from: node1.id, to: node2.id)
     }
     
@@ -112,15 +106,15 @@ class SwiftNodesTests: XCTestCase {
 
         let node2 = graph.insert(2)
         XCTAssertNil(graph.edge(from: "id1", to: "id2"))
-        XCTAssertNil(graph.edge(from: node1, to: node2))
+        XCTAssertNil(graph.edge(from: node1.id, to: node2.id))
         
         let edge12 = graph.addEdge(from: node1.id, to: node2.id)
         XCTAssertNotNil(graph.edge(from: "id1", to: "id2"))
-        XCTAssertNotNil(graph.edge(from: node1, to: node2))
+        XCTAssertNotNil(graph.edge(from: node1.id, to: node2.id))
         
         XCTAssertEqual(edge12.count, 1)
         XCTAssertEqual(edge12.id, graph.addEdge(from: "id1", to: "id2").id)
-        XCTAssertEqual(graph.edge(from: node1, to: node2)?.count, 2)
+        XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.count, 2)
         XCTAssertEqual(edge12.originID, node1.id)
         XCTAssertEqual(edge12.destinationID, node2.id)
         
@@ -144,7 +138,7 @@ class SwiftNodesTests: XCTestCase {
         
         graph.removeEdge(with: edge12.id)
         XCTAssertNil(graph.edge(from: "id1", to: "id2"))
-        XCTAssertNil(graph.edge(from: node1, to: node2))
+        XCTAssertNil(graph.edge(from: node1.id, to: node2.id))
         
         guard let finalNode1 = graph.node(for: node1.id),
               let finalNode2 = graph.node(for: node2.id) else
@@ -170,9 +164,9 @@ class SwiftNodesTests: XCTestCase {
         let node2 = graph.insert(2)
         let node3 = graph.insert(3)
         
-        graph.addEdge(from: node1, to: node2)
-        graph.addEdge(from: node2, to: node3)
-        graph.addEdge(from: node1, to: node3)
+        graph.addEdge(from: node1.id, to: node2.id)
+        graph.addEdge(from: node2.id, to: node3.id)
+        graph.addEdge(from: node1.id, to: node3.id)
         
         XCTAssertEqual(graph.edges.count, 3)
         

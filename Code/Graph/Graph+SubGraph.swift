@@ -2,11 +2,10 @@ import OrderedCollections
 
 public extension Graph
 {
-    func subGraph(nodes: OrderedSet<Node>) -> Graph where NodeValue: Identifiable, NodeValue.ID == NodeID
+    func subGraph(nodeIDs: Set<NodeID>) -> Graph
     {
-        let nodeIDs = Set(nodes.map { $0.id })
-        
-        var subGraph = Graph(values: nodes.map { $0.value })
+        var subGraph = Graph(values: nodeIDs.compactMap { nodesByID[$0]?.value },
+                             makeNodeIDForValue: makeNodeIDForValue)
         
         for edge in edges
         {
