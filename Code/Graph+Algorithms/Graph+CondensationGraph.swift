@@ -55,7 +55,7 @@ public extension Graph
     // TODO: use NodeID as condensation node id type and require client to pass a closure for creating new ids of that type. use ids of contained node for StronglyConnectedComponents that contain only 1 node
     typealias CondensationGraph = Graph<StronglyConnectedComponent.ID, StronglyConnectedComponent>
     
-    class StronglyConnectedComponent: Identifiable, Hashable
+    final class StronglyConnectedComponent: Identifiable, Hashable, Sendable
     {
         public static func == (lhs: StronglyConnectedComponent,
                                rhs: StronglyConnectedComponent) -> Bool { lhs.id == rhs.id }
