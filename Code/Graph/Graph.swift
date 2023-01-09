@@ -19,6 +19,8 @@ public struct Graph<NodeID, NodeValue>: Sendable
         self.init(nodes: OrderedSet(nodeArray))
     }
     
+    // TODO: nowhere should the client be required to provide nodes, since nodes contain edge caches. only the graph should create nodes. the client only reads them.
+    
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
@@ -264,7 +266,7 @@ public struct Graph<NodeID, NodeValue>: Sendable
         nodesByID.values
     }
     
-    // FIXME: To avoid the warning, update to https://github.com/apple/swift-collections 1.1.0 as soo an that's officially released. It's unclear (to me) how that hasn't happened yet: https://github.com/apple/swift-collections/pull/191#issuecomment-1374861077
+    // FIXME: To avoid the warning, update to https://github.com/apple/swift-collections 1.1.0 as soon as that's officially released. It's unclear (to me) how that hasn't happened yet: https://github.com/apple/swift-collections/pull/191#issuecomment-1374861077
     /**
      All ``GraphNode``s of the `Graph` hashable by their ``GraphNode/id``s
      */
