@@ -177,11 +177,12 @@ Ancestor counts can serve as a proxy for [topological sorting](https://en.wikipe
 
 ## Future Directions
 
-For the included algorithms and current clients, the above described editing capabilities seem to suffice. Also, to make a `Graph` part of a `Sendable` type, you would need to hold it as a constant anyway. So, regarding editing, following development steps will focus on creating complete graphs with edges via initializers – rather than on editing `Graph` variables. 
+* `Sendable` conformance should be conditional! `Graph` should not generally require its value type to be `Sendable` but rather be itself `Sendable` only when its vaule- and id type are.
+* For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to make a `Graph` part of a `Sendable` type, you would need to hold it as a constant anyway. So, regarding editing, following development steps will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances. 
 
-But an interesting future direction is certainly to further align `Graph` with the official Swift data structures and to provide an arsenal of synchronous and asynchronous filtering- and mapping functions.
+* But an interesting future direction is certainly to further align `Graph` with the official Swift data structures and to provide an arsenal of synchronous and asynchronous filtering- and mapping functions.
 
-Also, since `Graph` is (now) a full value type, public API and internal implementation should only use IDs instead of complete node- and edge values unless where necessary. The public `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
+* Also, since `Graph` is (now) a full value type, public API and internal implementation should only use IDs instead of complete node- and edge values unless where necessary. The public `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
 
 ## Architecture
 
