@@ -6,13 +6,15 @@
 
 ## What?
 
-SwiftNodes provides a [`Graph` data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A `Graph` stores values in nodes which can be connected via edges. SwiftNodes was first used in production by [Codeface](https://codeface.io).
+SwiftNodes provides a concurrency safe [`Graph` data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A `Graph` stores values in identifiable nodes which can be connected via edges.
+
+SwiftNodes was first used in production by [Codeface](https://codeface.io).
 
 ### Design Goals
 
 * Usability, safety, extensibility and maintainability – which also imply simplicity.
-* In particular, the API is supposed to be familiar and fit well with official Swift data structures. So one question that has started to guide its design is: What would Apple do?
-* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The only compromise SwiftNodes currently involves is that nodes are value types and can not be referenced, so they must be hashed. We might be able to solve even that for essential use cases by exploiting array indices and accepting lower sorting performance.
+* In particular, the API is supposed to feel familiar and fit well with official Swift data structures. So one question that has started to guide its design is: What would Apple do?
+* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The only compromise SwiftNodes currently involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and we might even be able to avoid the hashing for essential use cases by exploiting array indices and accepting lower sorting performance.
 
 ## How to Create, Edit and Query Graphs
 
