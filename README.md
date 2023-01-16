@@ -14,7 +14,16 @@ SwiftNodes was first used in production by [Codeface](https://codeface.io).
 
 * Usability, safety, extensibility and maintainability – which also imply simplicity.
 * In particular, the API is supposed to feel familiar and fit well with official Swift data structures. So one question that has started to guide its design is: What would Apple do?
-* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The only compromise SwiftNodes currently involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and we might even be able to avoid the hashing for essential use cases by exploiting array indices and accepting lower sorting performance.
+* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The only compromise SwiftNodes currently involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future,  we might even be able to avoid the hashing for essential use cases by exploiting array indices and accepting lower sorting performance.
+
+### Value Semantics
+
+`Graph` is `Sendable` and thereby ready for the strict concurrency safety of Swift 6. Like the official Swift data structures, `Graph` is even a pure `struct` and inherits the benefits of value types:
+
+* You decide on mutability by using `var` or `let`.
+* You can easily copy a whole `Graph`.
+* You can use a `Graph` as a `@State` or `@Published` variable with SwiftUI.
+* You can use property observers like `didSet` to observe changes in a `Graph`.
 
 ## How to Create, Edit and Query Graphs
 
@@ -134,16 +143,7 @@ let subsetOfNodeIDs: Set<Int> = [0, 3, 6, 9, 12]
 let subGraph = graph.subGraph(nodeIDs: subsetOfNodeIDs)
 ```
 
-## Concurrency Safety
-
-`Graph` is `Sendable` and thereby ready for the strict concurrency safety of Swift 6. Like the official Swift data structures, `Graph` is even a pure `struct` and inherits the benefits of value types:
-
-* You decide on mutability by using `var` or `let`.
-* You can easily copy a whole `Graph`.
-* You can use a `Graph` as a `@State` or `@Published` variable with SwiftUI.
-* You can use property observers like `didSet` to observe changes in a `Graph`.
-
-## How Algorithms Mark Nodes 
+## How To Mark Nodes in Algorithms
 
 Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
 
@@ -177,15 +177,6 @@ This only works on acyclic graphs right now and might return incorrect results f
 
 Ancestor counts can serve as a proxy for [topological sorting](https://en.wikipedia.org/wiki/Topological_sorting).
 
-## Future Directions
-
-* `Sendable` conformance should be conditional! `Graph` should not generally require its value type to be `Sendable` but rather be itself `Sendable` only when its vaule- and id type are.
-* For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to make a `Graph` part of a `Sendable` type, you would need to hold it as a constant anyway. So, regarding editing, following development steps will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances. 
-
-* But an interesting future direction is certainly to further align `Graph` with the official Swift data structures and to provide an arsenal of synchronous and asynchronous filtering- and mapping functions.
-
-* Also, since `Graph` is (now) a full value type, public API and internal implementation should only use IDs instead of complete node- and edge values unless where necessary. The public `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
-
 ## Architecture
 
 Here is the internal architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the SwiftNodes code folder:
@@ -199,3 +190,14 @@ The above image was created with [Codeface](https://codeface.io).
 From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://semver.org). So until it has reached 1.0.0, its API may still break frequently, but this will be expressed in version bumps.
 
 SwiftNodes is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftNodes will move to version 1.0.0 as soon as its basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
+
+## Road Map
+
+* [ ] `Sendable` conformance should be conditional! `Graph` should not generally require its value- and id type to be `Sendable` but rather be itself `Sendable` **only if** its vaule- and id type are.
+* [ ] Since `Graph` is (now) a full value type, public API and internal implementation should reference nodes and edges by their IDs instead of using complete values unless where necessary. The `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
+* [ ] For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to declare a `Graph` property on a `Sendable` reference type, you would need to make that property constant anyway. So, development will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances (Add those initializers!).
+* [ ] Further align with official Swift data structures (What would Apple do?)
+    * [ ] Provide an arsenal of synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
+    * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
+    * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection` etc.)
+    * [ ] Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
