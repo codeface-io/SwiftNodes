@@ -196,8 +196,15 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 * [ ] `Sendable` conformance should be conditional! `Graph` should not generally require its value- and id type to be `Sendable` but rather be itself `Sendable` **only if** its vaule- and id type are.
 * [ ] Since `Graph` is (now) a full value type, public API and internal implementation should reference nodes and edges by their IDs instead of using complete values unless where necessary. The `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
 * [ ] For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to declare a `Graph` property on a `Sendable` reference type, you would need to make that property constant anyway. So, development will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances (Add those initializers!).
-* [ ] Further align with official Swift data structures (What would Apple do?)
+* [ ] Add tests for all algorithms! The test graphs should be complex enough to provide confidence in algorithm correctness.
+* [ ] Further align with official Swift data structures (What would Apple do?):
     * [ ] Provide an arsenal of synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
     * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
-    * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection` etc.)
+    * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection`, `Codable` etc.)
     * [ ] Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
+* [ ] Add more algorithms (based on the needs of Codeface):
+    * [ ] Make existing algorithms compatible with cyclic graphs (two of them are still not)
+    * [ ] General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
+    * [ ] Better ways of topological sorting
+    * [ ] Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the least amount of dependence that needs to be cut in order to avoid cycles.
+* [ ] Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more important than optimizing the data structure itself.
