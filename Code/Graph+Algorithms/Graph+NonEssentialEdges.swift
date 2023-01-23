@@ -36,7 +36,7 @@ public extension Graph
             {
                 for node in condensationNode.value.nodes
                 {
-                    condensationNodeIDByNodeID[node.id] = condensationNode.id
+                    condensationNodeIDByNodeID[node] = condensationNode.id
                 }
             }
             

@@ -9,15 +9,15 @@ extension Graph
      
      - Returns: Multiple sets of nodes which represent the strongly connected components of the graph
      */
-    func findStronglyConnectedComponents() -> Set<Nodes>
+    func findStronglyConnectedComponents() -> Set<NodeIDs>
     {
-        var resultingSCCs = Set<Nodes>()
+        var resultingSCCs = Set<NodeIDs>()
         
         var index = 0
-        var stack = [Node]()
-        var markings = [Node: Marking]()
+        var stack = [NodeID]()
+        var markings = [NodeID: Marking]()
         
-        for node in nodes
+        for node in nodesIDs
         {
             if markings[node] == nil
             {
@@ -32,11 +32,11 @@ extension Graph
     }
     
     @discardableResult
-    private func findSCCsRecursively(node: Node,
+    private func findSCCsRecursively(node: NodeID,
                                      index: inout Int,
-                                     stack: inout [Node],
-                                     markings: inout [Node: Marking],
-                                     handleNewSCC: (Nodes) -> Void) -> Marking
+                                     stack: inout [NodeID],
+                                     markings: inout [NodeID: Marking],
+                                     handleNewSCC: (NodeIDs) -> Void) -> Marking
     {
         // Set the depth index for node to the smallest unused index
         assert(markings[node] == nil, "there shouldn't be a marking value for this node yet")
@@ -46,7 +46,7 @@ extension Graph
         stack.append(node)
         
         // Consider descendants of node
-        let nodeDescendants = node.descendantIDs.compactMap { self.node(for: $0) }
+        let nodeDescendants = self.node(for: node)?.descendantIDs ?? []
         
         for descendant in nodeDescendants
         {
@@ -75,7 +75,7 @@ extension Graph
         // If node is a root node, pop the stack and generate an SCC
         if nodeMarking.lowLink == nodeMarking.index
         {
-            var newSCC = Nodes()
+            var newSCC = NodeIDs()
             
             while !stack.isEmpty
             {
@@ -89,7 +89,7 @@ extension Graph
                 markings[sccNode]?.isOnStack = false
                 newSCC += sccNode
                 
-                if node.id == sccNode.id { break }
+                if node == sccNode { break }
             }
             
             handleNewSCC(newSCC)

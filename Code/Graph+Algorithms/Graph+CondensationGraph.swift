@@ -1,6 +1,9 @@
 import SwiftyToolz
 import OrderedCollections
 
+
+extension Graph.StronglyConnectedComponent: Sendable where NodeID: Sendable {}
+
 public extension Graph
 {
     // TODO: this can be accelerated a bit by only working with- and returning Node IDs instead of Nodes. Nowhere here do we need neighbour IDs. First, findStronglyConnectedComponents() would need to be transformed in that manner ...
@@ -22,7 +25,7 @@ public extension Graph
         {
             for node in scc.nodes
             {
-                sccByNodeID[node.id] = scc
+                sccByNodeID[node] = scc
             }
         }
         
@@ -52,25 +55,25 @@ public extension Graph
     typealias CondensationNode = CondensationGraph.Node
     typealias CondensationEdge = CondensationGraph.Edge
     
-    // TODO: use NodeID as condensation node id type and require client to pass a closure for creating new ids of that type. use ids of contained node for StronglyConnectedComponents that contain only 1 node
     typealias CondensationGraph = Graph<StronglyConnectedComponent.ID, StronglyConnectedComponent>
     
-    final class StronglyConnectedComponent: Identifiable, Hashable, Sendable
+    final class StronglyConnectedComponent: Identifiable, Hashable
     {
         public static func == (lhs: StronglyConnectedComponent,
                                rhs: StronglyConnectedComponent) -> Bool { lhs.id == rhs.id }
         
         public func hash(into hasher: inout Hasher) { hasher.combine(id) }
         
+        // TODO: use NodeID as condensation node id type and derive id from contained nodes (requires that there is at least one contained node)
         public let id: ID = .randomID()
         
         public typealias ID = String
         
-        init(nodes: Nodes)
+        init(nodes: NodeIDs)
         {
             self.nodes = nodes
         }
         
-        public let nodes: Nodes
+        public let nodes: NodeIDs
     }
 }
