@@ -33,7 +33,7 @@ public extension Graph
         var condensationGraph = CondensationGraph(values: sccs)
         
         // add condensation edges
-        for edgeID in edgesByID.keys
+        for edgeID in edgeIDs
         {
             guard let originSCC = sccByNodeID[edgeID.originID],
                   let destinationSCC = sccByNodeID[edgeID.destinationID] else

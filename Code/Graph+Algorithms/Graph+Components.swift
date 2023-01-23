@@ -15,7 +15,7 @@ public extension Graph
         
         var components = Set<NodeIDs>()
 
-        for node in nodesIDs
+        for node in nodeIDs
         {
             if markedNodes.contains(node) { continue }
             

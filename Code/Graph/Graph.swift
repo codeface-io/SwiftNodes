@@ -122,9 +122,17 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      All ``GraphEdge``s of the `Graph`
      */
-    public var edges: Dictionary<Edge.ID, Edge>.Values
+    public var edges: some Collection<Edge>
     {
         edgesByID.values
+    }
+    
+    /**
+     All ``GraphEdge/id-swift.property``s of the ``GraphEdge``s of the `Graph`
+     */
+    public var edgeIDs: some Collection<Edge.ID>
+    {
+        edgesByID.keys
     }
     
     /**
@@ -215,19 +223,19 @@ public struct Graph<NodeID: Hashable, NodeValue>
     }
     
     /**
-     The ``GraphNode/id``s of all ``GraphNode``s of the `Graph`
+     All ``GraphNode``s of the `Graph`
      */
-    public var nodesIDs: OrderedSet<NodeID>
+    public var nodes: some RandomAccessCollection<Node>
     {
-        nodesByID.keys
+        nodesByID.values
     }
     
     /**
-     All ``GraphNode``s of the `Graph`
+     The ``GraphNode/id``s of all ``GraphNode``s of the `Graph`
      */
-    public var nodes: OrderedDictionary<NodeID, Node>.Values
+    public var nodeIDs: OrderedSet<NodeID>
     {
-        nodesByID.values
+        nodesByID.keys
     }
     
     // FIXME: To avoid the warning, update to https://github.com/apple/swift-collections 1.1.0 as soon as that's officially released. It's unclear (to me) how that hasn't happened yet: https://github.com/apple/swift-collections/pull/191#issuecomment-1374861077

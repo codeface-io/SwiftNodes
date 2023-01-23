@@ -17,7 +17,7 @@ extension Graph
         var stack = [NodeID]()
         var markings = [NodeID: Marking]()
         
-        for node in nodesIDs
+        for node in nodeIDs
         {
             if markings[node] == nil
             {
