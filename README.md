@@ -210,7 +210,6 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 ## Roadmap
 
-* [ ] Since `Graph` is (now) a full value type, public API and internal implementation should reference nodes and edges by their IDs instead of using complete values unless where necessary. The `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
 * [ ] For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to declare a `Graph` property on a `Sendable` reference type, you would need to make that property constant anyway. So, development will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances (Add those initializers!).
 * [ ] Add tests for all algorithms! The test graphs should be complex enough to provide confidence in algorithm correctness.
 * [ ] Further align with official Swift data structures (What would Apple do?):
