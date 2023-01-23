@@ -9,13 +9,13 @@ public extension Graph
      
      - Returns: Multiple sets of nodes which represent the components of the graph
      */
-    func findComponents() -> Set<Nodes>
+    func findComponents() -> Set<NodeIDs>
     {
-        var markedNodes = Nodes()
+        var markedNodes = NodeIDs()
         
-        var components = Set<Nodes>()
+        var components = Set<NodeIDs>()
 
-        for node in nodes
+        for node in nodesIDs
         {
             if markedNodes.contains(node) { continue }
             
@@ -27,16 +27,17 @@ public extension Graph
         return components
     }
     
-    private func findLackingNodes(forComponent incompleteComponent: Nodes,
-                                  startingAt node: Node) -> Nodes
+    private func findLackingNodes(forComponent incompleteComponent: NodeIDs,
+                                  startingAt startNode: NodeID) -> NodeIDs
     {
-        guard !incompleteComponent.contains(node) else { return [] }
+        guard !incompleteComponent.contains(startNode) else { return [] }
         
-        var lackingNodes: Nodes = [node]
+        var lackingNodes: NodeIDs = [startNode]
         
-        for neighbourID in node.neighbourIDs
+        let neighbours = node(for: startNode)?.neighbourIDs ?? []
+        
+        for neighbour in neighbours
         {
-            guard let neighbour = self.node(for: neighbourID) else { continue }
             let extendedComponent = incompleteComponent + lackingNodes
             lackingNodes += findLackingNodes(forComponent: extendedComponent,
                                              startingAt: neighbour)

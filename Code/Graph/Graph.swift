@@ -250,4 +250,9 @@ public struct Graph<NodeID: Hashable, NodeValue>
      Shorthand for the `Graph`'s full generic node type `GraphNode<NodeID, NodeValue>`
      */
     public typealias Node = GraphNode<NodeID, NodeValue>
+    
+    /**
+     Shorthand for `Set<NodeID>`
+     */
+    public typealias NodeIDs = Set<NodeID>
 }

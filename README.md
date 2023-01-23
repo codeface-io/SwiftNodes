@@ -145,7 +145,7 @@ Like the official Swift data structures, `Graph` is a pure `struct` and inherits
 * You can use property observers like `didSet` to observe changes in a `Graph`.
 * You can easily copy a whole `Graph`.
 
-Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. You copy a `Graph` like any other value. But right now, SwiftNodes only lets you add and remove edges – not nodes. So, to create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
+Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. You copy a `Graph` like any other value. But right now, SwiftNodes lets you add and remove only edges – not nodes. So, to create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
 
 ```swift
 var graph = Graph<Int, Int>()

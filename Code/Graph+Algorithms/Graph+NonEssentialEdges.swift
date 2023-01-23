@@ -24,8 +24,7 @@ public extension Graph
         // for each component graph individually ...
         for component in findComponents()
         {
-            let componentIDs = Set(component.map({ $0.id }))
-            let componentGraph = subGraph(nodeIDs: componentIDs)
+            let componentGraph = subGraph(nodeIDs: component)
             
             // make condensation graph
             let condensationGraph = componentGraph.makeCondensationGraph()
