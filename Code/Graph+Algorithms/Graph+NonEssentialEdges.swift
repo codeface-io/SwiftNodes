@@ -17,9 +17,9 @@ public extension Graph
      
      Note that this will not find any edges that are part of cycles (i.e. part of strongly connected components), as it only considers edges of the condensation graph. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
      */
-    func findNonEssentialEdges() -> Set<Edge.ID>
+    func findNonEssentialEdges() -> EdgeIDs
     {
-        var idsOfNonEssentialEdges = Set<Edge.ID>()
+        var idsOfNonEssentialEdges = EdgeIDs()
         
         // for each component graph individually ...
         for component in findComponents()
