@@ -1,5 +1,7 @@
 import SwiftyToolz
 
+extension GraphNode: Sendable where ID: Sendable, Value: Sendable {}
+
 /**
  Unique node of a ``Graph``, holds a value, can be connected to other nodes of the graph
  
@@ -11,8 +13,7 @@ import SwiftyToolz
  
  A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestorIDs``, ``GraphNode/descendantIDs`` and related properties.
  */
-public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable, Sendable
-    where ID: Sendable, Value: Sendable
+public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable
 {
     // MARK: - Caches for Accessing Neighbours Quickly
     

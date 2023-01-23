@@ -1,6 +1,8 @@
 import OrderedCollections
 import SwiftyToolz
 
+extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
+
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
  
@@ -8,8 +10,7 @@ import SwiftyToolz
  
  Nodes maintain an order, and so the graph can be sorted, see ``Graph/sort(by:)``.
  */
-public struct Graph<NodeID, NodeValue>: Sendable
-    where NodeID: Sendable, NodeID: Hashable, NodeValue: Sendable
+public struct Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
     

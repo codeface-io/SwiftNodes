@@ -1,5 +1,7 @@
 import SwiftyToolz
 
+extension GraphEdge: Sendable where NodeID: Sendable, NodeValue: Sendable {}
+
 /**
  Directed connection of two ``GraphNode``s in a ``Graph``
  
@@ -20,8 +22,7 @@ import SwiftyToolz
   - ``Graph/removeEdge(from:to:)-55efs``
   - ``Graph/removeEdge(from:to:)-1gqeh``
  */
-public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable, Sendable
-    where NodeID: Sendable, NodeValue: Sendable
+public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
 {
     // MARK: - Hashability
     

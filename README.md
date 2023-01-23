@@ -136,16 +136,16 @@ graph.insert(3)                // graph.values == [5, 3]
 graph.sort { $0.id < $1.id }   // graph.values == [3, 5]
 ```
 
-### Copy and Share a Graph
+### Copy and Share a Graph 
 
-`Graph` is `Sendable` and thereby ready for the strict concurrency safety of Swift 6, you can safely share `Graph` values between actors. Like the official Swift data structures, `Graph` is even a pure `struct` and inherits the benefits of value types:
+Like the official Swift data structures, `Graph` is a pure `struct` and inherits the benefits of value types:
 
 * You decide on mutability by using `var` or `let`.
-* You can easily copy a whole `Graph`.
 * You can use a `Graph` as a `@State` or `@Published` variable with SwiftUI.
 * You can use property observers like `didSet` to observe changes in a `Graph`.
+* You can easily copy a whole `Graph`.
 
-Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. You copy a `Graph` like any other value type. But right now, SwiftNodes only lets you add and remove edges – not nodes. To create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
+Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. You copy a `Graph` like any other value. But right now, SwiftNodes only lets you add and remove edges – not nodes. So, to create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
 
 ```swift
 var graph = Graph<Int, Int>()
@@ -153,6 +153,8 @@ var graph = Graph<Int, Int>()
 let subsetOfNodeIDs: Set<Int> = [0, 3, 6, 9, 12]
 let subGraph = graph.subGraph(nodeIDs: subsetOfNodeIDs)
 ```
+
+A `Graph` is also `Sendable` **if** its value- and id type are. SwiftNodes is thereby ready for the strict concurrency safety of Swift 6. You can safely share `Sendable` `Graph` values between actors.
 
 ### Mark Nodes in Algorithms
 
@@ -208,7 +210,6 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 ## Roadmap
 
-* [ ] `Sendable` conformance should be conditional! `Graph` should not generally require its value- and id type to be `Sendable` but rather be itself `Sendable` **only if** its vaule- and id type are.
 * [ ] Since `Graph` is (now) a full value type, public API and internal implementation should reference nodes and edges by their IDs instead of using complete values unless where necessary. The `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
 * [ ] For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to declare a `Graph` property on a `Sendable` reference type, you would need to make that property constant anyway. So, development will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances (Add those initializers!).
 * [ ] Add tests for all algorithms! The test graphs should be complex enough to provide confidence in algorithm correctness.
