@@ -8,24 +8,28 @@
 
 SwiftNodes provides a concurrency safe [`Graph` data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A `Graph` stores values in identifiable nodes which can be connected via edges.
 
-SwiftNodes was first used in production by [Codeface](https://codeface.io).
+### Contents
+
+* [Why?](#Why?)
+* [How?](#How?)
+* [Included Algorithms](#Included-Algorithms)
+* [Architecture](#Architecture)
+* [Development Status](#Development-Status)
+* [Roadmap](#Roadmap)
+
+## Why?
+
+A graph is a fundamental mathematical concept with wide applications in the modelling, analysis and visualization of data. And although such a data structure fits well with the language, Swift implementations of graphs – and in particular of comprehensive algorithm libraries – are lacking.
+
+SwiftNodes was extracted from the infrastructure of [Codeface](https://codeface.io) and its current selection of included algorithms stems from the specific needs of Codeface. But SwiftNodes is general enough to serve other applications as well and extensible enough for more algorithms to be added.
 
 ### Design Goals
 
 * Usability, safety, extensibility and maintainability – which also imply simplicity.
 * In particular, the API is supposed to feel familiar and fit well with official Swift data structures. So one question that has started to guide its design is: What would Apple do?
-* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The only compromise SwiftNodes currently involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future,  we might even be able to avoid the hashing for essential use cases by exploiting array indices and accepting lower sorting performance.
+* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The main compromise SwiftNodes involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future, we might even be able to avoid the hashing in essential use cases by exploiting array indices and accepting lower sorting performance.
 
-### Value Semantics
-
-`Graph` is `Sendable` and thereby ready for the strict concurrency safety of Swift 6. Like the official Swift data structures, `Graph` is even a pure `struct` and inherits the benefits of value types:
-
-* You decide on mutability by using `var` or `let`.
-* You can easily copy a whole `Graph`.
-* You can use a `Graph` as a `@State` or `@Published` variable with SwiftUI.
-* You can use property observers like `didSet` to observe changes in a `Graph`.
-
-## How to Create, Edit and Query Graphs
+## How?
 
 The following explanations touch only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](https://github.com/codeface-io/SwiftNodes/tree/master/Tests) and [production code](https://github.com/codeface-io/SwiftNodes/tree/master/Code). The code in particular is actually small and easy to grasp.
 
@@ -132,9 +136,16 @@ graph.insert(3)                // graph.values == [5, 3]
 graph.sort { $0.id < $1.id }   // graph.values == [3, 5]
 ```
 
-### Copy a Graph
+### Copy and Share a Graph
 
-Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. Since Graph is a `struct`, you copy it like any other value type. But right now, SwiftNodes only lets you add and remove edges – not nodes. To create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
+`Graph` is `Sendable` and thereby ready for the strict concurrency safety of Swift 6, you can safely share `Graph` values between actors. Like the official Swift data structures, `Graph` is even a pure `struct` and inherits the benefits of value types:
+
+* You decide on mutability by using `var` or `let`.
+* You can easily copy a whole `Graph`.
+* You can use a `Graph` as a `@State` or `@Published` variable with SwiftUI.
+* You can use property observers like `didSet` to observe changes in a `Graph`.
+
+Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. You copy a `Graph` like any other value type. But right now, SwiftNodes only lets you add and remove edges – not nodes. To create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
 
 ```swift
 var graph = Graph<Int, Int>()
@@ -143,11 +154,11 @@ let subsetOfNodeIDs: Set<Int> = [0, 3, 6, 9, 12]
 let subGraph = graph.subGraph(nodeIDs: subsetOfNodeIDs)
 ```
 
-## How To Mark Nodes in Algorithms
+### Mark Nodes in Algorithms
 
 Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
 
-In an effort to make SwiftNodes concurrency safe and play well with the new Swift concurrency features, we removed the possibility to mark nodes directly. See how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) now use hashing to associate markings with nodes.
+When we made SwiftNodes concurrency safe (to play well with the new Swift concurrency features), we removed the possibility to mark nodes directly, as that had lost its potential for performance optimization. See how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) now use hashing to associate markings with nodes.
 
 ## Included Algorithms
 
@@ -169,6 +180,10 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 `graph.makeMinimumEquivalentGraph()` creates the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. Right now, this only works on acyclic graphs and might even hang or crash on cyclic ones.
 
+### Non-Essential Edges
+
+`graph.findNonEssentialEdges()` returns the IDs of all edges that correspond to edges of the [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) which are not in the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) of the condensation graph. In simpler terms: Non-essential edges are both 1) not in cycles and 2) already implied by other edges – i.e. the reachability (or "path") they describe is already indirectly given by other edges.
+
 ### Ancestor Counts
 
 `graph.findNumberOfNodeAncestors()` returns a `[(Node, Int)]` containing each node of the `graph` together with its ancestor count. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached. 
@@ -187,11 +202,11 @@ The above image was created with [Codeface](https://codeface.io).
 
 ## Development Status
 
-From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://semver.org). So until it has reached 1.0.0, its API may still break frequently, but this will be expressed in version bumps.
+From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://semver.org). So until it has reached 1.0.0, its API may still break frequently, and we express breaks in minor version bumps.
 
 SwiftNodes is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftNodes will move to version 1.0.0 as soon as its basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
 
-## Road Map
+## Roadmap
 
 * [ ] `Sendable` conformance should be conditional! `Graph` should not generally require its value- and id type to be `Sendable` but rather be itself `Sendable` **only if** its vaule- and id type are.
 * [ ] Since `Graph` is (now) a full value type, public API and internal implementation should reference nodes and edges by their IDs instead of using complete values unless where necessary. The `Graph` API is already free of requiring any edge- or node value arguments, but the algorithms have not been migrated in that way yet.
