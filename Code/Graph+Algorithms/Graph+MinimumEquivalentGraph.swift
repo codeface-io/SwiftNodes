@@ -11,8 +11,8 @@ public extension Graph
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
     {
-        var nonEssentialEdges = Set<Edge>()
-        var consideredAncestorsHash = [Node: Nodes]()
+        var nonEssentialEdges = EdgeIDs()
+        var consideredAncestorsHash = [NodeID: NodeIDs]()
         
         for sourceNode in sources
         {
@@ -24,15 +24,15 @@ public extension Graph
         }
         
         var minimumEquivalentGraph = self
-        nonEssentialEdges.forEach { minimumEquivalentGraph.removeEdge(with: $0.id) }
+        nonEssentialEdges.forEach { minimumEquivalentGraph.removeEdge(with: $0) }
         return minimumEquivalentGraph
     }
     
     private func findNonEssentialEdges(around node: Node,
-                                       reachedAncestors: Nodes,
-                                       consideredAncestorsHash: inout [Node: Nodes]) -> Set<Edge>
+                                       reachedAncestors: NodeIDs,
+                                       consideredAncestorsHash: inout [NodeID: NodeIDs]) -> EdgeIDs
     {
-        let consideredAncestors = consideredAncestorsHash[node, default: Nodes()]
+        let consideredAncestors = consideredAncestorsHash[node.id, default: NodeIDs()]
         let ancestorsToConsider = reachedAncestors - consideredAncestors
         
         if !reachedAncestors.isEmpty && ancestorsToConsider.isEmpty
@@ -41,31 +41,33 @@ public extension Graph
             return []
         }
         
-        consideredAncestorsHash[node, default: Set<Node>()] += ancestorsToConsider
+        consideredAncestorsHash[node.id, default: NodeIDs()] += ancestorsToConsider
         
-        var nonEssentialEdges = Set<Edge>()
+        var nonEssentialEdges = EdgeIDs()
         
         // base case: add edges from all reached ancestors to all reachable neighbours of node
         
-        let descendants = node.descendantIDs.compactMap { self.node(for: $0) }
+        let descendants = node.descendantIDs
         
         for descendant in descendants
         {
             for ancestor in ancestorsToConsider
             {
-                if let nonEssentialEdge = edge(from: ancestor.id, to: descendant.id)
+                if let nonEssentialEdge = edge(from: ancestor, to: descendant)
                 {
-                    nonEssentialEdges += nonEssentialEdge
+                    nonEssentialEdges += nonEssentialEdge.id
                 }
             }
         }
         
         // recursive calls on descendants
         
-        for descendant in descendants
+        for descendantID in descendants
         {
+            guard let descendant = self.node(for: descendantID) else { continue }
+            
             nonEssentialEdges += findNonEssentialEdges(around: descendant,
-                                                       reachedAncestors: ancestorsToConsider + node,
+                                                       reachedAncestors: ancestorsToConsider + node.id,
                                                        consideredAncestorsHash: &consideredAncestorsHash)
         }
         

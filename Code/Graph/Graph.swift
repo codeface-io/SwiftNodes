@@ -145,6 +145,11 @@ public struct Graph<NodeID: Hashable, NodeValue>
      */
     public typealias Edge = GraphEdge<NodeID, NodeValue>
     
+    /**
+     Shorthand for `Set<Edge.ID>`
+     */
+    public typealias EdgeIDs = Set<Edge.ID>
+    
     // MARK: - Node Values
     
     /**
