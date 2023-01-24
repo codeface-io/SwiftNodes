@@ -19,15 +19,16 @@ SwiftNodes provides a concurrency safe [graph data structure](https://en.wikiped
 
 ## Why?
 
-A graph is a fundamental mathematical concept with wide applications in the modelling, analysis and visualization of data. And although such a data structure fits well with the language, Swift implementations of graphs – and in particular of comprehensive algorithm libraries – are lacking.
+Graphs may be the most fundamental mathematical concept besides numbers. They have wide applications in problem solving, data analysis and visualization. And although such data structures fit well with the language, graph implementations in Swift are lacking – in particular, comprehensive graph algorithm libraries.
 
-SwiftNodes was extracted from the infrastructure of [Codeface](https://codeface.io) and its current selection of included algorithms stems from the specific needs of Codeface. But SwiftNodes is general enough to serve other applications as well and extensible enough for more algorithms to be added.
+SwiftNodes was extracted from [Codeface](https://codeface.io), so the current selection of included algorithms stems from there. But SwiftNodes is general enough to serve other applications as well – and extensible enough for more algorithms to be added.
 
 ### Design Goals
 
 * Usability, safety, extensibility and maintainability – which also imply simplicity.
-* In particular, the API is supposed to feel familiar and fit well with official Swift data structures. So one question that has started to guide its design is: What would Apple do?
-* We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The main compromise SwiftNodes involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future, we might even be able to avoid the hashing in essential use cases by exploiting array indices and accepting lower sorting performance.
+* In particular, the API is supposed to feel familiar and fit well with official Swift data structures. So one question that guides its design is: What would Apple do?
+
+We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The main compromise SwiftNodes involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future, we might even be able to avoid that hashing in essential use cases by exploiting array indices and accepting lower sorting performance.
 
 ## How?
 
@@ -168,11 +169,11 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Components
 
-`graph.findComponents()`  returns multiple sets of nodes which represent the [components](https://en.wikipedia.org/wiki/Component_(graph_theory)) of the `graph`.
+`graph.findComponents()`  returns multiple sets of node IDs which represent the [components](https://en.wikipedia.org/wiki/Component_(graph_theory)) of the `graph`.
 
 ### Strongly Connected Components
 
-`graph.findStronglyConnectedComponents()`  returns multiple sets of nodes which represent the [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `graph`.
+`graph.findStronglyConnectedComponents()`  returns multiple sets of node IDs which represent the [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `graph`.
 
 ### Condensation Graph
 
@@ -196,7 +197,7 @@ Ancestor counts can serve as a proxy for [topological sorting](https://en.wikipe
 
 ## Architecture
 
-Here is the internal architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the SwiftNodes code folder:
+Here is the architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the SwiftNodes code folder:
 
 ![](Documentation/architecture.png)
 
@@ -204,22 +205,22 @@ The above image was created with [Codeface](https://codeface.io).
 
 ## Development Status
 
-From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://semver.org). So until it has reached 1.0.0, its API may still break frequently, and we express breaks in minor version bumps.
+From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://semver.org). So until it has reached 1.0.0, its API may still break frequently, and we express those breaks with minor version bumps.
 
 SwiftNodes is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftNodes will move to version 1.0.0 as soon as its basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
 
 ## Roadmap
 
 * [ ] For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to declare a `Graph` property on a `Sendable` reference type, you would need to make that property constant anyway. So, development will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances (Add those initializers!).
-* [ ] Add tests for all algorithms! The test graphs should be complex enough to provide confidence in algorithm correctness.
+* [ ] Add tests for all algorithms! The test graphs should be complex enough to establish confidence in algorithm correctness.
 * [ ] Further align with official Swift data structures (What would Apple do?):
-    * [ ] Provide an arsenal of synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
     * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
-    * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection`, `Codable` etc.)
+    * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection`, `Codable`, expressibility by literals, etc.)
+    * [ ] Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operations, or both ...
     * [ ] Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
-* [ ] Add more algorithms (based on the needs of Codeface):
+* [ ] Add more algorithms (starting with the needs of Codeface):
     * [ ] Make existing algorithms compatible with cyclic graphs (two of them are still not)
     * [ ] General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
     * [ ] Better ways of topological sorting
-    * [ ] Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the least amount of dependence that needs to be cut in order to avoid cycles.
-* [ ] Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more important than optimizing the data structure itself.
+    * [ ] Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
+* [ ] Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
