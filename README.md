@@ -6,7 +6,7 @@
 
 ## What?
 
-SwiftNodes provides a concurrency safe [`Graph` data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A `Graph` stores values in identifiable nodes which can be connected via edges.
+SwiftNodes provides a concurrency safe [graph data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A graph stores values in identifiable nodes which can be connected via edges.
 
 ### Contents
 
