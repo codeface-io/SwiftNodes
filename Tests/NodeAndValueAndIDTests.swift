@@ -5,7 +5,7 @@ class NodeAndValueAndIDTests: XCTestCase {
     
     func testInitializeWithValuesAndEdges() throws {
         // with values as node IDs
-        let graph = Graph<Int, Int>(values: [-7, 0, 5, 42], edges: [(-7, 0)])
+        let graph = Graph(values: [-7, 0, 5, 42], edges: [(-7, 0)])
         
         XCTAssertNotNil(graph.edge(from: -7, to: 0))
         

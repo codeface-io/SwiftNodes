@@ -96,6 +96,17 @@ graph.addEdge(from: node1.id, to: node2.id, count: 40)  // edge count is 40
 graph.addEdge(from: node1.id, to: node2.id, count: 2)   // edge count is 42
 ```
 
+### Initialize Graphs With Values And Edges 
+
+To work with a `Graph` constant (for example as a property on a `Sendable` reference type), you need to initialize the whole graph, complete with its values and edges. There are more ways to do so than we can exemplify here, so have a look at the [graph initializers in code](Code/Graph/Graph.swift).
+
+When you don't need to specify edge counts, the initializers allow to specify edges as tuples of node IDs. And when you're passing in values and edges anyway, you can omit the type parameters. Furthermore, you can often omit the closure that creates the node IDs, as described earlier. All this together can make initialization as simple as it gets:
+
+```swift
+let graph = Graph(values: [-7, 0, 5, 42], 
+                  edges: [(-7, 0), (0, 42)])
+```
+
 ### Remove Edges
 
 A `GraphEdge<NodeID: Hashable, NodeValue>` has its own `ID` type which combines the edge's `originID`- and `destinationID` node IDs. In the context of a `Graph` or `GraphEdge`, you can create edge IDs like so:
@@ -155,7 +166,7 @@ let subsetOfNodeIDs: Set<Int> = [0, 3, 6, 9, 12]
 let subGraph = graph.subGraph(nodeIDs: subsetOfNodeIDs)
 ```
 
-A `Graph` is also `Sendable` **if** its value- and id type are. SwiftNodes is thereby ready for the strict concurrency safety of Swift 6. You can safely share `Sendable` `Graph` values between actors.
+A `Graph` is also `Sendable` **if** its value- and id type are. SwiftNodes is thereby ready for the strict concurrency safety of Swift 6. You can safely share `Sendable` `Graph` values between actors. Remember that, to declare a `Graph` property on a `Sendable` reference type, you need to make that property constant (use `let`).
 
 ### Mark Nodes in Algorithms
 
@@ -211,7 +222,6 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 ## Roadmap
 
-* [ ] For the included algorithms and current clients, existing editing capabilities seem to suffice. Also, to declare a `Graph` property on a `Sendable` reference type, you would need to make that property constant anyway. So, development will focus on initializing graphs complete with their edges rather than on mutating existing `Graph` instances (Add those initializers!).
 * [ ] Add tests for all algorithms! The test graphs should be complex enough to establish confidence in algorithm correctness.
 * [ ] Further align with official Swift data structures (What would Apple do?):
     * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
