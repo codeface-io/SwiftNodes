@@ -17,33 +17,66 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
-    public init(values: [NodeValue] = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
+    public init(values: [NodeValue] = [],
+                edges: [(NodeID, NodeID)]) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
-        self.init(values: values) { $0.id }
+        self.init(values: values, edges: edges) { $0.id }
+    }
+    
+    /**
+     Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
+     */
+    public init(values: [NodeValue] = [],
+                edges: [Edge] = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
+    {
+        self.init(values: values, edges: edges) { $0.id }
     }
     
     /**
      Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
      */
-    public init(values: [NodeValue] = []) where NodeID == NodeValue
+    public init(values: [NodeValue] = [],
+                edges: [(NodeID, NodeID)]) where NodeID == NodeValue
     {
-        self.init(values: values) { $0 }
+        self.init(values: values, edges: edges) { $0 }
+    }
+    
+    /**
+     Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
+     */
+    public init(values: [NodeValue] = [],
+                edges: [Edge] = []) where NodeID == NodeValue
+    {
+        self.init(values: values, edges: edges) { $0 }
     }
     
     /**
      Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
      */
     public init(values: [NodeValue] = [],
+                edges: [(NodeID, NodeID)],
                 makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
-        let idsWithNodes = values.map
-        {
-            let id = makeNodeIDForValue($0)
-            return (id, Node(id: id, value: $0))
-        }
+        let actualEdges = edges.map { Edge(from: $0.0, to: $0.1) }
         
-        nodesByID = .init(uniqueKeysWithValues: idsWithNodes)
+        self.init(values: values,
+                  edges: actualEdges,
+                  makeNodeIDForValue: makeNodeIDForValue)
+    }
+    
+    /**
+     Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
+     */
+    public init(values: [NodeValue] = [],
+                edges: [Edge] = [],
+                makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
+    {
         self.makeNodeIDForValue = makeNodeIDForValue
+        
+        let nodes = values.map { Node(id: makeNodeIDForValue($0), value: $0) }
+        self.nodesByID = .init(values: nodes) { $0.id }
+        
+        edgesByID = .init(values: edges) { $0.id }
     }
     
     // MARK: - Edges
@@ -138,7 +171,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      All ``GraphEdge``s of the `Graph` hashable by their ``GraphEdge/id-swift.property``
      */
-    public private(set) var edgesByID = [Edge.ID: Edge]()
+    public private(set) var edgesByID: [Edge.ID: Edge]
     
     /**
      Shorthand for the full generic type name `GraphEdge<NodeID, NodeValue>`
@@ -268,4 +301,20 @@ public struct Graph<NodeID: Hashable, NodeValue>
      Shorthand for `Set<NodeID>`
      */
     public typealias NodeIDs = Set<NodeID>
+}
+
+extension Dictionary
+{
+    init(values: some Sequence<Value>, getKeyFromValue: (Value) -> Key)
+    {
+        self.init(uniqueKeysWithValues: values.map({ (getKeyFromValue($0), $0) }))
+    }
+}
+
+extension OrderedDictionary
+{
+    init(values: some Sequence<Value>, getKeyFromValue: (Value) -> Key)
+    {
+        self.init(uniqueKeysWithValues: values.map({ (getKeyFromValue($0), $0) }))
+    }
 }

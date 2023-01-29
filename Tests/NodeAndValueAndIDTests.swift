@@ -3,6 +3,21 @@ import XCTest
 
 class NodeAndValueAndIDTests: XCTestCase {
     
+    func testInitializeWithValuesAndEdges() throws {
+        // with values as node IDs
+        let graph = Graph<Int, Int>(values: [-7, 0, 5, 42], edges: [(-7, 0)])
+        
+        XCTAssertNotNil(graph.edge(from: -7, to: 0))
+        
+        // with identifiable values
+        struct IdentifiableValue: Identifiable { let id: Int }
+        
+        let graph2 = Graph<Int, IdentifiableValue>(values: [.init(id: -7), .init(id: 0), .init(id: 5), .init(id: 42)],
+                                                   edges: [(-7, 0)])
+        
+        XCTAssertNotNil(graph2.edge(from: -7, to: 0))
+    }
+    
     func testInsertingNodes() throws {
         var graph = Graph<String, Int> { "id\($0)" }  // NodeID == String, NodeValue == Int
         let node1 = graph.insert(1)                   // node1.id == "id1"

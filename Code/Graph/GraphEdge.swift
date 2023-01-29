@@ -2,25 +2,14 @@ import SwiftyToolz
 
 extension GraphEdge: Sendable where NodeID: Sendable, NodeValue: Sendable {}
 
+extension GraphEdge.ID: Sendable where NodeID: Sendable {}
+
 /**
  Directed connection of two ``GraphNode``s in a ``Graph``
  
  A `GraphEdge` has a direction and goes from its ``GraphEdge/origin`` to its ``GraphEdge/destination``
  
  A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``.
- 
- Edges are owned and managed by a ``Graph``. You create, query and destroy them via a given ``Graph``:
- 
-  - ``Graph/addEdge(from:to:count:)-mz60``
-  - ``Graph/addEdge(from:to:count:)-8wg9h``
-  - ``Graph/edge(from:to:)-y9tk``
-  - ``Graph/edge(from:to:)-7vu5h``
-  - ``Graph/edgesByID``
-  - ``Graph/edges``
-  - ``Graph/remove(_:)``
-  - ``Graph/removeEdge(with:)``
-  - ``Graph/removeEdge(from:to:)-55efs``
-  - ``Graph/removeEdge(from:to:)-1gqeh``
  */
 public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
 {
@@ -44,7 +33,7 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     /**
      An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/origin`` and ``GraphEdge/destination``
      */
-    public struct ID: Hashable, Sendable
+    public struct ID: Hashable
     {
         internal init(_ originID: NodeID, _ destinationID: NodeID)
         {
@@ -58,7 +47,10 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
     
     // MARK: - Basics
     
-    internal init(from originID: NodeID, to destinationID: NodeID, count: Int = 1)
+    /// Create a ``GraphEdge``, for instance to pass it to a ``Graph`` initializer.
+    public init(from originID: NodeID,
+                to destinationID: NodeID,
+                count: Int = 1)
     {
         self.originID = originID
         self.destinationID = destinationID
