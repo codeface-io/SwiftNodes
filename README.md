@@ -200,7 +200,7 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Ancestor Counts
 
-`graph.findNumberOfNodeAncestors()` returns a `[(Node, Int)]` containing each node of the `graph` together with its ancestor count. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached. 
+`graph.findNumberOfNodeAncestors()` returns a `[(NodeID, Int)]` containing each node ID of the `graph` together with the node's ancestor count. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached. 
 
 This only works on acyclic graphs right now and might return incorrect results for nodes in cycles.
 

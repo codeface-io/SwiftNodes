@@ -11,36 +11,41 @@ public extension Graph
      
      - Returns: Every ``GraphNode`` of the `Graph` together with its ancestor count
      */
-    func findNumberOfNodeAncestors() -> [(Node, Int)]
+    func findNumberOfNodeAncestors() -> [(NodeID, Int)]
     {
-        var ancestorCountByNode = [Node: Int]()
+        var ancestorCountByNodeID = [NodeID: Int]()
         
         sinks.forEach
         {
-            getAncestorCount(for: $0, ancestorCountByNode: &ancestorCountByNode)
+            getAncestorCount(for: $0.id, ancestorCountByNodeID: &ancestorCountByNodeID)
         }
 
-        return nodesByID.values.map { ($0, ancestorCountByNode[$0] ?? 0) }
+        return nodesByID.keys.map { ($0, ancestorCountByNodeID[$0] ?? 0) }
     }
 
     @discardableResult
-    private func getAncestorCount(for node: Node,
-                                  ancestorCountByNode: inout [Node: Int]) -> Int
+    private func getAncestorCount(for nodeID: NodeID,
+                                  ancestorCountByNodeID: inout [NodeID: Int]) -> Int
     {
-        if let ancestorCount = ancestorCountByNode[node] { return ancestorCount }
+        if let ancestorCount = ancestorCountByNodeID[nodeID] { return ancestorCount }
         
-        ancestorCountByNode[node] = 0 // mark node as visited to avoid infinite loops in cyclic graphs
+        ancestorCountByNodeID[nodeID] = 0 // mark node as visited to avoid infinite loops in cyclic graphs
         
-        let directAncestors = node.ancestorIDs.compactMap { self.node(for: $0) }
-        let ingoingEdges = directAncestors.compactMap { edge(from: $0.id, to: node.id) }
-        let directAncestorCount = ingoingEdges.sum { $0.count }
-        
-        let ancestorCount = directAncestorCount + directAncestors.sum
+        guard let directAncestorIDs = self.node(for: nodeID)?.ancestorIDs else
         {
-            getAncestorCount(for: $0, ancestorCountByNode: &ancestorCountByNode)
+            log(error: "No node for node ID exists, but it should.")
+            return 0
         }
         
-        ancestorCountByNode[node] = ancestorCount
+        let ingoingEdges = directAncestorIDs.compactMap { edge(from: $0, to: nodeID) }
+        let directAncestorCount = ingoingEdges.sum { $0.count }
+        
+        let ancestorCount = directAncestorCount + directAncestorIDs.sum
+        {
+            getAncestorCount(for: $0, ancestorCountByNodeID: &ancestorCountByNodeID)
+        }
+        
+        ancestorCountByNodeID[nodeID] = ancestorCount
         
         return ancestorCount
     }
