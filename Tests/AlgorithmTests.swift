@@ -5,15 +5,8 @@ class AlgorithmTests: XCTestCase {
     
     func testMinimumEquivalentGraph() {
         // make original graph
-        var graph = Graph<String, Int> { "id\($0)" }
-        
-        let node1 = graph.insert(1)
-        let node2 = graph.insert(2)
-        let node3 = graph.insert(3)
-        
-        graph.addEdge(from: node1.id, to: node2.id)
-        graph.addEdge(from: node2.id, to: node3.id)
-        graph.addEdge(from: node1.id, to: node3.id)
+        let graph = Graph(values: [1, 2, 3],
+                          edges: [(1, 2), (2, 3), (1, 3)])
         
         XCTAssertEqual(graph.edges.count, 3)
         
@@ -21,9 +14,9 @@ class AlgorithmTests: XCTestCase {
         let meg = graph.makeMinimumEquivalentGraph()
         
         XCTAssertEqual(meg.edges.count, 2)
-        XCTAssertNotNil(meg.edge(from: "id1", to: "id2"))
-        XCTAssertNotNil(meg.edge(from: "id2", to: "id3"))
-        XCTAssertNil(meg.edge(from: "id1", to: "id3"))
+        XCTAssertNotNil(meg.edge(from: 1, to: 2))
+        XCTAssertNotNil(meg.edge(from: 2, to: 3))
+        XCTAssertNil(meg.edge(from: 1, to: 3))
     }
     
     func testSubGraph() {

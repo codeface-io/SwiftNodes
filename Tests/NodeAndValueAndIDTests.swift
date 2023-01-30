@@ -8,14 +8,18 @@ class NodeAndValueAndIDTests: XCTestCase {
         let graph = Graph(values: [-7, 0, 5, 42], edges: [(-7, 0)])
         
         XCTAssertNotNil(graph.edge(from: -7, to: 0))
+        XCTAssertEqual(graph.node(for: -7)?.descendantIDs.contains(0), true)
+        XCTAssertEqual(graph.node(for: 0)?.ancestorIDs.contains(-7), true)
         
         // with identifiable values
         struct IdentifiableValue: Identifiable { let id: Int }
         
-        let graph2 = Graph<Int, IdentifiableValue>(values: [.init(id: -7), .init(id: 0), .init(id: 5), .init(id: 42)],
-                                                   edges: [(-7, 0)])
+        let values: [IdentifiableValue] = [.init(id: -7), .init(id: 0), .init(id: 5), .init(id: 42)]
+        let graph2 = Graph(values: values, edges: [(-7, 0)])
         
         XCTAssertNotNil(graph2.edge(from: -7, to: 0))
+        XCTAssertEqual(graph2.node(for: -7)?.descendantIDs.contains(0), true)
+        XCTAssertEqual(graph2.node(for: 0)?.ancestorIDs.contains(-7), true)
     }
     
     func testInsertingNodes() throws {

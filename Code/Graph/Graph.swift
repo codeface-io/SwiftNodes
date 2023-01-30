@@ -71,12 +71,24 @@ public struct Graph<NodeID: Hashable, NodeValue>
                 edges: [Edge] = [],
                 makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
-        self.makeNodeIDForValue = makeNodeIDForValue
+        // set nodes with their neighbour caches
         
         let nodes = values.map { Node(id: makeNodeIDForValue($0), value: $0) }
-        self.nodesByID = .init(values: nodes) { $0.id }
+        var nodesByIDTemporary = OrderedDictionary<NodeID, Node>(values: nodes) { $0.id }
+        
+        edges.forEach
+        {
+            nodesByIDTemporary[$0.originID]?.descendantIDs.insert($0.destinationID)
+            nodesByIDTemporary[$0.destinationID]?.ancestorIDs.insert($0.originID)
+        }
+        
+        nodesByID = nodesByIDTemporary
+        
+        // set edges and node ID retriever
         
         edgesByID = .init(values: edges) { $0.id }
+        
+        self.makeNodeIDForValue = makeNodeIDForValue
     }
     
     // MARK: - Edges
