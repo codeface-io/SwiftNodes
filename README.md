@@ -21,7 +21,7 @@ SwiftNodes provides a concurrency safe [graph data structure](https://en.wikiped
 
 Graphs may be the most fundamental mathematical concept besides numbers. They have wide applications in problem solving, data analysis and visualization. And although such data structures fit well with the language, graph implementations in Swift are lacking – in particular, comprehensive graph algorithm libraries.
 
-SwiftNodes was extracted from [Codeface](https://codeface.io), so the current selection of included algorithms stems from there. But SwiftNodes is general enough to serve other applications as well – and extensible enough for more algorithms to be added.
+SwiftNodes and its included algorithms were extracted from [Codeface](https://codeface.io). But SwiftNodes is general enough to serve other applications as well – and extensible enough for more algorithms to be added.
 
 ### Design Goals
 
