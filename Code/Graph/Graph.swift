@@ -198,7 +198,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Shorthand for the full generic type name `GraphEdge<NodeID, NodeValue>`
      */
-    public typealias Edge = GraphEdge<NodeID, NodeValue>
+    public typealias Edge = GraphEdge<NodeID>
     
     /**
      Shorthand for `Set<Edge.ID>`

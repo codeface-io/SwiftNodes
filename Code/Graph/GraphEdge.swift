@@ -1,7 +1,6 @@
 import SwiftyToolz
 
-extension GraphEdge: Sendable where NodeID: Sendable, NodeValue: Sendable {}
-
+extension GraphEdge: Sendable where NodeID: Sendable {}
 extension GraphEdge.ID: Sendable where NodeID: Sendable {}
 
 /**
@@ -11,17 +10,12 @@ extension GraphEdge.ID: Sendable where NodeID: Sendable {}
  
  A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``.
  */
-public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
+public struct GraphEdge<NodeID: Hashable>: Identifiable, Equatable
 {
-    // MARK: - Hashability
-    
-    public func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    public static func == (lhs: Edge, rhs: Edge) -> Bool { lhs.id == rhs.id }
-    
     /**
-     A shorthand for the edge's full generic type name `GraphEdge<NodeID, NodeValue>`
+     A shorthand for the edge's full generic type name `GraphEdge<NodeID>`
      */
-    public typealias Edge = GraphEdge<NodeID, NodeValue>
+    public typealias Edge = GraphEdge<NodeID>
     
     // MARK: - Identity
     
@@ -74,9 +68,4 @@ public struct GraphEdge<NodeID: Hashable, NodeValue>: Identifiable, Hashable
      The destination ``GraphNode/id`` at which the edge ends / to which it goes in
      */
     public let destinationID: NodeID
-    
-    /**
-     A shorthand for the `origin`- and `destination` type `GraphNode<NodeID, NodeValue>`
-     */
-    public typealias Node = GraphNode<NodeID, NodeValue>
 }
