@@ -2,8 +2,6 @@ import SwiftyToolz
 
 public extension Graph
 {
-    // TODO: this can be accelerated a bit by only working with- and returning Node- and Edge IDs instead of Nodes and Edges. Only for where we actually need the descendant IDs do we need to hash the Node itself.
-    
     /**
      Find the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
      

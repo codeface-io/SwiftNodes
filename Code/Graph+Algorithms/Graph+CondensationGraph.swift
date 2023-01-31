@@ -6,8 +6,6 @@ extension Graph.StronglyConnectedComponent: Sendable where NodeID: Sendable {}
 
 public extension Graph
 {
-    // TODO: this can be accelerated a bit by only working with- and returning Node IDs instead of Nodes. Nowhere here do we need neighbour IDs. First, findStronglyConnectedComponents() would need to be transformed in that manner ...
-    
     /**
      Creates the acyclic [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `Graph`
      

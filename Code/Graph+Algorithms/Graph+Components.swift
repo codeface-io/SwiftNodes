@@ -2,8 +2,6 @@ import SwiftyToolz
 
 public extension Graph
 {
-    // TODO: this can be accelerated a bit by only working with- and returning Node IDs instead of Nodes. Only for where we actually need the neighbour IDs do we need to hash the Node itself. The client can then decide whether it actually needs the nodes or whether the IDs suffice ...
-    
     /**
      Find the [components](https://en.wikipedia.org/wiki/Component_(graph_theory)) of the `Graph`
      
