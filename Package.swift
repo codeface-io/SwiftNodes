@@ -15,19 +15,13 @@ let package = Package(
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
             exact: "0.3.0"
-        ),
-        .package(
-            url: "https://github.com/apple/swift-collections.git",
-            exact: "1.0.4"
         )
     ],
     targets: [
         .target(
             name: "SwiftNodes",
             dependencies: [
-                "SwiftyToolz",
-                .product(name: "OrderedCollections",
-                         package: "swift-collections"),
+                "SwiftyToolz"
             ],
             path: "Code"
         ),

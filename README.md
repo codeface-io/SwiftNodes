@@ -28,7 +28,7 @@ SwiftNodes and its included algorithms were extracted from [Codeface](https://co
 * Usability, safety, extensibility and maintainability – which also imply simplicity.
 * In particular, the API is supposed to feel familiar and fit well with official Swift data structures. So one question that guides its design is: What would Apple do?
 
-We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The main compromise SwiftNodes involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future, we might even be able to avoid that hashing in essential use cases by exploiting array indices and accepting lower sorting performance.
+We put the above qualities over performance. But that doesn't mean we neccessarily end up with suboptimal performance. The main compromise SwiftNodes involves is that nodes are value types and can not be referenced, so they must be hashed. But that doesn't change the average case complexity and, in the future, we might even be able to avoid that hashing in essential use cases by exploiting array indices.
 
 ## How?
 
@@ -135,17 +135,6 @@ node.ancestorIDs    // IDs of all nodes from which there is an edge to node
 node.neighbourIDs   // all descendant- and ancestor IDs
 node.isSink         // whether node has no descendants
 node.isSource       // whether node has no ancestors
-```
-
-### Sort Nodes
-
-The nodes in a `Graph` maintain an order. So you can also sort them:
-
-```swift
-var graph = Graph<Int, Int>()  // NodeID == NodeValue == Int
-graph.insert(5)
-graph.insert(3)                // graph.values == [5, 3]
-graph.sort { $0.id < $1.id }   // graph.values == [3, 5]
 ```
 
 ### Copy and Share a Graph 

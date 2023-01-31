@@ -1,5 +1,3 @@
-import OrderedCollections
-
 public extension Graph
 {
     func subGraph(nodeIDs: NodeIDs) -> Graph

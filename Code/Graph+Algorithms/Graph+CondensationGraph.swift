@@ -1,6 +1,4 @@
 import SwiftyToolz
-import OrderedCollections
-
 
 extension Graph.StronglyConnectedComponent: Sendable where NodeID: Sendable {}
 

@@ -1,4 +1,3 @@
-import OrderedCollections
 import SwiftyToolz
 
 extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
@@ -23,6 +22,7 @@ extension Graph: Equatable where NodeValue: Equatable
 public struct Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
+    // FIXME: turn parameters from arrays into sets to not falsely suggest order matters
     
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
@@ -84,7 +84,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         // set nodes with their neighbour caches
         
         let nodes = values.map { Node(id: makeNodeIDForValue($0), value: $0) }
-        var nodesByIDTemporary = OrderedDictionary<NodeID, Node>(values: nodes) { $0.id }
+        var nodesByIDTemporary = [NodeID: Node](values: nodes) { $0.id }
         
         edges.forEach
         {
@@ -275,17 +275,9 @@ public struct Graph<NodeID: Hashable, NodeValue>
     }
     
     /**
-     Sort the ``GraphNode``s of the `Graph` with the given closure
-     */
-    public mutating func sort(by nodesAreInOrder: (Node, Node) -> Bool)
-    {
-        nodesByID.values.sort(by: nodesAreInOrder)
-    }
-    
-    /**
      All ``GraphNode``s of the `Graph`
      */
-    public var nodes: some RandomAccessCollection<Node>
+    public var nodes: some Collection<Node>
     {
         nodesByID.values
     }
@@ -293,26 +285,15 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      The ``GraphNode/id``s of all ``GraphNode``s of the `Graph`
      */
-    public var nodeIDs: OrderedSet<NodeID>
+    public var nodeIDs: some Collection<NodeID>
     {
         nodesByID.keys
     }
     
-    // FIXME: To avoid the warning, update to https://github.com/apple/swift-collections 1.1.0 as soon as that's officially released. It's unclear (to me) how that hasn't happened yet: https://github.com/apple/swift-collections/pull/191#issuecomment-1374861077
     /**
      All ``GraphNode``s of the `Graph` hashable by their ``GraphNode/id``s
      */
-    public private(set) var nodesByID = OrderedDictionary<NodeID, Node>()
-    
-    /**
-     Shorthand for `OrderedSet<Node>`
-     */
-    public typealias OrderedNodes = OrderedSet<Node>
-    
-    /**
-     Shorthand for `Set<Node>`
-     */
-    public typealias Nodes = Set<Node>
+    public private(set) var nodesByID = [NodeID: Node]()
     
     /**
      Shorthand for the `Graph`'s full generic node type `GraphNode<NodeID, NodeValue>`
@@ -326,14 +307,6 @@ public struct Graph<NodeID: Hashable, NodeValue>
 }
 
 extension Dictionary
-{
-    init(values: some Sequence<Value>, getKeyFromValue: (Value) -> Key)
-    {
-        self.init(uniqueKeysWithValues: values.map({ (getKeyFromValue($0), $0) }))
-    }
-}
-
-extension OrderedDictionary
 {
     init(values: some Sequence<Value>, getKeyFromValue: (Value) -> Key)
     {
