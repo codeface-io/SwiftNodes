@@ -6,7 +6,7 @@
 
 ## What?
 
-SwiftNodes provides a concurrency safe [graph data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A graph stores values in identifiable nodes which can be connected via edges.
+SwiftNodes offers a concurrency safe [graph data structure](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) together with graph algorithms. A graph stores values in identifiable nodes which can be connected via edges.
 
 ### Contents
 
@@ -100,7 +100,7 @@ graph.addEdge(from: node1.id, to: node2.id, count: 2)   // edge count is 42
 
 To work with a `Graph` constant (for example as a property on a `Sendable` reference type), you need to initialize the whole graph, complete with its values and edges. There are more ways to do so than we can exemplify here, so have a look at the [graph initializers in code](Code/Graph/Graph.swift).
 
-When you don't need to specify edge counts, the initializers allow to specify edges as tuples of node IDs. And when you're passing in values and edges anyway, you can omit the type parameters. Furthermore, you can often omit the closure that creates the node IDs, as described earlier. All this together can make initialization as simple as it gets:
+When you don't need to specify edge counts, the initializers allow to specify edges as tuples of node IDs. And when you're passing in values and edges anyway, you can omit the type parameters. Furthermore, you can often omit the closure that retrieves node IDs, as described earlier. All this together can make initialization as simple as it gets:
 
 ```swift
 let graph = Graph(values: [-7, 0, 5, 42], 
@@ -218,11 +218,14 @@ The above image was created with [Codeface](https://codeface.io).
 
 From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://semver.org). So until it has reached 1.0.0, its API may still break frequently, and we express those breaks with minor version bumps.
 
-SwiftNodes is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftNodes will move to version 1.0.0 as soon as its basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
+SwiftNodes is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftNodes will move to version 1.0.0 as soon as **either one** of these conditions is met:
+
+* SwiftNode's basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
+* We feel SwiftNodes is mature enough (well rounded and stable API, comprehensive tests, complete documentation and solid achievement of design goals).
 
 ## Roadmap
 
-* [ ] Add tests for all algorithms! The test graphs should be complex enough to establish confidence in algorithm correctness.
+* [ ] Add tests for all algorithms! The tests should be complex enough to establish confidence in algorithm correctness.
 * [ ] Further align with official Swift data structures (What would Apple do?):
     * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
     * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection`, `Codable`, expressibility by literals, etc.)
