@@ -14,7 +14,7 @@ extension GraphNode: Equatable where Value: Equatable {}
  
  A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestorIDs``, ``GraphNode/descendantIDs`` and related properties.
  */
-public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable
+public struct GraphNode<ID: Hashable, Value>: Identifiable
 {
     // MARK: - Caches for Accessing Neighbours Quickly
     
@@ -42,11 +42,6 @@ public struct GraphNode<ID: Hashable, Value>: Identifiable, Hashable
      The node's descendants (nodes connected via outgoing edges)
      */
     public internal(set) var descendantIDs = Set<ID>()
-    
-    // MARK: - Hashability
-    
-    public func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    public static func == (lhs: Node, rhs: Node) -> Bool { lhs.id == rhs.id }
     
     /**
      A shorthand for the node's full generic type name `GraphNode<ID, Value>`
