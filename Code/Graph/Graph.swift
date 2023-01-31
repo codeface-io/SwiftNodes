@@ -3,6 +3,16 @@ import SwiftyToolz
 
 extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
 
+extension Graph: Equatable where NodeValue: Equatable
+{
+    // TODO: why is this not generated automatically since all properties of the Graph struct are Equatable in this case???
+    public static func == (lhs: Graph<NodeID, NodeValue>,
+                           rhs: Graph<NodeID, NodeValue>) -> Bool
+    {
+        lhs.edgesByID == rhs.edgesByID && lhs.nodesByID == rhs.nodesByID
+    }
+}
+
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
  
