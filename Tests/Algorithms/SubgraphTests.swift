@@ -1,23 +1,7 @@
 @testable import SwiftNodes
 import XCTest
 
-class AlgorithmTests: XCTestCase {
-    
-    func testMinimumEquivalentGraph() {
-        // make original graph
-        let graph = Graph(values: [1, 2, 3],
-                          edges: [(1, 2), (2, 3), (1, 3)])
-        
-        XCTAssertEqual(graph.edges.count, 3)
-        
-        // make MEG
-        let meg = graph.makeMinimumEquivalentGraph()
-        
-        XCTAssertEqual(meg.edges.count, 2)
-        XCTAssertNotNil(meg.edge(from: 1, to: 2))
-        XCTAssertNotNil(meg.edge(from: 2, to: 3))
-        XCTAssertNil(meg.edge(from: 1, to: 3))
-    }
+class SubgraphTests: XCTestCase {
     
     func testSubGraph() {
         var graph = Graph<Int, Int>()
