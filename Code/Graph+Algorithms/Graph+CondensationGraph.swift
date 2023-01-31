@@ -14,7 +14,10 @@ public extension Graph
     func makeCondensationGraph() -> CondensationGraph
     {
         // get SCCs
-        let sccs = findStronglyConnectedComponents().map { StronglyConnectedComponent(nodes: $0) }
+        let sccs = findStronglyConnectedComponents().map
+        {
+            StronglyConnectedComponent(nodes: $0)
+        }
         
         // create hashmap from nodes to their SCCs
         var sccByNodeID = [Node.ID: StronglyConnectedComponent]()
@@ -36,7 +39,8 @@ public extension Graph
             guard let originSCC = sccByNodeID[edgeID.originID],
                   let destinationSCC = sccByNodeID[edgeID.destinationID] else
             {
-                fatalError("mising scc in hash map")
+                log(error: "mising scc in hash map")
+                continue
             }
             
             if originSCC !== destinationSCC
