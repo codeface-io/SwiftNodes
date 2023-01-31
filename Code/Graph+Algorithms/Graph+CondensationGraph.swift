@@ -16,17 +16,17 @@ public extension Graph
         // get SCCs
         let sccs = findStronglyConnectedComponents().map
         {
-            StronglyConnectedComponent(nodes: $0)
+            StronglyConnectedComponent(nodeIDs: $0)
         }
         
-        // create hashmap from nodes to their SCCs
+        // create hashmap from node IDs to the containing SCCs
         var sccByNodeID = [Node.ID: StronglyConnectedComponent]()
         
         for scc in sccs
         {
-            for node in scc.nodes
+            for nodeID in scc.nodeIDs
             {
-                sccByNodeID[node] = scc
+                sccByNodeID[nodeID] = scc
             }
         }
         
@@ -43,7 +43,7 @@ public extension Graph
                 continue
             }
             
-            if originSCC !== destinationSCC
+            if originSCC.id != destinationSCC.id
             {
                 condensationGraph.addEdge(from: originSCC.id,
                                           to: destinationSCC.id)
@@ -59,23 +59,17 @@ public extension Graph
     
     typealias CondensationGraph = Graph<StronglyConnectedComponent.ID, StronglyConnectedComponent>
     
-    final class StronglyConnectedComponent: Identifiable, Hashable
+    struct StronglyConnectedComponent: Identifiable, Hashable
     {
-        public static func == (lhs: StronglyConnectedComponent,
-                               rhs: StronglyConnectedComponent) -> Bool { lhs.id == rhs.id }
+        public var id: ID { nodeIDs }
         
-        public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+        public typealias ID = NodeIDs
         
-        // TODO: use NodeID as condensation node id type and derive id from contained nodes (requires that there is at least one contained node)
-        public let id: ID = .randomID()
-        
-        public typealias ID = String
-        
-        init(nodes: NodeIDs)
+        init(nodeIDs: NodeIDs)
         {
-            self.nodes = nodes
+            self.nodeIDs = nodeIDs
         }
         
-        public let nodes: NodeIDs
+        public let nodeIDs: NodeIDs
     }
 }
