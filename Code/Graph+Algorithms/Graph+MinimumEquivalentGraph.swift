@@ -9,26 +9,26 @@ public extension Graph
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
     {
-        var nonEssentialEdges = EdgeIDs()
+        var idOfTransitiveEdges = EdgeIDs() // or "shortcuts" of longer paths; or "implied" edges
         var consideredAncestorsHash = [NodeID: NodeIDs]()
         
         for sourceNode in sources
         {
             // TODO: keep track of visited nodes within each traversal from a source and ignore already visited nodes so we can't get hung up in cycles
             
-            nonEssentialEdges += findNonEssentialEdges(around: sourceNode,
+            idOfTransitiveEdges += findTransitiveEdges(around: sourceNode,
                                                        reachedAncestors: [],
                                                        consideredAncestorsHash: &consideredAncestorsHash)
         }
         
         var minimumEquivalentGraph = self
-        nonEssentialEdges.forEach { minimumEquivalentGraph.removeEdge(with: $0) }
+        minimumEquivalentGraph.removeEdges(with: idOfTransitiveEdges)
         return minimumEquivalentGraph
     }
     
-    private func findNonEssentialEdges(around node: Node,
-                                       reachedAncestors: NodeIDs,
-                                       consideredAncestorsHash: inout [NodeID: NodeIDs]) -> EdgeIDs
+    private func findTransitiveEdges(around node: Node,
+                                     reachedAncestors: NodeIDs,
+                                     consideredAncestorsHash: inout [NodeID: NodeIDs]) -> EdgeIDs
     {
         let consideredAncestors = consideredAncestorsHash[node.id, default: NodeIDs()]
         let ancestorsToConsider = reachedAncestors - consideredAncestors
@@ -41,7 +41,7 @@ public extension Graph
         
         consideredAncestorsHash[node.id, default: NodeIDs()] += ancestorsToConsider
         
-        var nonEssentialEdges = EdgeIDs()
+        var idsOfTransitiveEdges = EdgeIDs()
         
         // base case: add edges from all reached ancestors to all reachable neighbours of node
         
@@ -51,9 +51,11 @@ public extension Graph
         {
             for ancestor in ancestorsToConsider
             {
-                if let nonEssentialEdge = edge(from: ancestor, to: descendant)
+                let edgeID = Edge.ID(ancestor, descendant)
+                
+                if contains(edgeID)
                 {
-                    nonEssentialEdges += nonEssentialEdge.id
+                    idsOfTransitiveEdges += edgeID
                 }
             }
         }
@@ -64,11 +66,11 @@ public extension Graph
         {
             guard let descendant = self.node(for: descendantID) else { continue }
             
-            nonEssentialEdges += findNonEssentialEdges(around: descendant,
-                                                       reachedAncestors: ancestorsToConsider + node.id,
-                                                       consideredAncestorsHash: &consideredAncestorsHash)
+            idsOfTransitiveEdges += findTransitiveEdges(around: descendant,
+                                                        reachedAncestors: ancestorsToConsider + node.id,
+                                                        consideredAncestorsHash: &consideredAncestorsHash)
         }
         
-        return nonEssentialEdges
+        return idsOfTransitiveEdges
     }
 }

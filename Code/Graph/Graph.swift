@@ -114,7 +114,15 @@ public struct Graph<NodeID: Hashable, NodeValue>
     }
     
     /**
-     Removes the ``GraphEdge`` with the given ID, also removing it from the caches of its ``GraphEdge/origin`` and ``GraphEdge/destination``
+     Removes the ``GraphEdge``s with the given IDs, also removing them from node neighbour caches
+     */
+    public mutating func removeEdges(with edgeIDs: EdgeIDs)
+    {
+        edgeIDs.forEach { removeEdge(with: $0) }
+    }
+    
+    /**
+     Removes the ``GraphEdge`` with the given ID, also removing it from node neighbour caches
      */
     @discardableResult
     public mutating func removeEdge(with edgeID: Edge.ID) -> Edge?
@@ -170,8 +178,23 @@ public struct Graph<NodeID: Hashable, NodeValue>
      */
     public func edge(from originID: NodeID, to destinationID: NodeID) -> Edge?
     {
-        guard contains(originID), contains(destinationID) else { return nil }
-        return edgesByID[.init(originID, destinationID)]
+        edge(with: .init(originID, destinationID))
+    }
+    
+    /**
+     The ``GraphEdge`` with the given ID if the edge exists, otherwise `nil`
+     */
+    public func edge(with edgeID: Edge.ID) -> Edge?
+    {
+        edgesByID[edgeID]
+    }
+    
+    /**
+     Whether the `Graph` contains a ``GraphEdge`` with the given ``GraphEdge/id-swift.property``
+     */
+    public func contains(_ edgeID: Edge.ID) -> Bool
+    {
+        edgesByID.keys.contains(edgeID)
     }
     
     /**
