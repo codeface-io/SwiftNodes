@@ -57,11 +57,11 @@ public extension Graph
 
                 if sourceCondensationNodeID == targetCondensationNodeID { continue }
 
-                // remove the edge if the corresponding edge in the condensation graph is not essential
-                let essentialEdge = minimumCondensationGraph.edge(from: sourceCondensationNodeID,
-                                                                  to: targetCondensationNodeID)
+                // the edge is essential if its equivalent is in the minimum equivalent condensation graph
+                
+                let edgeIsEssential = minimumCondensationGraph.contains(.init(sourceCondensationNodeID, targetCondensationNodeID))
 
-                if essentialEdge == nil
+                if !edgeIsEssential
                 {
                     idsOfNonEssentialEdges += componentGraphEdge.id
                 }
