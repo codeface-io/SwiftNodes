@@ -9,7 +9,7 @@ public extension Graph
      */
     mutating func removeNonEssentialEdges()
     {
-        findNonEssentialEdges().forEach { self.removeEdge(with: $0) }
+        removeEdges(with: findNonEssentialEdges())
     }
     
     /**
@@ -21,6 +21,7 @@ public extension Graph
     {
         var idsOfNonEssentialEdges = EdgeIDs()
         
+        // TODO: decomposing the graph into its components is probably legacy from before the algorithm extraction from Codeface ... this also seems to have no performance benefit here ... better just unit-test that makeCondensationGraph() and makeMinimumEquivalentGraph() also work on graphs that are "fragmented" into multiple components and then do this algorithm here on the whole graph in one go ...
         // for each component graph individually ...
         for component in findComponents()
         {
@@ -44,26 +45,30 @@ public extension Graph
             let minimumCondensationGraph = condensationGraph.makeMinimumEquivalentGraph()
 
             // for each original edge in the component graph ...
-            for componentGraphEdge in componentGraph.edges
+            for edge in componentGraph.edges
             {
-                // skip this edge if it is within the same condensation node (within a strongly connected component)
-                guard let sourceCondensationNodeID = condensationNodeIDByNodeID[componentGraphEdge.originID],
-                      let targetCondensationNodeID = condensationNodeIDByNodeID[componentGraphEdge.destinationID]
+                guard let originCondensationNodeID = condensationNodeIDByNodeID[edge.originID],
+                      let destinationCondensationNodeID = condensationNodeIDByNodeID[edge.destinationID]
                 else
                 {
                     log(error: "Nodes don't have their condensation node IDs set (but must have at this point)")
                     continue
                 }
+                
+                // skip this edge if it is within the same condensation node (within a strongly connected component)
 
-                if sourceCondensationNodeID == targetCondensationNodeID { continue }
+                if originCondensationNodeID == destinationCondensationNodeID { continue }
 
                 // the edge is essential if its equivalent is in the minimum equivalent condensation graph
                 
-                let edgeIsEssential = minimumCondensationGraph.contains(.init(sourceCondensationNodeID, targetCondensationNodeID))
+                let condensationEdgeID = CondensationEdge.ID(originCondensationNodeID,
+                                                             destinationCondensationNodeID)
+                
+                let edgeIsEssential = minimumCondensationGraph.contains(condensationEdgeID)
 
                 if !edgeIsEssential
                 {
-                    idsOfNonEssentialEdges += componentGraphEdge.id
+                    idsOfNonEssentialEdges += edge.id
                 }
             }
         }

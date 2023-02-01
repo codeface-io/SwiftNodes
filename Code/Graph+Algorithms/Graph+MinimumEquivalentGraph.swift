@@ -12,10 +12,9 @@ public extension Graph
         var idOfTransitiveEdges = EdgeIDs() // or "shortcuts" of longer paths; or "implied" edges
         var consideredAncestorsHash = [NodeID: NodeIDs]()
         
+        // TODO: keep track of visited nodes within each traversal from a node and ignore already visited nodes so we can't get hung up in cycles. be aware that iterating through only the sources in this loop will also not work when graphs are potentially cyclic or even exclusively made of cycles (i.e. have no sources)!
         for sourceNode in sources
         {
-            // TODO: keep track of visited nodes within each traversal from a source and ignore already visited nodes so we can't get hung up in cycles
-            
             idOfTransitiveEdges += findTransitiveEdges(around: sourceNode,
                                                        reachedAncestors: [],
                                                        consideredAncestorsHash: &consideredAncestorsHash)
