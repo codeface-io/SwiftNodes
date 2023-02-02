@@ -15,7 +15,7 @@ extension Graph: Equatable where NodeValue: Equatable
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
  
- You create `GraphNode`s by inserting `NodeValue`s into the `Graph`, whereby the `Graph` determines the node IDs for new values according to the closure passed to- or implied by its initializer, see ``Graph/init(nodes:determineNodeIDForNewValue:)`` and other initializers.
+ The `Graph` creates `GraphNode`s when you insert `NodeValue`s into it, whereby the `Graph` determines the node IDs for new values according to the closure passed to- or implied by its initializer, see ``Graph/init(nodes:determineNodeIDForNewValue:)`` and other initializers.
  
  A `Graph` is Equatable if its `NodeValue` is. Equatability excludes the `determineNodeIDForNewValue` closure mentioned above.
  */

@@ -6,9 +6,9 @@ extension GraphEdge.ID: Sendable where NodeID: Sendable {}
 /**
  Directed connection of two ``GraphNode``s in a ``Graph``
  
- A `GraphEdge` has a direction and goes from its ``GraphEdge/origin`` to its ``GraphEdge/destination``
+ A `GraphEdge` points from an origin- to a destination node and therefor has an ``GraphEdge/originID`` and a ``GraphEdge/destinationID``.
  
- A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``.
+ A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of ``GraphEdge/originID`` and ``GraphEdge/destinationID``.
  */
 public struct GraphEdge<NodeID: Hashable>: Identifiable, Equatable
 {
@@ -20,12 +20,12 @@ public struct GraphEdge<NodeID: Hashable>: Identifiable, Equatable
     // MARK: - Identity
     
     /**
-     The edge's `ID` combines the ``GraphNode/id``s of ``GraphEdge/origin`` and ``GraphEdge/destination``
+     The edge's `ID` combines the ``GraphNode/id``s of ``GraphEdge/originID`` and ``GraphEdge/destinationID``
      */
     public var id: ID { ID(originID, destinationID) }
     
     /**
-     An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/origin`` and ``GraphEdge/destination``
+     An edge's `ID` combines the ``GraphNode/id``s of its ``GraphEdge/originID`` and ``GraphEdge/destinationID``
      */
     public struct ID: Hashable
     {
@@ -55,7 +55,7 @@ public struct GraphEdge<NodeID: Hashable>: Identifiable, Equatable
     /**
      A kind of edge weight. Indicates how often the edge was "added" to its graph.
      
-     The count to "add" can be specified when adding an edge to a graph, see ``Graph/addEdge(from:to:count:)-mz60`` and ``Graph/addEdge(from:to:count:)-8wg9h``. By default, adding the edge the first time sets its count to 1, and every time it gets added again adds 1 to its `count`.
+     The count to "add" can be specified when adding an edge to a graph, see ``Graph/addEdge(from:to:count:)``. By default, adding the edge the first time sets its count to 1, and every time it gets added again adds 1 to its `count`.
      */
     public internal(set) var count: Int
     

@@ -8,11 +8,11 @@ extension GraphNode: Equatable where Value: Equatable {}
  
  A `GraphNode` is `Identifiable` by its ``GraphNode/id`` of generic type `ID`.
  
- You typically create `GraphNode`s by inserting `NodeValue`s into a ``Graph``, whereby the ``Graph`` generates the IDs for new nodes according to the closure passed to- (``Graph/init(nodes:makeNodeIDForValue:)``) or implied by its initializer.
- 
- You may also create `GraphNode`s independent of a ``Graph`` in order to create a new ``Graph`` with them, see ``GraphNode/init(id:value:)`` and ``Graph/init(nodes:makeNodeIDForValue:)``.
- 
  A `GraphNode` has caches maintained by its ``Graph`` that enable quick access to the node's neighbours, see ``GraphNode/ancestorIDs``, ``GraphNode/descendantIDs`` and related properties.
+ 
+ A `Graph` creates, owns and manages its `GraphNode`s. You can not create a `GraphNode` or mutate the `GraphNode`s contained in a `Graph`, since the contained neighbour caches must always be consistent with the `Graph`'s edges.
+ 
+ When inserting a `NodeValue` into a ``Graph``, the ``Graph`` determines the ID of the node containing that value by use of the closure passed to- (``Graph/init(values:edges:determineNodeIDForNewValue:)``) or implied by its initializer.
  */
 public struct GraphNode<ID: Hashable, Value>: Identifiable
 {
@@ -60,7 +60,7 @@ public struct GraphNode<ID: Hashable, Value>: Identifiable
     }
     
     /**
-     The `ID: Hashable` by which the node is `Identifiable`
+     The `Hashable` ID by which the node is `Identifiable`
      */
     public let id: ID
     
