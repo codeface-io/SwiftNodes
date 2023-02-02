@@ -4,7 +4,7 @@ extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
 
 extension Graph: Equatable where NodeValue: Equatable
 {
-    // TODO: why is this not generated automatically since all properties of the Graph struct are Equatable in this case???
+    /// Compare two graphs without their `determineNodeIDForNewValue` closure
     public static func == (lhs: Graph<NodeID, NodeValue>,
                            rhs: Graph<NodeID, NodeValue>) -> Bool
     {
@@ -15,14 +15,14 @@ extension Graph: Equatable where NodeValue: Equatable
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
  
- You create `GraphNode`s by inserting `NodeValue`s into the `Graph`, whereby the `Graph` generates the IDs for new nodes according to the closure passed to- or implied by its initializer, see ``Graph/init(nodes:makeNodeIDForValue:)`` and the convenience initializers.
+ You create `GraphNode`s by inserting `NodeValue`s into the `Graph`, whereby the `Graph` determines the node IDs for new values according to the closure passed to- or implied by its initializer, see ``Graph/init(nodes:determineNodeIDForNewValue:)`` and other initializers.
  
- Nodes maintain an order, and so the graph can be sorted, see ``Graph/sort(by:)``.
+ A `Graph` is Equatable if its `NodeValue` is. Equatability excludes the `determineNodeIDForNewValue` closure mentioned above.
  */
 public struct Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
-    // FIXME: turn parameters from arrays into sets to not falsely suggest order matters
+    // FIXME: turn parameters from arrays into sets (or better: `some` generic unordered collection or sequence ...) to not falsely suggest order matters
     
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
@@ -61,29 +61,29 @@ public struct Graph<NodeID: Hashable, NodeValue>
     }
     
     /**
-     Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
+     Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
     public init(values: [NodeValue] = [],
                 edges: [(NodeID, NodeID)],
-                makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
+                determineNodeIDForNewValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
         let actualEdges = edges.map { Edge(from: $0.0, to: $0.1) }
         
         self.init(values: values,
                   edges: actualEdges,
-                  makeNodeIDForValue: makeNodeIDForValue)
+                  determineNodeIDForNewValue: determineNodeIDForNewValue)
     }
     
     /**
-     Creates a `Graph` that generates ``GraphNode/id``s for new ``GraphNode``s with the given closure
+     Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
     public init(values: [NodeValue] = [],
                 edges: [Edge] = [],
-                makeNodeIDForValue: @Sendable @escaping (NodeValue) -> NodeID)
+                determineNodeIDForNewValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
         // set nodes with their neighbour caches
         
-        let nodes = values.map { Node(id: makeNodeIDForValue($0), value: $0) }
+        let nodes = values.map { Node(id: determineNodeIDForNewValue($0), value: $0) }
         var nodesByIDTemporary = [NodeID: Node](values: nodes) { $0.id }
         
         edges.forEach
@@ -98,7 +98,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         
         edgesByID = .init(values: edges) { $0.id }
         
-        self.makeNodeIDForValue = makeNodeIDForValue
+        self.determineNodeIDForNewValue = determineNodeIDForNewValue
     }
     
     // MARK: - Edges
@@ -155,8 +155,6 @@ public struct Graph<NodeID: Hashable, NodeValue>
         {
             edgesByID[edgeID]?.count += count
             existingEdge.count += count
-            
-            // TODO: maintain count in edge caches in nodes as well, for algorithms that take edge weight into account when traversing the graph, like dijkstra shortest path ...
             
             return existingEdge
         }
@@ -238,14 +236,14 @@ public struct Graph<NodeID: Hashable, NodeValue>
     @discardableResult
     public mutating func insert(_ value: NodeValue) -> Node
     {
-        let nodeID = makeNodeIDForValue(value)
+        let nodeID = determineNodeIDForNewValue(value)
         if let existingNode = nodesByID[nodeID] { return existingNode }
         let node = Node(id: nodeID, value: value)
         nodesByID[nodeID] = node
         return node
     }
     
-    public let makeNodeIDForValue: @Sendable (NodeValue) -> NodeID
+    private let determineNodeIDForNewValue: @Sendable (NodeValue) -> NodeID
     
     /**
      ``GraphNode/value`` of the ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`

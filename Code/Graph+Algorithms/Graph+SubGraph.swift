@@ -3,7 +3,7 @@ public extension Graph
     func subGraph(nodeIDs: NodeIDs) -> Graph
     {
         var subGraph = Graph(values: nodeIDs.compactMap { nodesByID[$0]?.value },
-                             makeNodeIDForValue: makeNodeIDForValue)
+                             makeNodeIDForValue: determineNodeIDForNewValue)
         
         for edge in edges
         {
