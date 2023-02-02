@@ -243,7 +243,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         return node
     }
     
-    private let determineNodeIDForNewValue: @Sendable (NodeValue) -> NodeID
+    internal let determineNodeIDForNewValue: @Sendable (NodeValue) -> NodeID
     
     /**
      ``GraphNode/value`` of the ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`
