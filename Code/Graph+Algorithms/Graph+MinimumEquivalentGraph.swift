@@ -9,6 +9,7 @@ public extension Graph
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
     {
+        // TODO: finding all transitive edges (on acyclic graphs) should be extracted as a public algorithm that could be used in isolation. then creating a subgraph with only those edges also is its own (filtering-) algorithm. making the MEG then is an algorithm that combines the other two ...
         var idOfTransitiveEdges = EdgeIDs() // or "shortcuts" of longer paths; or "implied" edges
         var consideredAncestorsHash = [NodeID: NodeIDs]()
         
