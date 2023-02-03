@@ -50,7 +50,19 @@ class MEGTests: XCTestCase {
         XCTAssertEqual(graph.edges.count, expectedNumberOfEdges)
         
         // only edges between neighbouring numbers should remain (0 -> 1 -> 2 ...)
-        let meg = graph.makeMinimumEquivalentGraph()
-        XCTAssertEqual(meg.edges.count, numberOfNodes - 1)
+        
+        var expectedMEG = Graph<Int, Int>()
+        
+        for i in 0 ..< numberOfNodes
+        {
+            expectedMEG.insert(i)
+            
+            if i > 0
+            {
+                expectedMEG.addEdge(from: i - 1, to: i)
+            }
+        }
+        
+        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), expectedMEG)
     }
 }
