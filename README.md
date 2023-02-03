@@ -214,9 +214,6 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 ## Roadmap
 
-* [ ] Add comprehensive tests for remaining undertested algorithms to establish confidence in their correctness:
-    * [ ] Graph+AncestorCount
-    * [ ] Graph+SubGraph
 * [ ] Check TODO comments in code ...
 * [ ] Further align with official Swift data structures (What would Apple do?):
     * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
