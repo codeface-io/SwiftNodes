@@ -8,9 +8,23 @@ public extension Graph
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
+    {   
+        var minimumEquivalentGraph = self
+        minimumEquivalentGraph.removeEdges(with: findTransitiveEdges())
+        return minimumEquivalentGraph
+    }
+    
+    /**
+     Find the edges of the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
+     
+     These are the edges which are **not** in the transitive reduction.
+     
+     🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
+     */
+    func findTransitiveEdges() -> EdgeIDs
     {
-        // TODO: finding all transitive edges (on acyclic graphs) should be extracted as a public algorithm that could be used in isolation. then creating a subgraph with only those edges also is its own (filtering-) algorithm. making the MEG then is an algorithm that combines the other two ...
         var idOfTransitiveEdges = EdgeIDs() // or "shortcuts" of longer paths; or "implied" edges
+        
         var consideredAncestorsHash = [NodeID: NodeIDs]()
         
         // TODO: keep track of visited nodes within each traversal from a node and ignore already visited nodes so we can't get hung up in cycles. be aware that iterating through only the sources in this loop will also not work when graphs are potentially cyclic or even exclusively made of cycles (i.e. have no sources)!
@@ -21,9 +35,7 @@ public extension Graph
                                                        consideredAncestorsHash: &consideredAncestorsHash)
         }
         
-        var minimumEquivalentGraph = self
-        minimumEquivalentGraph.removeEdges(with: idOfTransitiveEdges)
-        return minimumEquivalentGraph
+        return idOfTransitiveEdges
     }
     
     private func findTransitiveEdges(around node: Node,

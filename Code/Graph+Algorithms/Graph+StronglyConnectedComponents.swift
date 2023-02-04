@@ -5,7 +5,7 @@ extension Graph
     /**
      Find the [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `Graph`
      
-     - Returns: Multiple sets of nodes which represent the strongly connected components of the graph
+     - Returns: Multiple sets of node IDs, each set representing a strongly connected components of the graph
      */
     func findStronglyConnectedComponents() -> Set<NodeIDs>
     {
