@@ -46,7 +46,7 @@ let nodeForID1 = graph.node(for: "id1")       // nodeForID1.id == "id1"
 let valueForID1 = graph.value(for: "id1")     // valueForID1 == 1
 ```
 
-When inserting a value, a `Graph` must know how to generate the ID of the node that would store the value. So the `Graph` initializer takes a closure returning a `NodeID` given a `NodeValue`.
+When inserting a value, a `Graph` must determine the ID of the node that would store the value. So the `Graph` initializer takes a closure returning a `NodeID` given a `NodeValue`.
 
 > Side Note: The reason, there's an explicit node type at all is that a) values don't need to be unique, but nodes in a graph are, and b) a node holds caches for quick access to its neighbours. The reason there is an explicit edge type at all is that edges have a count (they are "weighted") and may hold their own values in the future.
 
@@ -219,7 +219,7 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 3. Implement TODOs from comments in code ... release 0.5.0
 4. Further align API with official Swift data structures (What would Apple do?):
    1. Align node access API with `Dictionary` (subscripts etc.) ... and review how we deal with node identity (can that be simplified? can we avoid storing that id determination closure? ...)
-   2. Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operations, or both ...
+   2. Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operators, or both ...
    3. Review API, make it precise and consistent (thereby more stable)
        * Precise argument- and return types (neither needlessy specific nor needlessly general), employ opaque arguments (`some`) and opaque result types
        * Do not suggest or require order where order is meaningless
