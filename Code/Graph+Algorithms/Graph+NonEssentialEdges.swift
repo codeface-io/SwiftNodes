@@ -3,25 +3,23 @@ import SwiftyToolz
 public extension Graph
 {
     /**
-     Remove edges of the condensation graph that are not in its minimum equivalent graph
+     Remove edges that not in the transitive reduction of the condensation graph
      
      Note that this will not remove any edges that are part of cycles (i.e. part of strongly connected components), as it only considers edges of the condensation graph. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
      */
-    mutating func removeNonEssentialEdges()
+    mutating func filterEssentialEdges()
     {
-        removeEdges(with: findNonEssentialEdges())
+        filterEdges(findEssentialEdges())
     }
     
-    // TODO: all this should probably be turned around semantically: "find essential edges" and then the client can still use those to filter the graph. also instead of a mutating `removeNonEssentialEdges`, we probably want something like `makeEssentialSubgraph()`, the client can still overwrite a mutable `Graph` value as in `graph = graph.makeEssentialSubgraph()`
-    
     /**
-     Find edges of the condensation graph that are not in its minimum equivalent graph
+     Find edges that are in the minimum equivalent graph of the condensation graph
      
-     Note that this will not find any edges that are part of cycles (i.e. part of strongly connected components), as it only considers edges of the condensation graph. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
+     Note that this includes all edges that are part of cycles (i.e. part of strongly connected components), as it only considers edges of the condensation graph. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
      */
-    func findNonEssentialEdges() -> EdgeIDs
+    func findEssentialEdges() -> EdgeIDs
     {
-        var idsOfNonEssentialEdges = EdgeIDs()
+        var idsOfEssentialEdges = EdgeIDs()
         
         // TODO: decomposing the graph into its components is probably legacy from before the algorithm extraction from Codeface ... this also seems to have no performance benefit here ... better just ensure makeCondensationGraph() (or find SCCs) and makeMinimumEquivalentGraph() work on disconnected graphs and then do this algorithm here on the whole graph in one go ...
         // for each component graph individually ...
@@ -59,24 +57,28 @@ public extension Graph
                     continue
                 }
                 
-                // skip this edge if it is within the same condensation node (within a strongly connected component)
+                // add this edge if it is within the same condensation node (within a strongly connected component and thereby within a cycle)
 
-                if originCondensationNodeID == destinationCondensationNodeID { continue }
+                if originCondensationNodeID == destinationCondensationNodeID
+                {
+                    idsOfEssentialEdges += edge.id
+                    continue
+                }
 
-                // the edge is essential if its equivalent is in the minimum equivalent condensation graph
+                // the non-cyclic edge is essential if its equivalent is in the minimum equivalent condensation graph
                 
                 let condensationEdgeID = CondensationEdge.ID(originCondensationNodeID,
                                                              destinationCondensationNodeID)
                 
                 let edgeIsEssential = minimumCondensationGraph.contains(condensationEdgeID)
 
-                if !edgeIsEssential
+                if edgeIsEssential
                 {
-                    idsOfNonEssentialEdges += edge.id
+                    idsOfEssentialEdges += edge.id
                 }
             }
         }
         
-        return idsOfNonEssentialEdges
+        return idsOfEssentialEdges
     }
 }
