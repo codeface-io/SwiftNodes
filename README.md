@@ -189,7 +189,7 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Ancestor Counts
 
-`graph.findNumberOfNodeAncestors()` returns a `[(NodeID, Int)]` containing each node ID of the `graph` together with the node's ancestor count. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached. 
+`graph.findNumberOfNodeAncestors()` returns a `[NodeID: Int]` containing the ancestor count for each node ID of the `graph`. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached.
 
 This only works on acyclic graphs right now and might return incorrect results for nodes in cycles.
 
@@ -209,20 +209,25 @@ From version/tag 0.1.0 on, SwiftNodes adheres to [semantic versioning](https://s
 
 SwiftNodes is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftNodes will move to version 1.0.0 as soon as **either one** of these conditions is met:
 
-* SwiftNode's basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
-* We feel SwiftNodes is mature enough (well rounded and stable API, comprehensive tests, complete documentation and solid achievement of design goals).
+* Basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
+* We feel it's mature enough (well rounded and stable API, comprehensive tests, complete documentation and solid achievement of design goals).
 
 ## Roadmap
 
-* [ ] Check TODO comments in code ...
-* [ ] Further align with official Swift data structures (What would Apple do?):
-    * [ ] Align node access with the API of `Dictionary` (subscripts etc.)
-    * [ ] Add the usual suspects of applicable protocol conformances (`Sequence`, `Collection`, `Codable`, expressibility by literals, etc.)
-    * [ ] Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operations, or both ...
-    * [ ] Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
-* [ ] Add more algorithms (starting with the needs of Codeface):
-    * [ ] Make existing algorithms compatible with cyclic graphs (two of them are still not)
-    * [ ] General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
-    * [ ] Better ways of topological sorting
-    * [ ] Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
-* [ ] Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
+1. Implement TODOs from comments in code ...
+2. Add unit tests to ensure all algorithms also work on disconnected graphs (graphs that are "fragmented" into multiple components)
+3. Further align API with official Swift data structures (What would Apple do?):
+   1. Align node access with the API of `Dictionary` (subscripts etc.) ... and review how we deal with node identity (can that be simplified? can we avoid storing that id determination closure? ...)
+   2. Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operations, or both ...
+   3. Review API, make it precise and consistent (thereby hopefully more stable), then **release** 0.5.0.
+       * Precise argument- and return types (neither needlessy specific nor needlessly general), employ opaque arguments (`some`) and opaque result types
+       * Do not suggest or require order where order is meaningless
+       * Consistence when it comes to finding certain edges/nodes vs. removing them vs. creating the subgraph with them vs. using them in more general filter functions ... (composability!)
+   4. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
+   5. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
+4. Add more algorithms (starting with the needs of Codeface):
+   1. Make existing algorithms compatible with cyclic graphs (two of them are still not)
+   2. General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
+   3. Better ways of topological sorting
+   4. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
+5. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.

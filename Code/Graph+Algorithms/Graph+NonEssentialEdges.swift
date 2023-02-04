@@ -12,7 +12,7 @@ public extension Graph
         removeEdges(with: findNonEssentialEdges())
     }
     
-    // TODO: all this should probably be turned around semantically: "find essential edges" and then the client can still use those to filter the graph. also instead of a mutating `removeNonEssentialEdges`, we probably want something like `makeEssentialSubgraph()`, the client can still overwrite a mutable `Graph` value as in `graph = graph.makeEssentialSubgraph()` ... also: the API should be consistent when it comes to finding certain edges/nodes vs. removing them vs. creating the subgraph with them vs. using them in more general filter functions ...
+    // TODO: all this should probably be turned around semantically: "find essential edges" and then the client can still use those to filter the graph. also instead of a mutating `removeNonEssentialEdges`, we probably want something like `makeEssentialSubgraph()`, the client can still overwrite a mutable `Graph` value as in `graph = graph.makeEssentialSubgraph()`
     
     /**
      Find edges of the condensation graph that are not in its minimum equivalent graph
@@ -23,7 +23,7 @@ public extension Graph
     {
         var idsOfNonEssentialEdges = EdgeIDs()
         
-        // TODO: decomposing the graph into its components is probably legacy from before the algorithm extraction from Codeface ... this also seems to have no performance benefit here ... better just unit-test that makeCondensationGraph() (or find SCCs) and makeMinimumEquivalentGraph() (or really: all algorithms!) also work on graphs that are "fragmented" into multiple components and then do this algorithm here on the whole graph in one go ...
+        // TODO: decomposing the graph into its components is probably legacy from before the algorithm extraction from Codeface ... this also seems to have no performance benefit here ... better just ensure makeCondensationGraph() (or find SCCs) and makeMinimumEquivalentGraph() work on disconnected graphs and then do this algorithm here on the whole graph in one go ...
         // for each component graph individually ...
         for component in findComponents()
         {
