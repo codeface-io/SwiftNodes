@@ -214,9 +214,10 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 ## Roadmap
 
-1. Implement TODOs from comments in code ...
+1. Fix: Make package compile again on iOS, tvOS and watchOS
 2. Add unit tests to ensure all algorithms also work on disconnected graphs (graphs that are "fragmented" into multiple components)
-3. Further align API with official Swift data structures (What would Apple do?):
+3. Implement TODOs from comments in code ...
+4. Further align API with official Swift data structures (What would Apple do?):
    1. Align node access with the API of `Dictionary` (subscripts etc.) ... and review how we deal with node identity (can that be simplified? can we avoid storing that id determination closure? ...)
    2. Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operations, or both ...
    3. Review API, make it precise and consistent (thereby hopefully more stable), then **release** 0.5.0.
@@ -225,9 +226,9 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
        * Consistence when it comes to finding certain edges/nodes vs. removing them vs. creating the subgraph with them vs. using them in more general filter functions ... (composability!)
    4. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
    5. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
-4. Add more algorithms (starting with the needs of Codeface):
+5. Add more algorithms (starting with the needs of Codeface):
    1. Make existing algorithms compatible with cyclic graphs (two of them are still not)
    2. General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
    3. Better ways of topological sorting
    4. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
-5. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
+6. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
