@@ -8,7 +8,7 @@ public extension Graph
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
     func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
-    {   
+    {
         var minimumEquivalentGraph = self
         minimumEquivalentGraph.removeEdges(with: findTransitiveEdges())
         return minimumEquivalentGraph
@@ -27,7 +27,6 @@ public extension Graph
         
         var consideredAncestorsHash = [NodeID: NodeIDs]()
         
-        // TODO: keep track of visited nodes within each traversal from a node and ignore already visited nodes so we can't get hung up in cycles. be aware that iterating through only the sources in this loop will also not work when graphs are potentially cyclic or even exclusively made of cycles (i.e. have no sources)!
         for sourceNode in sources
         {
             idOfTransitiveEdges += findTransitiveEdges(around: sourceNode,
@@ -42,6 +41,8 @@ public extension Graph
                                      reachedAncestors: NodeIDs,
                                      consideredAncestorsHash: inout [NodeID: NodeIDs]) -> EdgeIDs
     {
+        // to make this not hang in cycles it might be enough to just ensure that node is not in reachedAncestors ...
+        
         let consideredAncestors = consideredAncestorsHash[node.id, default: NodeIDs()]
         let ancestorsToConsider = reachedAncestors - consideredAncestors
         
