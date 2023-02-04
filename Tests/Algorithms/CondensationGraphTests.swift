@@ -80,4 +80,27 @@ class CondensationGraphTests: XCTestCase {
         
         XCTAssertEqual(condensationGraph, expectedCondensationGraph)
     }
+    
+    func testGraphContainingTwoComponents() {
+        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
+                          edges: [(1, 2), (2, 3), (1, 3), (4, 5), (5, 6), (6, 4)])
+        
+        let condensationGraph = graph.makeCondensationGraph()
+        
+        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+            values: [
+                .init(nodeIDs: [1]),
+                .init(nodeIDs: [2]),
+                .init(nodeIDs: [3]),
+                .init(nodeIDs: [4, 5, 6])
+            ],
+            edges: [
+                ([1], [2]),
+                ([2], [3]),
+                ([1], [3])
+            ]
+        )
+        
+        XCTAssertEqual(condensationGraph, expectedCondensationGraph)
+    }
 }

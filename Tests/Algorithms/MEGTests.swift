@@ -30,6 +30,16 @@ class MEGTests: XCTestCase {
         XCTAssertEqual(graph.makeMinimumEquivalentGraph(), expectedMEG)
     }
     
+    func testGraphWithTwoComponentsEachWithOneTransitiveEdge() {
+        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
+                          edges: [(1, 2), (2, 3), (1, 3), (4, 5), (5, 6), (4, 6)])
+        
+        let expectedMEG = Graph(values: [1, 2, 3, 4, 5, 6],
+                                edges: [(1, 2), (2, 3), (4, 5), (5, 6)])
+        
+        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), expectedMEG)
+    }
+    
     func testGraphWithManyTransitiveEdges() {
         var graph = Graph<Int, Int>()
         

@@ -2,6 +2,7 @@
 import XCTest
 
 class SCCTests: XCTestCase {
+    
     func testEmptyGraph() {
         XCTAssertEqual(Graph<Int, Int>().findStronglyConnectedComponents().count, 0)
     }
