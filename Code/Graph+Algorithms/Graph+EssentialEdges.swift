@@ -3,7 +3,19 @@ import SwiftyToolz
 public extension Graph
 {
     /**
-     Remove edges that not in the transitive reduction of the condensation graph
+     Graph with only the edges of the transitive reduction of the condensation graph
+     
+     Note that this will not remove any edges that are part of cycles (i.e. part of strongly connected components), as it only considers edges of the condensation graph. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
+     */
+    func filteredEssentialEdges() -> Graph<NodeID, NodeValue>
+    {
+        var result = self
+        result.filterEssentialEdges()
+        return result
+    }
+    
+    /**
+     Remove edges that are not in the transitive reduction of the condensation graph
      
      Note that this will not remove any edges that are part of cycles (i.e. part of strongly connected components), as it only considers edges of the condensation graph. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
      */
@@ -36,7 +48,7 @@ public extension Graph
         }
         
         // make minimum equivalent condensation graph
-        let minimumCondensationGraph = condensationGraph.makeMinimumEquivalentGraph()
+        let minimumCondensationGraph = condensationGraph.filteredTransitiveReduction()
         
         // for each original edge in the component graph ...
         for edge in edges

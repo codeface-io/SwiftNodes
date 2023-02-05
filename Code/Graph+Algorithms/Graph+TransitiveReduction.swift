@@ -3,15 +3,26 @@ import SwiftyToolz
 public extension Graph
 {
     /**
-     Find the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
+     Make the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
      
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
-    func makeMinimumEquivalentGraph() -> Graph<NodeID, NodeValue>
+    func filteredTransitiveReduction() -> Graph<NodeID, NodeValue>
     {
         var minimumEquivalentGraph = self
-        minimumEquivalentGraph.removeEdges(with: findTransitiveEdges())
+        minimumEquivalentGraph.filterTransitiveReduction()
         return minimumEquivalentGraph
+    }
+    
+    /**
+     Filter an **acyclic** `Graph` down to its [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction)
+     
+     🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
+     */
+    mutating func filterTransitiveReduction()
+    {
+        let transitiveEdges = findTransitiveEdges()
+        filterEdges { !transitiveEdges.contains($0.id) }
     }
     
     /**

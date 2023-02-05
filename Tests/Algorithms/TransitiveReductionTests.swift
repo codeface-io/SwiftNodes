@@ -4,20 +4,20 @@ import XCTest
 class MEGTests: XCTestCase {
     
     func testEmptyGraph() {
-        XCTAssertEqual(Graph<Int, Int>().makeMinimumEquivalentGraph(), Graph<Int, Int>())
+        XCTAssertEqual(Graph<Int, Int>().filteredTransitiveReduction(), Graph<Int, Int>())
     }
     
     func testGraphWithoutEdges() {
         let graph = Graph(values: [1, 2, 3])
         
-        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), graph)
+        XCTAssertEqual(graph.filteredTransitiveReduction(), graph)
     }
     
     func testGraphWithoutTransitiveEdges() {
         let graph = Graph(values: [1, 2, 3],
                           edges: [(1, 2), (2, 3)])
         
-        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), graph)
+        XCTAssertEqual(graph.filteredTransitiveReduction(), graph)
     }
     
     func testGraphWithOneTransitiveEdge() {
@@ -27,7 +27,7 @@ class MEGTests: XCTestCase {
         let expectedMEG = Graph(values: [1, 2, 3],
                                 edges: [(1, 2), (2, 3)])
         
-        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), expectedMEG)
+        XCTAssertEqual(graph.filteredTransitiveReduction(), expectedMEG)
     }
     
     func testGraphWithTwoComponentsEachWithOneTransitiveEdge() {
@@ -37,7 +37,7 @@ class MEGTests: XCTestCase {
         let expectedMEG = Graph(values: [1, 2, 3, 4, 5, 6],
                                 edges: [(1, 2), (2, 3), (4, 5), (5, 6)])
         
-        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), expectedMEG)
+        XCTAssertEqual(graph.filteredTransitiveReduction(), expectedMEG)
     }
     
     func testGraphWithManyTransitiveEdges() {
@@ -73,6 +73,6 @@ class MEGTests: XCTestCase {
             }
         }
         
-        XCTAssertEqual(graph.makeMinimumEquivalentGraph(), expectedMEG)
+        XCTAssertEqual(graph.filteredTransitiveReduction(), expectedMEG)
     }
 }

@@ -179,13 +179,19 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 `graph.makeCondensationGraph()` creates the [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) of the `graph`, which is the graph in which all [strongly connected components](https://en.wikipedia.org/wiki/Strongly_connected_component) of the original `graph` have been collapsed into single nodes, so the resulting condensation graph is acyclic.
 
-### Minimum Equivalent Graph
+### Transitive Reduction
 
-`graph.makeMinimumEquivalentGraph()` creates the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. Right now, this only works on acyclic graphs and might even hang or crash on cyclic ones.
+`graph.findTransitiveEdges()` finds all edges which are **not** in the [transitive reduction (the minimum equivalent graph)](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. **You** can also use `filterTransitiveReduction()` and `filteredTransitiveReduction()` to create a graph's [minimum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction).
 
-### Non-Essential Edges
+Right now, all this only works on acyclic graphs and might even hang or crash on cyclic ones.
 
-`graph.findNonEssentialEdges()` returns the IDs of all edges that correspond to edges of the [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component) which are not in the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) of the condensation graph. In simpler terms: Non-essential edges are both 1) not in cycles and 2) already implied by other edges – i.e. the reachability (or "path") they describe is already indirectly given by other edges.
+### Essential Edges
+
+`graph.findEssentialEdges()` returns the IDs of all "essential" edges. You can also use `graph.filterEssentialEdges()` and `graph.filteredEssentialEdges()` to remove all "non-essential" edges from a `graph`.
+
+Edges are essential when they correspond to edges of the [MEG](https://en.wikipedia.org/wiki/Transitive_reduction) (the transitive reduction) of the [condensation graph](https://en.wikipedia.org/wiki/Strongly_connected_component). In simpler terms: Essential edges are either in cycles or they are essential to the reachability described by the graph – i.e. they cannot be removed without destroying the only path between some nodes.
+
+Note that only edges of the condensation graph can be non-essential and so edges in cycles (i.e. in strongly connected components) are all considered essential. This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
 
 ### Ancestor Counts
 
@@ -215,8 +221,8 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 ## Roadmap
 
 1. Further align API with official Swift data structures (What would Apple do?):
-   1. Align node access API with `Dictionary` (subscripts etc.) ... and review how we deal with node identity (can that be simplified? can we avoid storing that id determination closure? ...)
-   2. Add synchronous and asynchronous filtering- and mapping functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs, unless we employ set operators, or both ...
+   1. Align value access API with `Dictionary` (subscripts etc.) ... and review how we deal with node identity (can that be simplified? can we avoid storing that id determination closure? ...)
+   2. Add node- and value- filtering functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
    3. Review API, make it precise and consistent (thereby more stable)
        * Precise argument- and return types (neither needlessy specific nor needlessly general), employ opaque arguments (`some`) and opaque result types
        * Do not suggest or require order where order is meaningless
