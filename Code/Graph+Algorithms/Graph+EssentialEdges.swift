@@ -20,8 +20,6 @@ public extension Graph
     func findEssentialEdges() -> EdgeIDs
     {
         var idsOfEssentialEdges = EdgeIDs()
-            
-        // TODO: Do we even need to create the MEG of the condensation graph here? AS SOON AS our algorithm to find all transitive edges (or inverted: the transitive reduction) correctly returns all edges that ARE NOT in cycles (even if the graph is cyclic) then we only need to filter out the edges which ARE in cycles for which we only need the SCCs ... this is about making the code more straight forward, we'll assess performance much later and based on measurement ...
         
         // make condensation graph
         let condensationGraph = makeCondensationGraph()
