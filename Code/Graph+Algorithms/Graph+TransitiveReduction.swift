@@ -3,7 +3,7 @@ import SwiftyToolz
 public extension Graph
 {
     /**
-     Make the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
+     The [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
      
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
@@ -26,9 +26,7 @@ public extension Graph
     }
     
     /**
-     Find the edges of the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
-     
-     These are the edges which are **not** in the transitive reduction.
+     Edges that are *not* in the [minumum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction) of an **acyclic** `Graph`
      
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
