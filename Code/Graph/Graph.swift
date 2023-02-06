@@ -1,16 +1,7 @@
 import SwiftyToolz
 
 extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
-
-extension Graph: Equatable where NodeValue: Equatable
-{
-    /// Compare two graphs without their `determineNodeIDForNewValue` closure
-    public static func == (lhs: Graph<NodeID, NodeValue>,
-                           rhs: Graph<NodeID, NodeValue>) -> Bool
-    {
-        lhs.edgesByID == rhs.edgesByID && lhs.nodesByID == rhs.nodesByID
-    }
-}
+extension Graph: Equatable where NodeValue: Equatable {}
 
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
