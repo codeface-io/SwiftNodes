@@ -20,7 +20,8 @@ public struct Graph<NodeID: Hashable, NodeValue>
     public init(values: [NodeValue],
                 edges: [(NodeID, NodeID)]) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
-        self.init(values: values, edges: edges) { $0.id }
+        self.init(idValuePairs: values.map { ($0.id, $0) },
+                  edges: edges)
     }
     
     /**
@@ -29,7 +30,8 @@ public struct Graph<NodeID: Hashable, NodeValue>
     public init(values: [NodeValue],
                 edges: [Edge] = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
-        self.init(values: values, edges: edges) { $0.id }
+        self.init(idValuePairs: values.map { ($0.id, $0) },
+                  edges: edges)
     }
     
     /**
@@ -38,7 +40,8 @@ public struct Graph<NodeID: Hashable, NodeValue>
     public init(values: [NodeValue],
                 edges: [(NodeID, NodeID)]) where NodeID == NodeValue
     {
-        self.init(values: values, edges: edges) { $0 }
+        self.init(idValuePairs: values.map { ($0, $0) },
+                  edges: edges)
     }
     
     /**
@@ -47,34 +50,31 @@ public struct Graph<NodeID: Hashable, NodeValue>
     public init(values: [NodeValue],
                 edges: [Edge] = []) where NodeID == NodeValue
     {
-        self.init(values: values, edges: edges) { $0 }
+        self.init(idValuePairs: values.map { ($0, $0) },
+                  edges: edges)
     }
     
     /**
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
-    public init(values: [NodeValue],
-                edges: [(NodeID, NodeID)],
-                determineNodeIDForNewValue: @Sendable @escaping (NodeValue) -> NodeID)
+    public init(idValuePairs: [(NodeID, NodeValue)],
+                edges: [(NodeID, NodeID)])
     {
         let actualEdges = edges.map { Edge(from: $0.0, to: $0.1) }
         
-        self.init(values: values,
-                  edges: actualEdges,
-                  determineNodeIDForNewValue: determineNodeIDForNewValue)
+        self.init(idValuePairs: idValuePairs, edges: actualEdges)
     }
     
     /**
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
-    public init(values: [NodeValue],
-                edges: [Edge] = [],
-                determineNodeIDForNewValue: @Sendable @escaping (NodeValue) -> NodeID)
+    public init(idValuePairs: [(NodeID, NodeValue)],
+                edges: [Edge] = [])
     {
         // set nodes with their neighbour caches
         
-        let nodes = values.map { Node(id: determineNodeIDForNewValue($0), value: $0) }
-        var nodesByIDTemporary = [NodeID: Node](values: nodes) { $0.id }
+        let idNodePairs = idValuePairs.map { ($0.0 , Node(id: $0.0, value: $0.1)) }
+        var nodesByIDTemporary = [NodeID: Node](uniqueKeysWithValues: idNodePairs)
         
         edges.forEach
         {
@@ -86,7 +86,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         
         // set edges and node ID retriever
         
-        edgesByID = .init(values: edges) { $0.id }
+        edgesByID = .init(values: edges)
     }
     
     public init()
@@ -378,8 +378,8 @@ public struct Graph<NodeID: Hashable, NodeValue>
 
 extension Dictionary
 {
-    init(values: some Sequence<Value>, getKeyFromValue: (Value) -> Key)
+    init(values: some Sequence<Value>) where Value: Identifiable, Value.ID == Key
     {
-        self.init(uniqueKeysWithValues: values.map({ (getKeyFromValue($0), $0) }))
+        self.init(uniqueKeysWithValues: values.map({ ($0.id, $0) }))
     }
 }
