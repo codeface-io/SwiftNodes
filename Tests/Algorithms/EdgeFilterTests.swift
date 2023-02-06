@@ -1,7 +1,7 @@
 @testable import SwiftNodes
 import XCTest
 
-class FilterTests: XCTestCase {
+class EdgeFilterTests: XCTestCase {
     
     func testEdgeFilterCopyingGraph() {
         let graph = Graph(values: [1, 2, 3, 4],

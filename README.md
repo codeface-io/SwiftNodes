@@ -221,13 +221,12 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 ## Roadmap
 
 1. Further align API with official Swift data structures (What would Apple do?):
-   1. Add node- and value- filtering functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
-   2. Review API, make it precise and consistent (thereby more stable)
+   1. Review API, make it precise and consistent (thereby more stable)
        * Precise argument- and return types (neither needlessy specific nor needlessly general), employ opaque arguments (`some`) and opaque result types
        * Do not suggest or require order where order is meaningless
        * Consistence when it comes to finding certain edges/nodes vs. removing them vs. creating the subgraph with them vs. using them in more general filter functions ... (composability!)
-   3. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
-   4. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
+   2. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
+   3. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
 2. Round out and add algorithms (starting with the needs of Codeface):
    1. Make existing algorithms compatible with cyclic graphs (two of them are still not)
    2. General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)

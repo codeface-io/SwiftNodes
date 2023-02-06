@@ -69,14 +69,14 @@ public struct Graph<NodeID: Hashable, NodeValue>
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
     public init(idValuePairs: [(NodeID, NodeValue)],
-                edges: [Edge] = [])
+                edges: (some Collection<Edge>)? = nil)
     {
         // set nodes with their neighbour caches
         
         let idNodePairs = idValuePairs.map { ($0.0 , Node(id: $0.0, value: $0.1)) }
         var nodesByIDTemporary = [NodeID: Node](uniqueKeysWithValues: idNodePairs)
         
-        edges.forEach
+        edges?.forEach
         {
             nodesByIDTemporary[$0.originID]?.descendantIDs.insert($0.destinationID)
             nodesByIDTemporary[$0.destinationID]?.ancestorIDs.insert($0.originID)
@@ -86,7 +86,14 @@ public struct Graph<NodeID: Hashable, NodeValue>
         
         // set edges and node ID retriever
         
-        edgesByID = .init(values: edges)
+        if let edges
+        {
+            edgesByID = .init(values: edges)
+        }
+        else
+        {
+            edgesByID = .init()
+        }
     }
     
     public init()
