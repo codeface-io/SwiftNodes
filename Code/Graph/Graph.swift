@@ -22,12 +22,11 @@ extension Graph: Equatable where NodeValue: Equatable
 public struct Graph<NodeID: Hashable, NodeValue>
 {
     // MARK: - Initialize
-    // FIXME: turn parameters from arrays into sets (or better: `some` generic unordered collection or sequence ...) to not falsely suggest order matters
     
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
-    public init(values: [NodeValue] = [],
+    public init(values: [NodeValue],
                 edges: [(NodeID, NodeID)]) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
         self.init(values: values, edges: edges) { $0.id }
@@ -36,7 +35,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
      */
-    public init(values: [NodeValue] = [],
+    public init(values: [NodeValue],
                 edges: [Edge] = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
     {
         self.init(values: values, edges: edges) { $0.id }
@@ -45,7 +44,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
      */
-    public init(values: [NodeValue] = [],
+    public init(values: [NodeValue],
                 edges: [(NodeID, NodeID)]) where NodeID == NodeValue
     {
         self.init(values: values, edges: edges) { $0 }
@@ -54,7 +53,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
      */
-    public init(values: [NodeValue] = [],
+    public init(values: [NodeValue],
                 edges: [Edge] = []) where NodeID == NodeValue
     {
         self.init(values: values, edges: edges) { $0 }
@@ -63,7 +62,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
-    public init(values: [NodeValue] = [],
+    public init(values: [NodeValue],
                 edges: [(NodeID, NodeID)],
                 determineNodeIDForNewValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
@@ -77,7 +76,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
-    public init(values: [NodeValue] = [],
+    public init(values: [NodeValue],
                 edges: [Edge] = [],
                 determineNodeIDForNewValue: @Sendable @escaping (NodeValue) -> NodeID)
     {
@@ -97,8 +96,31 @@ public struct Graph<NodeID: Hashable, NodeValue>
         // set edges and node ID retriever
         
         edgesByID = .init(values: edges) { $0.id }
+    }
+    
+    public init()
+    {
+        nodesByID = .init()
+        edgesByID = .init()
+    }
+    
+    // MARK: - Remove Nodes
+    
+    mutating func removeNode(with nodeID: NodeID)
+    {
+        guard let node = nodesByID[nodeID] else { return }
         
-        self.determineNodeIDForNewValue = determineNodeIDForNewValue
+        nodesByID[nodeID] = nil
+        
+        for ancestorID in node.ancestorIDs
+        {
+            removeEdge(with: .init(ancestorID, nodeID))
+        }
+        
+        for descendantID in node.descendantIDs
+        {
+            removeEdge(with: .init(nodeID, descendantID))
+        }
     }
     
     // MARK: - Edges
@@ -226,24 +248,60 @@ public struct Graph<NodeID: Hashable, NodeValue>
      */
     public typealias EdgeIDs = Set<Edge.ID>
     
-    // MARK: - Node Values
+    // MARK: - Values
+    
+    public subscript(_ nodeID: NodeID) -> NodeValue?
+    {
+        get
+        {
+            nodesByID[nodeID]?.value
+        }
+        
+        set
+        {
+            guard let newValue else
+            {
+                removeNode(with: nodeID)
+                return
+            }
+            
+            update(newValue, for: nodeID)
+        }
+    }
+    
+    @discardableResult
+    public mutating func insert(_ value: NodeValue) -> Node where NodeValue: Identifiable, NodeValue.ID == NodeID
+    {
+        update(value, for: value.id)
+    }
+    
+    @discardableResult
+    public mutating func insert(_ value: NodeValue) -> Node where NodeID == NodeValue
+    {
+        update(value, for: value)
+    }
     
     /**
      Insert a `NodeValue` and get the (new) ``GraphNode`` that stores it
      
-     - Returns: The existing ``GraphNode`` if one with the generated ``GraphNode/id`` already exists (see ``Graph/init(nodes:makeNodeIDForValue:)``), otherwise a newly created ``GraphNode``.
+     - Returns: The (possibly new) ``GraphNode`` holding the value
      */
     @discardableResult
-    public mutating func insert(_ value: NodeValue) -> Node
+    public mutating func update(_ value: NodeValue, for nodeID: NodeID) -> Node
     {
-        let nodeID = determineNodeIDForNewValue(value)
-        if let existingNode = nodesByID[nodeID] { return existingNode }
-        let node = Node(id: nodeID, value: value)
-        nodesByID[nodeID] = node
-        return node
+        if var node = nodesByID[nodeID]
+        {
+            node.value = value
+            nodesByID[nodeID] = node
+            return node
+        }
+        else
+        {
+            let node = Node(id: nodeID, value: value)
+            nodesByID[nodeID] = node
+            return node
+        }
     }
-    
-    internal let determineNodeIDForNewValue: @Sendable (NodeValue) -> NodeID
     
     /**
      ``GraphNode/value`` of the ``GraphNode`` with the given ``GraphNode/id`` if one exists, otherwise `nil`
@@ -256,9 +314,9 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      All `NodeValue`s of the `Graph`
      */
-    public var values: [NodeValue]
+    public var values: some Collection<NodeValue>
     {
-        nodes.map { $0.value }
+        nodesByID.values.map { $0.value }
     }
     
     // MARK: - Nodes

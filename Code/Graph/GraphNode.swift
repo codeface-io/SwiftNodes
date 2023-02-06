@@ -67,5 +67,5 @@ public struct GraphNode<ID: Hashable, Value>: Identifiable
     /**
      The actual stored `Value`
      */
-    public let value: Value
+    public internal(set) var value: Value
 }

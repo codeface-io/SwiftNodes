@@ -221,14 +221,13 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 ## Roadmap
 
 1. Further align API with official Swift data structures (What would Apple do?):
-   1. Align value access API with `Dictionary` (subscripts etc.) ... and review how we deal with node identity (can that be simplified? can we avoid storing that id determination closure? ...)
-   2. Add node- and value- filtering functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
-   3. Review API, make it precise and consistent (thereby more stable)
+   1. Add node- and value- filtering functions. The existing `subGraph` function should probably rather be some kind of filter over node IDs.
+   2. Review API, make it precise and consistent (thereby more stable)
        * Precise argument- and return types (neither needlessy specific nor needlessly general), employ opaque arguments (`some`) and opaque result types
        * Do not suggest or require order where order is meaningless
        * Consistence when it comes to finding certain edges/nodes vs. removing them vs. creating the subgraph with them vs. using them in more general filter functions ... (composability!)
-   4. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
-   5. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
+   3. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
+   4. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
 2. Round out and add algorithms (starting with the needs of Codeface):
    1. Make existing algorithms compatible with cyclic graphs (two of them are still not)
    2. General purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
@@ -237,3 +236,4 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
    5. Better ways of topological sorting
    6. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
 3. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
+    * What role does `@inlinable` play here?

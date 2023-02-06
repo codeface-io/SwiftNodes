@@ -1,18 +1,16 @@
+import SwiftyToolz
+
 public extension Graph
 {
-    func subGraph(nodeIDs: NodeIDs) -> Graph
+    func subGraph(nodeIDs: NodeIDs) -> Graph<NodeID, NodeValue>
     {
-        var subGraph = Graph(values: nodeIDs.compactMap { nodesByID[$0]?.value },
-                             determineNodeIDForNewValue: determineNodeIDForNewValue)
+        var subGraph = self
         
-        for edge in edges
+        let idsOfNodesToRemove = Set(nodesByID.keys) - nodeIDs
+        
+        for idOfNodeToRemove in idsOfNodesToRemove
         {
-            if nodeIDs.contains(edge.originID) && nodeIDs.contains(edge.destinationID)
-            {
-                subGraph.addEdge(from: edge.originID,
-                                 to: edge.destinationID,
-                                 count: edge.count)
-            }
+            subGraph.removeNode(with: idOfNodeToRemove)
         }
         
         return subGraph
