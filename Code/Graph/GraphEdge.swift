@@ -3,6 +3,9 @@ import SwiftyToolz
 extension GraphEdge: Sendable where NodeID: Sendable {}
 extension GraphEdge.ID: Sendable where NodeID: Sendable {}
 
+extension GraphEdge: Codable where NodeID: Codable {}
+extension GraphEdge.ID: Codable where NodeID: Codable {}
+
 /**
  Directed connection of two ``GraphNode``s in a ``Graph``
  

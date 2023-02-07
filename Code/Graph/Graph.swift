@@ -2,6 +2,7 @@ import SwiftyToolz
 
 extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
 extension Graph: Equatable where NodeValue: Equatable {}
+extension Graph: Codable where NodeID: Codable, NodeValue: Codable {}
 
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s

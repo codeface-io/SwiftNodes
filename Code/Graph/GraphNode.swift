@@ -2,6 +2,7 @@ import SwiftyToolz
 
 extension GraphNode: Sendable where ID: Sendable, Value: Sendable {}
 extension GraphNode: Equatable where Value: Equatable {}
+extension GraphNode: Codable where ID: Codable, Value: Codable {}
 
 /**
  Unique node of a ``Graph``, holds a value, can be connected to other nodes of the graph
