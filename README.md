@@ -222,10 +222,10 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 1. Round out and add algorithms (starting with the needs of Codeface):
    1. Make existing algorithms compatible with cycles (two algorithms are still not). meaning: don't hang or crash, maybe throw an error!
-   2. Add general purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
-   3. Model edge weights so they *can* be considered in algorithms like Dijkstra. Do we really need a third type parameter for `Graph`? Or just use `Double` as universal weight type? Do we merge that with edge count or keep both distinct?
-   4. Update and complete documentation
-   5. Move to version 1.0.0 if possible
+   2. Model edge weights so they *can* be considered in algorithms like Dijkstra. Do we really need a third type parameter for `Graph`? Or just use `Double` as universal weight type? Do we merge that with edge count or keep both distinct?
+   3. Update and complete documentation
+   4. Move to version 1.0.0 if possible
+   5. Add general purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
    6. Add better ways of topological sorting
    7. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
 2. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
