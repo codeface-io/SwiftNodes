@@ -4,11 +4,11 @@ import XCTest
 class CondensationGraphTests: XCTestCase {
     
     func testGraphWithoutEdges() {
-        let graph = Graph(values: [1, 2, 3])
+        let graph = TestGraph(values: [1, 2, 3])
         
         let condensationGraph = graph.makeCondensationGraph()
         
-        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+        let expectedCondensationGraph = TestGraph.CondensationGraph(
             values: [
                 .init(nodeIDs: [1]),
                 .init(nodeIDs: [2]),
@@ -20,8 +20,8 @@ class CondensationGraphTests: XCTestCase {
     }
     
     func testGraphWithoutCycles() {
-        let graph = Graph(values: [1, 2, 3, 4],
-                          edges: [(1, 2), (2, 3), (3, 4), (1, 3), (2, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4],
+                              edges: [(1, 2), (2, 3), (3, 4), (1, 3), (2, 4)])
         
         let condensationGraph = graph.makeCondensationGraph()
         
@@ -30,7 +30,7 @@ class CondensationGraphTests: XCTestCase {
             ([1], [2]), ([2], [3]), ([3], [4]), ([1], [3]), ([2], [4])
         ]
         
-        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+        let expectedCondensationGraph = TestGraph.CondensationGraph(
             values: [
                 .init(nodeIDs: [1]),
                 .init(nodeIDs: [2]),
@@ -44,12 +44,12 @@ class CondensationGraphTests: XCTestCase {
     }
     
     func testGraphMadeOfOneCycle() {
-        let graph = Graph(values: [1, 2, 3, 4],
-                          edges: [(1, 2), (2, 3), (3, 4), (4, 1)])
+        let graph = TestGraph(values: [1, 2, 3, 4],
+                              edges: [(1, 2), (2, 3), (3, 4), (4, 1)])
         
         let condensationGraph = graph.makeCondensationGraph()
         
-        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+        let expectedCondensationGraph = TestGraph.CondensationGraph(
             values: [.init(nodeIDs: [1, 2, 3, 4])]
         )
         
@@ -57,14 +57,14 @@ class CondensationGraphTests: XCTestCase {
     }
     
     func testGraphContainingOneCycle() {
-        let graph = Graph(values: [1, 2, 3, 4],
-                          edges: [(1, 2), (2, 3), (3, 1), (3, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4],
+                              edges: [(1, 2), (2, 3), (3, 1), (3, 4)])
         
         let condensationGraph = graph.makeCondensationGraph()
         
         let expectedEdges: [(Set<Int>, Set<Int>)] = [([1, 2, 3], [4])]
         
-        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+        let expectedCondensationGraph = TestGraph.CondensationGraph(
             values: [.init(nodeIDs: [1, 2, 3]), .init(nodeIDs: [4])],
             edges: expectedEdges
         )
@@ -73,14 +73,14 @@ class CondensationGraphTests: XCTestCase {
     }
     
     func testGraphContainingTwoCycles() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
-                          edges: [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (6, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6],
+                              edges: [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (6, 4)])
         
         let condensationGraph = graph.makeCondensationGraph()
         
         let expectedEdges: [(Set<Int>, Set<Int>)] = [([1, 2, 3], [4, 5, 6])]
         
-        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+        let expectedCondensationGraph = TestGraph.CondensationGraph(
             values: [.init(nodeIDs: [1, 2, 3]), .init(nodeIDs: [4, 5, 6])],
             edges: expectedEdges
         )
@@ -89,14 +89,14 @@ class CondensationGraphTests: XCTestCase {
     }
     
     func testGraphContainingTwoComponents() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
-                          edges: [(1, 2), (2, 3), (1, 3), (4, 5), (5, 6), (6, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6],
+                              edges: [(1, 2), (2, 3), (1, 3), (4, 5), (5, 6), (6, 4)])
         
         let condensationGraph = graph.makeCondensationGraph()
         
         let expectedEdges: [(Set<Int>, Set<Int>)] = [([1], [2]), ([2], [3]), ([1], [3])]
         
-        let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
+        let expectedCondensationGraph = TestGraph.CondensationGraph(
             values: [
                 .init(nodeIDs: [1]),
                 .init(nodeIDs: [2]),

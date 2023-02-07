@@ -2,7 +2,7 @@ public extension Graph
 {
     // MARK: - Value Mapper
     
-    func map<MappedValue>(_ transform: (NodeValue) throws -> MappedValue) rethrows -> Graph<NodeID, MappedValue>
+    func map<MappedValue>(_ transform: (NodeValue) throws -> MappedValue) rethrows -> Graph<NodeID, MappedValue, EdgeWeight>
     {
         .init(idValuePairs: try nodes.map { ($0.id, try transform($0.value)) },
               edges: edges)
@@ -10,7 +10,7 @@ public extension Graph
     
     // MARK: - Edge Filters
     
-    func filteredEdges(_ isIncluded: EdgeIDs) -> Graph<NodeID, NodeValue>
+    func filteredEdges(_ isIncluded: EdgeIDs) -> Self
     {
         var result = self
         result.filterEdges(isIncluded)
@@ -22,7 +22,7 @@ public extension Graph
         filterEdges { isIncluded.contains($0.id) }
     }
     
-    func filteredEdges(_ isIncluded: (Edge) throws -> Bool) rethrows -> Graph<NodeID, NodeValue>
+    func filteredEdges(_ isIncluded: (Edge) throws -> Bool) rethrows -> Self
     {
         var result = self
         try result.filterEdges(isIncluded)
@@ -42,7 +42,7 @@ public extension Graph
     
     // MARK: - Value Filters
     
-    func filtered(_ isIncluded: (NodeValue) throws -> Bool) rethrows -> Graph<NodeID, NodeValue>
+    func filtered(_ isIncluded: (NodeValue) throws -> Bool) rethrows -> Self
     {
         var result = self
         try result.filter(isIncluded)
@@ -56,7 +56,7 @@ public extension Graph
     
     // MARK: - Node Filters
     
-    func filteredNodes(_ isIncluded: NodeIDs) -> Graph<NodeID, NodeValue>
+    func filteredNodes(_ isIncluded: NodeIDs) -> Self
     {
         var result = self
         result.filterNodes(isIncluded)
@@ -68,7 +68,7 @@ public extension Graph
         filterNodes { isIncluded.contains($0.id) }
     }
     
-    func filteredNodes(_ isIncluded: (Node) throws -> Bool) rethrows -> Graph<NodeID, NodeValue>
+    func filteredNodes(_ isIncluded: (Node) throws -> Bool) rethrows -> Self
     {
         var result = self
         try result.filterNodes(isIncluded)

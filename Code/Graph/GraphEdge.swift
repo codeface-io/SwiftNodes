@@ -1,9 +1,9 @@
 import SwiftyToolz
 
-extension GraphEdge: Sendable where NodeID: Sendable {}
+extension GraphEdge: Sendable where NodeID: Sendable, Weight: Sendable {}
 extension GraphEdge.ID: Sendable where NodeID: Sendable {}
 
-extension GraphEdge: Codable where NodeID: Codable {}
+extension GraphEdge: Codable where NodeID: Codable, Weight: Codable {}
 extension GraphEdge.ID: Codable where NodeID: Codable {}
 
 /**
@@ -13,12 +13,12 @@ extension GraphEdge.ID: Codable where NodeID: Codable {}
  
  A `GraphEdge` is `Identifiable` by its ``GraphEdge/id-swift.property``, which is a combination of ``GraphEdge/originID`` and ``GraphEdge/destinationID``.
  */
-public struct GraphEdge<NodeID: Hashable>: Identifiable, Equatable
+public struct GraphEdge<NodeID: Hashable, Weight: Numeric>: Identifiable, Equatable
 {
     /**
      A shorthand for the edge's full generic type name `GraphEdge<NodeID>`
      */
-    public typealias Edge = GraphEdge<NodeID>
+    public typealias Edge = GraphEdge<NodeID, Weight>
     
     // MARK: - Identity
     
@@ -47,20 +47,20 @@ public struct GraphEdge<NodeID: Hashable>: Identifiable, Equatable
     /// Create a ``GraphEdge``, for instance to pass it to a ``Graph`` initializer.
     public init(from originID: NodeID,
                 to destinationID: NodeID,
-                count: Int = 1)
+                weight: Weight = 1)
     {
         self.originID = originID
         self.destinationID = destinationID
         
-        self.count = count
+        self.weight = weight
     }
     
     /**
-     A kind of edge weight. Indicates how often the edge was "added" to its graph.
+     The edge weight.
      
-     The count to "add" can be specified when adding an edge to a graph, see ``Graph/addEdge(from:to:count:)``. By default, adding the edge the first time sets its count to 1, and every time it gets added again adds 1 to its `count`.
+     If you don't need edge weights and want to save memory, you could specify `UInt8` (a.k.a. Byte) as the edge weight type, so each edge would require just one Byte instead of for example four or 8 Bytes for other numeric types.
      */
-    public internal(set) var count: Int
+    public internal(set) var weight: Weight
     
     /**
      The origin ``GraphNode/id`` at which the edge starts / from which it goes out

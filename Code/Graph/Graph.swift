@@ -1,8 +1,11 @@
 import SwiftyToolz
 
-extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable {}
+public typealias HashableValuesGraph<Value: Hashable, EdgeWeight: Numeric> = Graph<Value, Value, EdgeWeight>
+public typealias IdentifiableValuesGraph<Value: Identifiable, EdgeWeight: Numeric> = Graph<Value.ID, Value, EdgeWeight>
+
+extension Graph: Sendable where NodeID: Sendable, NodeValue: Sendable, EdgeWeight: Sendable {}
 extension Graph: Equatable where NodeValue: Equatable {}
-extension Graph: Codable where NodeID: Codable, NodeValue: Codable {}
+extension Graph: Codable where NodeID: Codable, NodeValue: Codable, EdgeWeight: Codable {}
 
 /**
  Holds `Value`s in unique ``GraphNode``s which can be connected through ``GraphEdge``s
@@ -11,7 +14,7 @@ extension Graph: Codable where NodeID: Codable, NodeValue: Codable {}
  
  A `Graph` is Equatable if its `NodeValue` is. Equatability excludes the `determineNodeIDForNewValue` closure mentioned above.
  */
-public struct Graph<NodeID: Hashable, NodeValue>
+public struct Graph<NodeID: Hashable, NodeValue, EdgeWeight: Numeric>
 {
     // MARK: - Initialize
     
@@ -59,7 +62,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     /**
      Shorthand for the full generic type name `GraphEdge<NodeID>`
      */
-    public typealias Edge = GraphEdge<NodeID>
+    public typealias Edge = GraphEdge<NodeID, EdgeWeight>
     
     // MARK: - Nodes
     

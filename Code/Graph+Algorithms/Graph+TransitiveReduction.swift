@@ -7,7 +7,7 @@ public extension Graph
      
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
-    func filteredTransitiveReduction() -> Graph<NodeID, NodeValue>
+    func filteredTransitiveReduction() -> Self
     {
         var minimumEquivalentGraph = self
         minimumEquivalentGraph.filterTransitiveReduction()

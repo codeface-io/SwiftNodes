@@ -5,7 +5,7 @@ class EdgeTests: XCTestCase {
     
     func testInitializeWithValuesAndEdges() throws {
         // with values as node IDs
-        let graph = Graph(values: [-7, 0, 5, 42], edges: [(-7, 0)])
+        let graph = TestGraph(values: [-7, 0, 5, 42], edges: [(-7, 0)])
         
         XCTAssertNotNil(graph.edge(from: -7, to: 0))
         XCTAssertEqual(graph.node(with: -7)?.descendantIDs.contains(0), true)
@@ -15,7 +15,7 @@ class EdgeTests: XCTestCase {
         struct IdentifiableValue: Identifiable { let id: Int }
         
         let values: [IdentifiableValue] = [.init(id: -7), .init(id: 0), .init(id: 5), .init(id: 42)]
-        let graph2 = Graph(values: values, edges: [(-7, 0)])
+        let graph2 = IdentifiableValuesGraph<IdentifiableValue, Int>(values: values, edges: [(-7, 0)])
         
         XCTAssertNotNil(graph2.edge(from: -7, to: 0))
         XCTAssertEqual(graph2.node(with: -7)?.descendantIDs.contains(0), true)
@@ -23,27 +23,27 @@ class EdgeTests: XCTestCase {
     }
     
     func testAddingEdges() throws {
-        var graph = Graph(values: [1, 2])
+        var graph = TestGraph(values: [1, 2])
         graph.insertEdge(from: 1, to: 2)
         
         XCTAssertNil(graph.edge(from: 1, to: 3))
         XCTAssertNil(graph.edge(from: 0, to: 2))
         XCTAssertNotNil(graph.edge(from: 1, to: 2))
-        XCTAssertEqual(graph.edge(from: 1, to: 2)?.count, 1)
+        XCTAssertEqual(graph.edge(from: 1, to: 2)?.weight, 1)
     }
     
     func testAddingEdgeWithBigCount() throws {
-        var graph = Graph(values: [1, 2])
+        var graph = TestGraph(values: [1, 2])
         
-        graph.insertEdge(from: 1, to: 2, count: 42)
-        XCTAssertEqual(graph.edge(from: 1, to: 2)?.count, 42)
+        graph.insertEdge(from: 1, to: 2, weight: 42)
+        XCTAssertEqual(graph.edge(from: 1, to: 2)?.weight, 42)
         
-        graph.add(count: 58, toEdgeWith: .init(1, 2))
-        XCTAssertEqual(graph.edge(from: 1, to: 2)?.count, 100)
+        graph.add(weight: 58, toEdgeWith: .init(1, 2))
+        XCTAssertEqual(graph.edge(from: 1, to: 2)?.weight, 100)
     }
     
     func testEdgesAreDirected() throws {
-        var graph = Graph(values: [1, 2])
+        var graph = TestGraph(values: [1, 2])
         graph.insertEdge(from: 1, to: 2)
         
         XCTAssertNotNil(graph.edge(from: 1, to: 2))
@@ -51,7 +51,7 @@ class EdgeTests: XCTestCase {
     }
     
     func testThreeWaysToRemoveAnEdge() {
-        var graph = Graph(values: [5, 3])
+        var graph = TestGraph(values: [5, 3])
         
         let edge = graph.insertEdge(from: 5, to: 3)
         XCTAssertNotNil(graph.edge(from: 5, to: 3))
@@ -70,7 +70,7 @@ class EdgeTests: XCTestCase {
     }
     
     func testInsertingConnectingAndDisconnectingValues() throws {
-        var graph = Graph<Int, Int>()
+        var graph = TestGraph()
         XCTAssertNil(graph.node(with: 1))
         XCTAssertNil(graph.value(for: 1))
         
@@ -91,9 +91,9 @@ class EdgeTests: XCTestCase {
         XCTAssertNotNil(graph.edge(from: 1, to: 2))
         XCTAssertNotNil(graph.edge(from: node1.id, to: node2.id))
         
-        XCTAssertEqual(edge12.count, 1)
-        XCTAssertEqual(2, graph.add(count: 1, toEdgeWith: .init(1, 2)))
-        XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.count, 2)
+        XCTAssertEqual(edge12.weight, 1)
+        XCTAssertEqual(2, graph.add(weight: 1, toEdgeWith: .init(1, 2)))
+        XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.weight, 2)
         XCTAssertEqual(edge12.originID, node1.id)
         XCTAssertEqual(edge12.destinationID, node2.id)
         

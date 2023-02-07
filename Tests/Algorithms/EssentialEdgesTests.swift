@@ -4,33 +4,33 @@ import XCTest
 class EssentialEdgesTests: XCTestCase {
     
     func testEmptyGraph() {
-        XCTAssert(Graph<Int, Int>().findEssentialEdges().isEmpty)
+        XCTAssert(TestGraph().findEssentialEdges().isEmpty)
     }
     
     func testGraphWithoutEdges() {
-        let graph = Graph(values: [1, 2, 3])
+        let graph = TestGraph(values: [1, 2, 3])
         
         XCTAssert(graph.findEssentialEdges().isEmpty)
     }
     
     func testGraphWithoutTransitiveEdges() {
-        let graph = Graph(values: [1, 2, 3],
-                          edges: [(1, 2), (2, 3)])
+        let graph = TestGraph(values: [1, 2, 3],
+                              edges: [(1, 2), (2, 3)])
         
         XCTAssertEqual(graph.findEssentialEdges(),
                        [.init(1, 2), .init(2, 3)])
     }
     
     func testGraphWithOneTransitiveEdge() {
-        let graph = Graph(values: [1, 2, 3],
-                          edges: [(1, 2), (2, 3), (1, 3)])
+        let graph = TestGraph(values: [1, 2, 3],
+                              edges: [(1, 2), (2, 3), (1, 3)])
         
         XCTAssertEqual(graph.findEssentialEdges(),
                        [.init(1, 2), .init(2, 3)])
     }
     
     func testAcyclicGraphWithManyTransitiveEdges() {
-        var graph = Graph<Int, Int>()
+        var graph = TestGraph()
         
         let numberOfNodes = 10
         
@@ -50,7 +50,7 @@ class EssentialEdgesTests: XCTestCase {
         
         // only edges between neighbouring numbers are essential (0 -> 1 -> 2 ...)
         
-        var expectedEssentialEdges = Set<GraphEdge<Int>.ID>()
+        var expectedEssentialEdges = Set<TestGraph.Edge.ID>()
         
         for i in 1 ..< numberOfNodes
         {
@@ -61,15 +61,15 @@ class EssentialEdgesTests: XCTestCase {
     }
     
     func testGraphWithTwoCyclesAndOnlyEssentialEdges() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
-                          edges: [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (6, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6],
+                              edges: [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (6, 4)])
         
         XCTAssertEqual(graph.findEssentialEdges(), Set(graph.edgeIDs))
     }
     
     func testGraphWithTwoCyclesAndOneNonEssentialEdge() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6, 7],
-                          edges: [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (6, 4), (6, 7), (3, 7)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6, 7],
+                              edges: [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (6, 4), (6, 7), (3, 7)])
         
         let allEdgesExceptNonEssentialOne = Set(graph.edgeIDs).subtracting([.init(3, 7)])
         

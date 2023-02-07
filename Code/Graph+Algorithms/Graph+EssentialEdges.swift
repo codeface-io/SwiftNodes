@@ -7,7 +7,7 @@ public extension Graph
      
      Note that this will not remove any edges that are part of cycles (i.e. part of strongly connected components), since only considers edges of the condensation graph can be "non-essential". This is because it's [algorithmically](https://en.wikipedia.org/wiki/Feedback_arc_set#Hardness) as well as conceptually hard to decide which edges in cycles are "non-essential". We recommend dealing with cycles independently of using this function.
      */
-    func filteredEssentialEdges() -> Graph<NodeID, NodeValue>
+    func filteredEssentialEdges() -> Self
     {
         var result = self
         result.filterEssentialEdges()

@@ -4,11 +4,11 @@ import XCTest
 class SCCTests: XCTestCase {
     
     func testEmptyGraph() {
-        XCTAssertEqual(Graph<Int, Int>().findStronglyConnectedComponents().count, 0)
+        XCTAssertEqual(TestGraph().findStronglyConnectedComponents().count, 0)
     }
     
     func testGraphWithoutEdges() {
-        let graph = Graph(values: [1, 2, 3])
+        let graph = TestGraph(values: [1, 2, 3])
         
         let expectedComponents: Set<Set<Int>> = [[1], [2], [3]]
         
@@ -16,7 +16,7 @@ class SCCTests: XCTestCase {
     }
     
     func testGraphWithOneTrueComponent() {
-        let graph = Graph(values: [1, 2, 3], edges: [(1, 2), (2, 3)])
+        let graph = TestGraph(values: [1, 2, 3], edges: [(1, 2), (2, 3)])
         
         let expectedComponents: Set<Set<Int>> = [[1], [2], [3]]
         
@@ -24,8 +24,8 @@ class SCCTests: XCTestCase {
     }
     
     func testGraphWithMultipleComponents() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
-                          edges: [(2, 3), (4, 5), (5, 6)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6],
+                              edges: [(2, 3), (4, 5), (5, 6)])
         
         let expectedComponents: Set<Set<Int>> = [[1], [2], [3], [4], [5], [6]]
         
@@ -33,8 +33,8 @@ class SCCTests: XCTestCase {
     }
     
     func testGraphWithMultipleComponentsAndCycles() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
-                          edges: [(2, 3), (3, 2), (4, 5), (5, 6), (6, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6],
+                              edges: [(2, 3), (3, 2), (4, 5), (5, 6), (6, 4)])
         
         let expectedComponents: Set<Set<Int>> = [[1], [2, 3], [4, 5, 6]]
         
@@ -42,8 +42,8 @@ class SCCTests: XCTestCase {
     }
     
     func testGraphWithOneBigCycle() {
-        let graph = Graph(values: [1, 2, 3, 4, 5],
-                          edges: [(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5],
+                              edges: [(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)])
         
         let expectedComponents: Set<Set<Int>> = [[1, 2, 3, 4, 5]]
         
@@ -51,8 +51,8 @@ class SCCTests: XCTestCase {
     }
     
     func testGraphWithTwoConnectedCycles() {
-        let graph = Graph(values: [1, 2, 3, 4, 5, 6],
-                          edges: [(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)])
+        let graph = TestGraph(values: [1, 2, 3, 4, 5, 6],
+                              edges: [(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)])
         
         let expectedComponents: Set<Set<Int>> = [[1, 2, 3], [4, 5, 6]]
         

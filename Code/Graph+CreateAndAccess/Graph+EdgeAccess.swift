@@ -27,35 +27,35 @@ public extension Graph
     }
     
     /**
-     Add to the count of the edge with the given ID, create the edge if necessary
+     Add to weight of the edge with the given ID, create the edge if necessary
      
-     - Returns: The new count of the edge with the given ID
+     - Returns: The new weight of the edge with the given ID
      */
     @discardableResult
-    mutating func add(count: Int, toEdgeWith id: Edge.ID) -> Int
+    mutating func add(weight: EdgeWeight, toEdgeWith id: Edge.ID) -> EdgeWeight
     {
-        if let existingCount = edgesByID[id]?.count
+        if let existingWeight = edgesByID[id]?.weight
         {
-            edgesByID[id]?.count += count
+            edgesByID[id]?.weight += weight
             
-            return existingCount + count
+            return existingWeight + weight
         }
         else
         {
             insertEdge(from: id.originID,
                        to: id.destinationID,
-                       count: count)
+                       weight: weight)
             
-            return count
+            return weight
         }
     }
     
     @discardableResult
     mutating func insertEdge(from originID: NodeID,
                              to destinationID: NodeID,
-                             count: Int = 1) -> Edge
+                             weight: EdgeWeight = 1) -> Edge
     {
-        let edge = Edge(from: originID, to: destinationID, count: count)
+        let edge = Edge(from: originID, to: destinationID, weight: weight)
         insert(edge)
         return edge
     }

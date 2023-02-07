@@ -4,7 +4,7 @@ import XCTest
 class NodeTests: XCTestCase {
     
     func testInsertingNodes() throws {
-        var graph = Graph<Int, Int>()
+        var graph = TestGraph()
         let node1 = graph.insert(1)
         
         let valueForID1 = graph.value(for: 1)
@@ -15,7 +15,7 @@ class NodeTests: XCTestCase {
     }
     
     func testUUIDAsID() throws {
-        var graph = Graph<UUID, Int>()
+        var graph = Graph<UUID, Int, Double>()
         let node1 = graph.update(1, for: UUID())
         let node2 = graph.update(1, for: UUID())
         XCTAssertNotEqual(node1.id, node2.id)
@@ -25,7 +25,7 @@ class NodeTests: XCTestCase {
     
     func testOmittingClosureForIdentifiableValues() throws {
         struct IdentifiableValue: Identifiable { let id = UUID() }
-        var graph = Graph<UUID, IdentifiableValue>()  // NodeID == NodeValue.ID == UUID
+        var graph = Graph<UUID, IdentifiableValue, Double>()
         let node = graph.insert(IdentifiableValue())  // node.id == node.value.id
         XCTAssertEqual(node.id, node.value.id)
     }

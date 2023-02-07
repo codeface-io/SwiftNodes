@@ -43,8 +43,8 @@ public extension Graph
             
             if originSCC.id != destinationSCC.id
             {
-                condensationGraph.insert(.init(from: originSCC.id,
-                                               to: destinationSCC.id))
+                condensationGraph.insert(CondensationEdge(from: originSCC.id,
+                                                          to: destinationSCC.id))
             }
         }
         
@@ -55,7 +55,7 @@ public extension Graph
     typealias CondensationNode = CondensationGraph.Node
     typealias CondensationEdge = CondensationGraph.Edge
     
-    typealias CondensationGraph = Graph<StronglyConnectedComponent.ID, StronglyConnectedComponent>
+    typealias CondensationGraph = Graph<StronglyConnectedComponent.ID, StronglyConnectedComponent, EdgeWeight>
     
     struct StronglyConnectedComponent: Identifiable, Hashable
     {
