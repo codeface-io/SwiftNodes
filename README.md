@@ -221,7 +221,7 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 ## Roadmap
 
 1. Further align API with official Swift data structures (What would Apple do?):
-   1. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, expressibility by literals, etc.)
+   1. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`)
    2. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)
 2. Round out and add algorithms (starting with the needs of Codeface):
    1. Make existing algorithms compatible with cyclic graphs (two of them are still not)

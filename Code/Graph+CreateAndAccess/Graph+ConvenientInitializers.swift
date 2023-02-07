@@ -1,3 +1,27 @@
+//extension Graph: ExpressibleByArrayLiteral where NodeValue: Identifiable, NodeValue.ID == NodeID
+//{
+//    public init(arrayLiteral elements: NodeValue...)
+//    {
+//        self.init(values: elements)
+//    }
+//}
+
+extension Graph: ExpressibleByArrayLiteral where NodeID == NodeValue
+{
+    public init(arrayLiteral elements: NodeValue...)
+    {
+        self.init(values: elements)
+    }
+}
+
+extension Graph: ExpressibleByDictionaryLiteral
+{
+    public init(dictionaryLiteral elements: (NodeID, NodeValue)...)
+    {
+        self.init(idValuePairs: elements)
+    }
+}
+
 public extension Graph
 {
     init(values: some Sequence<NodeValue>)
