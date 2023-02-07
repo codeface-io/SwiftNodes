@@ -222,8 +222,6 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 1. Further align API with official Swift data structures (What would Apple do?):
    1. Review API, make it precise and consistent (thereby more stable)
-       * Precise argument- and return types (neither needlessy specific nor needlessly general), employ opaque arguments (`some`) and opaque result types
-       * Do not suggest or require order where order is meaningless
        * Consistence when it comes to finding certain edges/nodes vs. removing them vs. creating the subgraph with them vs. using them in more general filter functions ... (composability!)
    2. Add the usual suspects of applicable protocol conformances (`Sequence`/`Collection`, `Codable`, expressibility by literals, etc.)
    3. Compare with- and learn from API and implementation of [Swift Collections](https://github.com/apple/swift-collections)

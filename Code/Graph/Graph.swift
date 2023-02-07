@@ -15,68 +15,17 @@ public struct Graph<NodeID: Hashable, NodeValue>
     // MARK: - Initialize
     
     /**
-     Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
-     */
-    public init(values: [NodeValue],
-                edges: [(NodeID, NodeID)]) where NodeValue: Identifiable, NodeValue.ID == NodeID
-    {
-        self.init(idValuePairs: values.map { ($0.id, $0) },
-                  edges: edges)
-    }
-    
-    /**
-     Uses the `NodeValue.ID` of a value as the ``GraphNode/id`` for its corresponding node
-     */
-    public init(values: [NodeValue],
-                edges: [Edge] = []) where NodeValue: Identifiable, NodeValue.ID == NodeID
-    {
-        self.init(idValuePairs: values.map { ($0.id, $0) },
-                  edges: edges)
-    }
-    
-    /**
-     Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
-     */
-    public init(values: [NodeValue],
-                edges: [(NodeID, NodeID)]) where NodeID == NodeValue
-    {
-        self.init(idValuePairs: values.map { ($0, $0) },
-                  edges: edges)
-    }
-    
-    /**
-     Uses a `NodeValue` itself as the ``GraphNode/id`` for its corresponding node
-     */
-    public init(values: [NodeValue],
-                edges: [Edge] = []) where NodeID == NodeValue
-    {
-        self.init(idValuePairs: values.map { ($0, $0) },
-                  edges: edges)
-    }
-    
-    /**
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
-    public init(idValuePairs: [(NodeID, NodeValue)],
-                edges: [(NodeID, NodeID)])
-    {
-        let actualEdges = edges.map { Edge(from: $0.0, to: $0.1) }
-        
-        self.init(idValuePairs: idValuePairs, edges: actualEdges)
-    }
-    
-    /**
-     Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
-     */
-    public init(idValuePairs: [(NodeID, NodeValue)],
-                edges: (some Collection<Edge>)? = nil)
+    public init(idValuePairs: some Sequence<(NodeID, NodeValue)>,
+                edges: some Sequence<Edge>)
     {
         // set nodes with their neighbour caches
         
         let idNodePairs = idValuePairs.map { ($0.0 , Node(id: $0.0, value: $0.1)) }
         var nodesByIDTemporary = [NodeID: Node](uniqueKeysWithValues: idNodePairs)
         
-        edges?.forEach
+        edges.forEach
         {
             nodesByIDTemporary[$0.originID]?.descendantIDs.insert($0.destinationID)
             nodesByIDTemporary[$0.destinationID]?.ancestorIDs.insert($0.originID)
@@ -85,15 +34,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
         nodesByID = nodesByIDTemporary
         
         // set edges and node ID retriever
-        
-        if let edges
-        {
-            edgesByID = .init(values: edges)
-        }
-        else
-        {
-            edgesByID = .init()
-        }
+        edgesByID = .init(values: edges)
     }
     
     public init()

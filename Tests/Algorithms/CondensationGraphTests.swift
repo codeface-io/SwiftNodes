@@ -25,6 +25,11 @@ class CondensationGraphTests: XCTestCase {
         
         let condensationGraph = graph.makeCondensationGraph()
         
+        let expectedEdges: [(Set<Int>, Set<Int>)] =
+        [
+            ([1], [2]), ([2], [3]), ([3], [4]), ([1], [3]), ([2], [4])
+        ]
+        
         let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
             values: [
                 .init(nodeIDs: [1]),
@@ -32,9 +37,7 @@ class CondensationGraphTests: XCTestCase {
                 .init(nodeIDs: [3]),
                 .init(nodeIDs: [4])
             ],
-            edges: [
-                ([1], [2]), ([2], [3]), ([3], [4]), ([1], [3]), ([2], [4])
-            ]
+            edges: expectedEdges
         )
         
         XCTAssertEqual(condensationGraph, expectedCondensationGraph)
@@ -59,9 +62,11 @@ class CondensationGraphTests: XCTestCase {
         
         let condensationGraph = graph.makeCondensationGraph()
         
+        let expectedEdges: [(Set<Int>, Set<Int>)] = [([1, 2, 3], [4])]
+        
         let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
             values: [.init(nodeIDs: [1, 2, 3]), .init(nodeIDs: [4])],
-            edges: [([1, 2, 3], [4])]
+            edges: expectedEdges
         )
         
         XCTAssertEqual(condensationGraph, expectedCondensationGraph)
@@ -73,9 +78,11 @@ class CondensationGraphTests: XCTestCase {
         
         let condensationGraph = graph.makeCondensationGraph()
         
+        let expectedEdges: [(Set<Int>, Set<Int>)] = [([1, 2, 3], [4, 5, 6])]
+        
         let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
             values: [.init(nodeIDs: [1, 2, 3]), .init(nodeIDs: [4, 5, 6])],
-            edges: [([1, 2, 3], [4, 5, 6])]
+            edges: expectedEdges
         )
         
         XCTAssertEqual(condensationGraph, expectedCondensationGraph)
@@ -87,6 +94,8 @@ class CondensationGraphTests: XCTestCase {
         
         let condensationGraph = graph.makeCondensationGraph()
         
+        let expectedEdges: [(Set<Int>, Set<Int>)] = [([1], [2]), ([2], [3]), ([1], [3])]
+        
         let expectedCondensationGraph = Graph<Int, Int>.CondensationGraph(
             values: [
                 .init(nodeIDs: [1]),
@@ -94,11 +103,7 @@ class CondensationGraphTests: XCTestCase {
                 .init(nodeIDs: [3]),
                 .init(nodeIDs: [4, 5, 6])
             ],
-            edges: [
-                ([1], [2]),
-                ([2], [3]),
-                ([1], [3])
-            ]
+            edges: expectedEdges
         )
         
         XCTAssertEqual(condensationGraph, expectedCondensationGraph)
