@@ -32,6 +32,8 @@ We put the above qualities over performance. But that doesn't mean we neccessari
 
 ## How?
 
+🚧 *Disclaimer: This section is now particularly outdated and the rewrite of all documentation is next on [the roadmap](#Roadmap)*.
+
 The following explanations touch only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](https://github.com/codeface-io/SwiftNodes/tree/master/Tests) and [production code](https://github.com/codeface-io/SwiftNodes/tree/master/Code). The code in particular is actually small and easy to grasp.
 
 ### Insert Values
@@ -181,7 +183,7 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Transitive Reduction
 
-`graph.findTransitiveEdges()` finds all edges which are **not** in the [transitive reduction (the minimum equivalent graph)](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. **You** can also use `filterTransitiveReduction()` and `filteredTransitiveReduction()` to create a graph's [minimum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction).
+`graph.findTransitiveReductionEdges()` finds all edges of the [transitive reduction (the minimum equivalent graph)](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. **You** can also use `filterTransitiveReduction()` and `filteredTransitiveReduction()` to create a graph's [minimum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction).
 
 Right now, all this only works on acyclic graphs and might even hang or crash on cyclic ones.
 
@@ -220,13 +222,13 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
 
 ## Roadmap
 
-1. Round out and add algorithms (starting with the needs of Codeface):
+1. Review, update and complete all documentation, including API comments.
+2. Round out and add algorithms (starting with the needs of Codeface):
    1. Make existing algorithms compatible with cycles (two algorithms are still not). meaning: don't hang or crash, maybe throw an error!
-   2. Update and complete documentation
-   3. Move to version 1.0.0 if possible
-   4. Add general purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
-   5. Add better ways of topological sorting
-   6. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
-2. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
-    * What role does `@inlinable` play here?
-    * What role does [`lazy`](https://developer.apple.com/documentation/swift/sequence/lazy) play here?
+   2. Move to version 1.0.0 if possible
+   3. Add general purpose graph traversal algorithms (BFT, DFT, compatible with potentially cyclic graphs)
+   4. Add better ways of topological sorting
+   5. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
+3. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
+    * What role can `@inlinable` play here?
+    * What role can [`lazy`](https://developer.apple.com/documentation/swift/sequence/lazy) play here?
