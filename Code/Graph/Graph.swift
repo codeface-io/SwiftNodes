@@ -20,7 +20,7 @@ public struct Graph<NodeID: Hashable, NodeValue>
     public init(idValuePairs: some Sequence<(NodeID, NodeValue)>,
                 edges: some Sequence<Edge>)
     {
-        // set nodes with their neighbour caches
+        // create nodes with their neighbour caches
         
         let idNodePairs = idValuePairs.map { ($0.0 , Node(id: $0.0, value: $0.1)) }
         var nodesByIDTemporary = [NodeID: Node](uniqueKeysWithValues: idNodePairs)
@@ -31,9 +31,9 @@ public struct Graph<NodeID: Hashable, NodeValue>
             nodesByIDTemporary[$0.destinationID]?.ancestorIDs.insert($0.originID)
         }
         
-        nodesByID = nodesByIDTemporary
+        // set nodes and edges
         
-        // set edges and node ID retriever
+        nodesByID = nodesByIDTemporary
         edgesByID = .init(values: edges)
     }
     

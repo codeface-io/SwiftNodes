@@ -21,8 +21,7 @@ public extension Graph
      */
     mutating func filterTransitiveReduction()
     {
-        let transitiveEdges = findTransitiveEdges()
-        filterEdges { !transitiveEdges.contains($0.id) }
+        filterEdges(findTransitiveReductionEdges())
     }
     
     /**
@@ -30,20 +29,22 @@ public extension Graph
      
      🛑 This only works on acyclic graphs and might even hang or crash on cyclic ones!
      */
-    func findTransitiveEdges() -> EdgeIDs
+    func findTransitiveReductionEdges() -> EdgeIDs
     {
-        var idOfTransitiveEdges = EdgeIDs() // or "shortcuts" of longer paths; or "implied" edges
+        var idsOfTransitiveEdges = EdgeIDs() // or "shortcuts" of longer paths; or "implied" edges
         
         var consideredAncestorsHash = [NodeID: NodeIDs]()
         
         for sourceNode in sources
         {
-            idOfTransitiveEdges += findTransitiveEdges(around: sourceNode,
+            idsOfTransitiveEdges += findTransitiveEdges(around: sourceNode,
                                                        reachedAncestors: [],
                                                        consideredAncestorsHash: &consideredAncestorsHash)
         }
         
-        return idOfTransitiveEdges
+        let idsOfAllEdges = EdgeIDs(edgeIDs)
+        
+        return idsOfAllEdges - idsOfTransitiveEdges
     }
     
     private func findTransitiveEdges(around node: Node,
