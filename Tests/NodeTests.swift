@@ -8,7 +8,7 @@ class NodeTests: XCTestCase {
         let node1 = graph.insert(1)
         
         let valueForID1 = graph.value(for: 1)
-        let nodeForID1 = graph.node(for: 1)
+        let nodeForID1 = graph.node(with: 1)
         
         XCTAssertEqual(valueForID1, node1.value)
         XCTAssertEqual(nodeForID1?.id, node1.id)

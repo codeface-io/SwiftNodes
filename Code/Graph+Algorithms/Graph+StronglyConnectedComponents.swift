@@ -44,7 +44,7 @@ extension Graph
         stack.append(node)
         
         // Consider descendants of node
-        let nodeDescendants = self.node(for: node)?.descendantIDs ?? []
+        let nodeDescendants = self.node(with: node)?.descendantIDs ?? []
         
         for descendant in nodeDescendants
         {

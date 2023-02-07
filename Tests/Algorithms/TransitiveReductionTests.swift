@@ -51,7 +51,7 @@ class MEGTests: XCTestCase {
             
             for i in 0 ..< j
             {
-                graph.addEdge(from: i, to: j)
+                graph.insertEdge(from: i, to: j)
             }
         }
         
@@ -69,7 +69,7 @@ class MEGTests: XCTestCase {
             
             if i > 0
             {
-                expectedMEG.addEdge(from: i - 1, to: i)
+                expectedMEG.insertEdge(from: i - 1, to: i)
             }
         }
         

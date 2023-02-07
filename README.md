@@ -236,3 +236,4 @@ SwiftNodes is already being used in production, but [Codeface](https://codeface.
    6. Approximate the [minimum feedback arc set](https://en.wikipedia.org/wiki/Feedback_arc_set), so Codeface can guess "faulty" or unintended dependencies, i.e. the fewest dependencies that need to be cut in order to break all cycles.
 3. Possibly optimize performance – but only based on measurements and only if measurements show that the optimization yields significant acceleration. Optimizing the algorithms might be more effective than optimizing the data structure itself.
     * What role does `@inlinable` play here?
+    * What role does [`lazy`](https://developer.apple.com/documentation/swift/sequence/lazy) play here?

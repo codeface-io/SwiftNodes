@@ -32,7 +32,7 @@ public extension Graph
         
         var lackingNodes: NodeIDs = [startNode]
         
-        let neighbours = node(for: startNode)?.neighbourIDs ?? []
+        let neighbours = node(with: startNode)?.neighbourIDs ?? []
         
         for neighbour in neighbours
         {

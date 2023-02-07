@@ -43,8 +43,8 @@ public extension Graph
             
             if originSCC.id != destinationSCC.id
             {
-                condensationGraph.addEdge(from: originSCC.id,
-                                          to: destinationSCC.id)
+                condensationGraph.insert(.init(from: originSCC.id,
+                                               to: destinationSCC.id))
             }
         }
         

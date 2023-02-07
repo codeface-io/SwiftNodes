@@ -86,7 +86,7 @@ public extension Graph
         
         for descendantID in descendants
         {
-            guard let descendant = self.node(for: descendantID) else { continue }
+            guard let descendant = self.node(with: descendantID) else { continue }
             
             idsOfTransitiveEdges += findTransitiveEdges(around: descendant,
                                                         reachedAncestors: ancestorsToConsider + node.id,

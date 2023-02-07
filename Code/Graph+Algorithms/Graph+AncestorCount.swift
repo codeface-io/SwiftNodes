@@ -33,7 +33,7 @@ public extension Graph
         
         ancestorsByNodeID[node] = [] // mark node as visited to avoid infinite loops in cyclic graphs
         
-        guard let directAncestors = self.node(for: node)?.ancestorIDs else
+        guard let directAncestors = self.node(with: node)?.ancestorIDs else
         {
             log(error: "No node for node ID exists, but it should.")
             return []

@@ -40,7 +40,7 @@ class EssentialEdgesTests: XCTestCase {
             
             for i in 0 ..< j
             {
-                graph.addEdge(from: i, to: j)
+                graph.insertEdge(from: i, to: j)
             }
         }
         
