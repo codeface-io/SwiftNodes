@@ -32,11 +32,27 @@ We put the above qualities over performance. But that doesn't mean we neccessari
 
 ## How?
 
-🚧 *Disclaimer: This section is now particularly outdated and the rewrite of all documentation is next on [the roadmap](#Roadmap)*.
+The following explanations touch only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](Tests) and [production code](Code). The code in particular is actually small and easy to grasp.
 
-The following explanations touch only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](https://github.com/codeface-io/SwiftNodes/tree/master/Tests) and [production code](https://github.com/codeface-io/SwiftNodes/tree/master/Code). The code in particular is actually small and easy to grasp.
+### Understand and Initialize Graphs
+
+Let's look at our first graph:
+
+```swift
+let graph = Graph<Int, Int, Double>(values: [1, 2, 3],
+                                    edges: [(1, 2), (2, 3), (1, 3)])
+```
+
+`Graph` is generic over three types: `Graph<NodeID: Hashable, NodeValue, EdgeWeight: Numeric>`. Much like a `Dictionary` stores values for unique keys, a `Graph` stores values for unique node IDs. In fact, the `Graph` stores the values *within* its nodes which we identify by their IDs. Unlike a `Dictionary`, a `Graph` also allows to connect its unique "value locations" (node IDs). Those connections are the graph's edges, and each of them has a numeric weight.
+
+So, in the above example, `Graph<Int, Int, Double>` stores `Int` values for `Int` node IDs and connects these node IDs (nodes) through edges that each have a `Double` weight. We provided the values and specified the edges. But where do the actual `Int` node IDs and `Double` edge weights come from? In both regards, the above initializer is a rather convenient one that infers things:
+
+1. When values and node IDs are of the same (and thereby hashable) type, SwiftNodes infers that we actually don't need distinct node IDs. In other words, each unique value is at the same time the ID of its node.
+2. When we don't want to use or specify edge weights, we can just specify edges by the node IDs they connect, and SwiftNodes will create the corresponding edges with a default weight of 1.
 
 ### Insert Values
+
+🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
 
 A `Graph<NodeID: Hashable, NodeValue>` holds values of type `NodeValue` in nodes of type `GraphNode<NodeID: Hashable, NodeValue>`. Nodes are unique and have IDs of type `NodeID`:
 
