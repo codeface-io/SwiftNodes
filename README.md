@@ -32,69 +32,82 @@ We put the above qualities over performance. But that doesn't mean we neccessari
 
 ## How?
 
-The following explanations touch only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](Tests) and [production code](Code). The code in particular is actually small and easy to grasp.
+This section is sort of a tutorial and touches only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](Tests) and [production code](Code). The code in particular is actually small, meaninfully organized and easy to grasp.
 
 ### Understand and Initialize Graphs
 
 Let's look at our first graph:
 
 ```swift
-let graph = Graph<Int, Int, Double>(values: [1, 2, 3],
-                                    edges: [(1, 2), (2, 3), (1, 3)])
+let graph1 = Graph<Int, Int, Double>(values: [1, 2, 3],
+                                     edges: [(1, 2), (2, 3), (1, 3)])
 ```
 
-`Graph` is generic over three types: `Graph<NodeID: Hashable, NodeValue, EdgeWeight: Numeric>`. Much like a `Dictionary` stores values for unique keys, a `Graph` stores values for unique node IDs. In fact, the `Graph` stores the values *within* its nodes which we identify by their IDs. Unlike a `Dictionary`, a `Graph` also allows to connect its unique "value locations" (node IDs). Those connections are the graph's edges, and each of them has a numeric weight.
+`Graph` is generic over three types: `Graph<NodeID: Hashable, NodeValue, EdgeWeight: Numeric>`. Much like a `Dictionary` stores values for unique keys, a `Graph` stores values for unique node IDs. Actually, the `Graph` stores the values *within* its nodes which we identify by their IDs. Unlike a `Dictionary`, a `Graph` also allows to connect its unique "value locations", which are its node IDs. Those connections are the graph's edges, and each of them has a numeric weight.
 
 So, in the above example, `Graph<Int, Int, Double>` stores `Int` values for `Int` node IDs and connects these node IDs (nodes) through edges that each have a `Double` weight. We provided the values and specified the edges. But where do the actual `Int` node IDs and `Double` edge weights come from? In both regards, the above initializer is a rather convenient one that infers things:
 
-1. When values and node IDs are of the same (and thereby hashable) type, SwiftNodes infers that we actually don't need distinct node IDs. In other words, each unique value is at the same time the ID of its node.
-2. When we don't want to use or specify edge weights, we can just specify edges by the node IDs they connect, and SwiftNodes will create the corresponding edges with a default weight of 1.
+1. When values and node IDs are of the same (and thereby hashable) type, SwiftNodes infers that we actually don't need distinct node IDs, so each unique value also serves as the ID of its own node.
+2. When we don't want to use or specify edge weights, we can specify edges by just the node IDs they connect, and SwiftNodes will create the corresponding edges with a default weight of 1.
 
-### Insert Values
-
-🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
-
-A `Graph<NodeID: Hashable, NodeValue>` holds values of type `NodeValue` in nodes of type `GraphNode<NodeID: Hashable, NodeValue>`. Nodes are unique and have IDs of type `NodeID`:
+We could explicitly provide distinct node IDs, for example of type `String`:
 
 ```swift
-var graph = Graph<String, Int> { "id\($0)" }  // NodeID == String, NodeValue == Int
-let node = graph.insert(1)                    // node.id == "id1", node.value == 1
-
-let nodeForID1 = graph.node(for: "id1")       // nodeForID1.id == "id1"
-let valueForID1 = graph.value(for: "id1")     // valueForID1 == 1
+let graph2 = Graph<String, Int, Double>(valuesByID: ["a": 1, "b": 2, "c": 3],
+                                        edges: [("a", "b"), ("b", "c"), ("a", "c")])
 ```
 
-When inserting a value, a `Graph` must determine the ID of the node that would store the value. So the `Graph` initializer takes a closure returning a `NodeID` given a `NodeValue`.
-
-> Side Note: The reason, there's an explicit node type at all is that a) values don't need to be unique, but nodes in a graph are, and b) a node holds caches for quick access to its neighbours. The reason there is an explicit edge type at all is that edges have a count (they are "weighted") and may hold their own values in the future.
-
-### Generate Node IDs
-
-You may generate `NodeID`s independent of `NodeValue`s:
+And if we want to add all edges later, we can create graphs without edges via array- and dictionary literals:
 
 ```swift
-var graph = Graph<UUID, Int> { _ in UUID() }  // NodeID == UUID, NodeValue == Int
-let node1 = graph.insert(42)
-let node2 = graph.insert(42)  // node1.id != node2.id, same value in different nodes
+let graph3: Graph<Int, Int, Double> = [1, 2, 3]  // values serve as node IDs
+let graph4: Graph<String, Int, Double> = ["a": 1, "b": 2, "c": 3]
 ```
 
-If `NodeID` and `NodeValue` are the same type, you can omit the closure and the `Graph` will assume the value is itself used as the node ID:
-
-```swift
-var graph = Graph<Int, Int>()  // NodeID == NodeValue == Int
-let node1 = graph.insert(42)   // node1.value == node1.id == 42
-let node2 = graph.insert(42)   // node1.id == node2.id because 42 implies the same ID
-```
-
-And if your `NodeValue` is itself `Identifiable` by IDs of type `NodeID`, then you can also omit the closure and `Graph` will use the `ID` of a `NodeValue` as the `NodeID` of the node holding that value:
+For `graph1` and `graph3`, SwiftNodes can infer node IDs because node values are of the same type. There is one other type of value with which we don't need to provide node IDs: node values that are `Identifiable` by the same type of IDs as nodes, i.e. `NodeID == NodeValue.ID`. In that case, each value's unique ID also serves as the ID of the value's node. This does not work with array literals but with initializers:
 
 ```swift
 struct IdentifiableValue: Identifiable { let id = UUID() }
-var graph = Graph<UUID, IdentifiableValue>()  // NodeID == NodeValue.ID == UUID
-let node = graph.insert(IdentifiableValue())  // node.id == node.value.id
+typealias IVGraph = Graph<UUID, IdentifiableValue, Double>
+
+let values = [IdentifiableValue(), IdentifiableValue(), IdentifiableValue()]
+let ids = values.map { $0.id }
+let graph5 = IVGraph(values: values,  // value IDs serve as node IDs 
+                     edges: [(ids[0], ids[1]), (ids[1], ids[2]), (ids[0], ids[2])])
 ```
 
-### Connect Nodes via Edges
+For all initializer variants, see [Graph.swift](Code/Graph/Graph.swift) and [Graph+ConvenientInitializers.swift](Code/Graph+CreateAndAccess/Graph+ConvenientInitializers.swift).
+
+### Values
+
+Just like with a `Dictionary`, you can read, write and delete values via subscripts and via functions:
+
+```swift
+var graph6 = Graph<String, Int, Double>()
+
+graph6["a"] = 1
+let valueA = graph6["a"]
+graph6["a"] = nil
+
+graph6.update(2, for: "b")  // returns the updated/created `Node` but is `@discardable`
+let valueB = graph6.value(for: "b")
+graph6.removeValue(for: "b")  // returns the removed `NodeValue?` but is `@discardable`
+        
+let allValues = graph6.values  // returns `some Collection`
+```
+
+And just like with the graph initializers, you don't need to provide node IDs if either the values themselves or their IDs can serve as node IDs:
+
+ ```swift
+ var graph7 = Graph<Int, Int, Double>()
+         
+ graph7.insert(1)  // returns the updated/created `Node` but is `@discardable`
+ graph7.remove(1)  // returns the removed `Node?` but is `@discardable`
+ ```
+
+### Edges
+
+🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
 
 ```swift
 var graph = Graph<String, Int> { "id\($0)" }
@@ -143,7 +156,7 @@ graph.removeEdge(with: .init(node1.id, node2.id))
 graph.removeEdge(from: node1.id, to: node2.id)
 ```
 
-### Query and Traverse a Graph
+### Nodes
 
 `Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition, a `GraphNode` has caches that enable quick access to its neighbours:
 
