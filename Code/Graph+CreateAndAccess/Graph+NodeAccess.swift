@@ -1,9 +1,13 @@
 public extension Graph
 {
     /// Remove the node with the given ID also removing its in- and outgoing edges
-    mutating func removeNode(with nodeID: NodeID)
+    @discardableResult
+    mutating func removeNode(with nodeID: NodeID) -> Node?
     {
-        guard let node = nodesByID.removeValue(forKey: nodeID) else { return }
+        guard let node = nodesByID.removeValue(forKey: nodeID) else
+        {
+            return nil
+        }
         
         for ancestorID in node.ancestorIDs
         {
@@ -14,6 +18,8 @@ public extension Graph
         {
             removeEdge(with: .init(nodeID, descendantID))
         }
+        
+        return node
     }
     
     /**

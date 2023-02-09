@@ -31,6 +31,18 @@ public extension Graph
         update(value, for: value)
     }
     
+    @discardableResult
+    mutating func remove(_ value: NodeValue) -> Node? where NodeValue: Identifiable, NodeValue.ID == NodeID
+    {
+        removeNode(with: value.id)
+    }
+    
+    @discardableResult
+    mutating func remove(_ value: NodeValue) -> Node? where NodeID == NodeValue
+    {
+        removeNode(with: value)
+    }
+    
     /**
      Insert a `NodeValue` and get the (new) ``GraphNode`` that stores it
      
@@ -51,6 +63,12 @@ public extension Graph
             nodesByID[nodeID] = node
             return node
         }
+    }
+    
+    @discardableResult
+    mutating func removeValue(for nodeID: NodeID) -> NodeValue?
+    {
+        removeNode(with: nodeID)?.value
     }
     
     /**
