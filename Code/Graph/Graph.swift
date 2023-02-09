@@ -21,12 +21,12 @@ public struct Graph<NodeID: Hashable, NodeValue, EdgeWeight: Numeric>
     /**
      Create a `Graph` that determines ``GraphNode/id``s for new `NodeValue`s via the given closure
      */
-    public init(idValuePairs: some Sequence<(NodeID, NodeValue)>,
+    public init(valuesByID: Dictionary<NodeID, NodeValue>,
                 edges: some Sequence<Edge>)
     {
         // create nodes with their neighbour caches
         
-        let idNodePairs = idValuePairs.map { ($0.0 , Node(id: $0.0, value: $0.1)) }
+        let idNodePairs = valuesByID.map { ($0.0 , Node(id: $0.0, value: $0.1)) }
         var nodesByIDTemporary = [NodeID: Node](uniqueKeysWithValues: idNodePairs)
         
         edges.forEach

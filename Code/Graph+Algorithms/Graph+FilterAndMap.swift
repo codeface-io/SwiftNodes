@@ -4,8 +4,10 @@ public extension Graph
     
     func map<MappedValue>(_ transform: (NodeValue) throws -> MappedValue) rethrows -> Graph<NodeID, MappedValue, EdgeWeight>
     {
-        .init(idValuePairs: try nodes.map { ($0.id, try transform($0.value)) },
-              edges: edges)
+        let idsWithMappedValues = try nodes.map { ($0.id, try transform($0.value)) }
+        
+        return .init(valuesByID: .init(uniqueKeysWithValues: idsWithMappedValues),
+                     edges: edges)
     }
     
     // MARK: - Edge Filters
