@@ -39,8 +39,8 @@ This section is sort of a tutorial and touches only parts of the SwiftNodes API.
 Let's look at our first graph:
 
 ```swift
-let graph1 = Graph<Int, Int, Double>(values: [1, 2, 3],
-                                     edges: [(1, 2), (2, 3), (1, 3)])
+let graph = Graph<Int, Int, Double>(values: [1, 2, 3],  // values serve as node IDs
+                                    edges: [(1, 2), (2, 3), (1, 3)])
 ```
 
 `Graph` is generic over three types: `Graph<NodeID: Hashable, NodeValue, EdgeWeight: Numeric>`. Much like a `Dictionary` stores values for unique keys, a `Graph` stores values for unique node IDs. Actually, the `Graph` stores the values *within* its nodes which we identify by their IDs. Unlike a `Dictionary`, a `Graph` also allows to connect its unique "value locations", which are its node IDs. Those connections are the graph's edges, and each of them has a numeric weight.
@@ -53,18 +53,18 @@ So, in the above example, `Graph<Int, Int, Double>` stores `Int` values for `Int
 We could explicitly provide distinct node IDs, for example of type `String`:
 
 ```swift
-let graph2 = Graph<String, Int, Double>(valuesByID: ["a": 1, "b": 2, "c": 3],
-                                        edges: [("a", "b"), ("b", "c"), ("a", "c")])
+let graph = Graph<String, Int, Double>(valuesByID: ["a": 1, "b": 2, "c": 3],
+                                       edges: [("a", "b"), ("b", "c"), ("a", "c")])
 ```
 
 And if we want to add all edges later, we can create graphs without edges via array- and dictionary literals:
 
 ```swift
-let graph3: Graph<Int, Int, Double> = [1, 2, 3]  // values serve as node IDs
-let graph4: Graph<String, Int, Double> = ["a": 1, "b": 2, "c": 3]
+let graph = Graph<Int, Int, Double> = [1, 2, 3]  // values serve as node IDs
+        _ = Graph<String, Int, Double> = ["a": 1, "b": 2, "c": 3]
 ```
 
-For `graph1` and `graph3`, SwiftNodes can infer node IDs because node values are of the same type. There is one other type of value with which we don't need to provide node IDs: node values that are `Identifiable` by the same type of IDs as nodes, i.e. `NodeID == NodeValue.ID`. In that case, each value's unique ID also serves as the ID of the value's node. This does not work with array literals but with initializers:
+In two of the above examples (1st and 3rd graph), SwiftNodes can infer node IDs because node values are of the same type. There is one other type of value with which we don't need to provide node IDs: node values that are `Identifiable` by the same type of ID as nodes are, i.e. `NodeID == NodeValue.ID`. In that case, each value's unique ID also serves as the ID of the value's node. This does not work with array literals but with initializers:
 
 ```swift
 struct IdentifiableValue: Identifiable { let id = UUID() }
@@ -72,91 +72,59 @@ typealias IVGraph = Graph<UUID, IdentifiableValue, Double>
 
 let values = [IdentifiableValue(), IdentifiableValue(), IdentifiableValue()]
 let ids = values.map { $0.id }
-let graph5 = IVGraph(values: values,  // value IDs serve as node IDs 
-                     edges: [(ids[0], ids[1]), (ids[1], ids[2]), (ids[0], ids[2])])
+let graph = IVGraph(values: values,  // value IDs serve as node IDs 
+                    edges: [(ids[0], ids[1]), (ids[1], ids[2]), (ids[0], ids[2])])
 ```
 
-For all initializer variants, see [Graph.swift](Code/Graph/Graph.swift) and [Graph+ConvenientInitializers.swift](Code/Graph+CreateAndAccess/Graph+ConvenientInitializers.swift).
+For all initializer variants see [Graph.swift](Code/Graph/Graph.swift) and [Graph+ConvenientInitializers.swift](Code/Graph+CreateAndAccess/Graph+ConvenientInitializers.swift).
 
 ### Values
 
 Just like with a `Dictionary`, you can read, write and delete values via subscripts and via functions:
 
 ```swift
-var graph6 = Graph<String, Int, Double>()
+var graph = Graph<String, Int, Double>()
 
-graph6["a"] = 1
-let valueA = graph6["a"]
-graph6["a"] = nil
+graph["a"] = 1
+let valueA = graph["a"]
+graph["a"] = nil
 
-graph6.update(2, for: "b")  // returns the updated/created `Node` but is `@discardable`
-let valueB = graph6.value(for: "b")
-graph6.removeValue(for: "b")  // returns the removed `NodeValue?` but is `@discardable`
+graph.update(2, for: "b")  // returns the updated/created `Node` as `@discardableResult`
+let valueB = graph.value(for: "b")
+graph.removeValue(for: "b")  // returns the removed `NodeValue?` as `@discardableResult`
         
-let allValues = graph6.values  // returns `some Collection`
+let allValues = graph.values  // returns `some Collection`
 ```
 
-And just like with the graph initializers, you don't need to provide node IDs if either the values themselves or their IDs can serve as node IDs:
+And just like with the graph initializers, you don't need to provide node IDs if either the values themselves or their IDs can serve as node IDs. Here, values are identical to their node IDs:
 
  ```swift
- var graph7 = Graph<Int, Int, Double>()
-         
- graph7.insert(1)  // returns the updated/created `Node` but is `@discardable`
- graph7.remove(1)  // returns the removed `Node?` but is `@discardable`
+ var graph = Graph<Int, Int, Double>()
+ 
+ graph.insert(1)  // returns the updated/created `Node` as `@discardableResult`
+ graph.remove(1)  // returns the removed `Node?` as `@discardableResult`
  ```
 
 ### Edges
 
-🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
+Each edge is identified by the two nodes it connects, thus an edge ID is a combination of two node IDs. Edges are also directed, which means they point in a direction, from one node to another, which we might call "origin-" and "destination node" (or similar). Directed edges are the most general form. If a client or algorithm works with "undirected" graphs, that simply means it doesn't care about edge direction.
+
+The three basic operations are inserting, reading and removing edges:
 
 ```swift
-var graph = Graph<String, Int> { "id\($0)" }
-let node1 = graph.insert(1)
-let node2 = graph.insert(2)
-let edge = graph.addEdge(from: node1.id,  to: node2.id)
+var graph: Graph<Int, Int, Double> = [1, 2, 3]  // values serve as node IDs
+
+graph.insertEdge(from: 1, to: 2)  // returns the edge as `@discardableResult`
+let edge = graph.edge(from: 1, to: 2)  // the optional edge itself
+let hasEdge = graph.containsEdge(from: 1, to: 2)  // whether the edge exists
+graph.removeEdge(from: 1, to: 2)  // returns the optional edge as `@discardableResult`
 ```
 
-An `edge` is directed and points from the node with ID `edge.originID` to the node with ID `edge.destinationID`.
-
-### Specify Edge Counts
-
-Every `edge` has an integer count accessible via `edge.count`. It is more specifically a "count" rather than a "weight", as it increases when the same edge is added again. By default, a new edge has `count` 1 and adding it again increases its `count` by 1. But you can specify a custom count when adding an edge:
-
-```swift
-graph.addEdge(from: node1.id, to: node2.id, count: 40)  // edge count is 40
-graph.addEdge(from: node1.id, to: node2.id, count: 2)   // edge count is 42
-```
-
-### Initialize Graphs With Values And Edges 
-
-To work with a `Graph` constant (for example as a property on a `Sendable` reference type), you need to initialize the whole graph, complete with its values and edges. There are more ways to do so than we can exemplify here, so have a look at the [graph initializers in code](Code/Graph/Graph.swift).
-
-When you don't need to specify edge counts, the initializers allow to specify edges as tuples of node IDs. And when you're passing in values and edges anyway, you can omit the type parameters. Furthermore, you can often omit the closure that determines node IDs, as described earlier. All this together can make initialization as simple as it gets:
-
-```swift
-let graph = Graph(values: [-7, 0, 5, 42], 
-                  edges: [(-7, 0), (0, 42)])
-```
-
-### Remove Edges
-
-A `GraphEdge<NodeID: Hashable, NodeValue>` has its own `ID` type which combines the edge's `originID`- and `destinationID` node IDs. In the context of a `Graph` or `GraphEdge`, you can create edge IDs like so:
-
-```swift
-let edgeID = Edge.ID(node1.id, node2.id)
-```
-
-This leads to 3 ways of removing an edge:
-
-```swift
-let edge = graph.addEdge(from: node1.id, to: node2.id)
-
-graph.removeEdge(with: edge.id)
-graph.removeEdge(with: .init(node1.id, node2.id))
-graph.removeEdge(from: node1.id, to: node2.id)
-```
+Of course, `Graph` also has properties providing all edges, all edges by their IDs and all edge IDs. And it has ways to initialize and mutate edge weights. For the whole edge API, see [Graph.swift](Code/Graph/Graph.swift) and [Graph+EdgeAccess.swift](Code/Graph+CreateAndAccess/Graph+EdgeAccess.swift).
 
 ### Nodes
+
+🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
 
 `Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition, a `GraphNode` has caches that enable quick access to its neighbours:
 

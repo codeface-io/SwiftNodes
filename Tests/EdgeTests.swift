@@ -3,6 +3,15 @@ import XCTest
 
 class EdgeTests: XCTestCase {
     
+    func testThatCodeInREADMECompiles() {
+        var graph: Graph<Int, Int, Double> = [1, 2, 3]
+        
+        graph.insertEdge(from: 1, to: 2)
+        let hasEdgeFrom1To2 = graph.containsEdge(from: 1, to: 2)
+        let edge = graph.edge(from: 1, to: 2)
+        graph.removeEdge(from: 1, to: 2)
+    }
+    
     func testInitializeWithValuesAndEdges() throws {
         // with values as node IDs
         let graph = TestGraph(values: [-7, 0, 5, 42], edges: [(-7, 0)])
@@ -38,7 +47,7 @@ class EdgeTests: XCTestCase {
         graph.insertEdge(from: 1, to: 2, weight: 42)
         XCTAssertEqual(graph.edge(from: 1, to: 2)?.weight, 42)
         
-        graph.add(weight: 58, toEdgeWith: .init(1, 2))
+        graph.add(58, toEdgeWith: .init(1, 2))
         XCTAssertEqual(graph.edge(from: 1, to: 2)?.weight, 100)
     }
     
@@ -92,7 +101,7 @@ class EdgeTests: XCTestCase {
         XCTAssertNotNil(graph.edge(from: node1.id, to: node2.id))
         
         XCTAssertEqual(edge12.weight, 1)
-        XCTAssertEqual(2, graph.add(weight: 1, toEdgeWith: .init(1, 2)))
+        XCTAssertEqual(2, graph.add(1, toEdgeWith: .init(1, 2)))
         XCTAssertEqual(graph.edge(from: node1.id, to: node2.id)?.weight, 2)
         XCTAssertEqual(edge12.originID, node1.id)
         XCTAssertEqual(edge12.destinationID, node2.id)
