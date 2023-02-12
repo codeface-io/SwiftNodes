@@ -124,9 +124,7 @@ Of course, `Graph` also has properties providing all edges, all edges by their I
 
 ### Nodes
 
-🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
-
-`Graph` offers many ways to query its nodes, node IDs, values and edges. Have a look into [Graph.swift](https://github.com/codeface-io/SwiftNodes/blob/master/Code/Graph/Graph.swift) to see them all. In addition, a `GraphNode` has caches that enable quick access to its neighbours:
+Nodes are basically identifiable value containers that can be connected by edges. But aside from values they also store the IDs of neighbouring nodes. This redundant storage (cache) is kept up to date by the `Graph` and makes graph traversal a bit more performant and convenient. Any given `node` has these cache-based properties:
 
 ```swift
 node.descendantIDs  // IDs of all nodes to which there is an edge from node
@@ -136,7 +134,11 @@ node.isSink         // whether node has no descendants
 node.isSource       // whether node has no ancestors
 ```
 
+For the whole node API, see [Graph.swift](Code/Graph/Graph.swift) and [Graph+NodeAccess.swift](Code/Graph+CreateAndAccess/Graph+NodeAccess.swift).
+
 ### Copy and Share a Graph 
+
+🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
 
 Like the official Swift data structures, `Graph` is a pure `struct` and inherits the benefits of value types:
 
