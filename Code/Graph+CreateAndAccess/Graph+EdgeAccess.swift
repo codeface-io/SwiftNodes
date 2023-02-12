@@ -32,7 +32,7 @@ public extension Graph
      - Returns: The new weight of the edge with the given ID
      */
     @discardableResult
-    mutating func add(weight: EdgeWeight, toEdgeWith id: Edge.ID) -> EdgeWeight
+    mutating func add(_ weight: EdgeWeight, toEdgeWith id: Edge.ID) -> EdgeWeight
     {
         if let existingWeight = edgesByID[id]?.weight
         {
@@ -86,6 +86,12 @@ public extension Graph
     func edge(with id: Edge.ID) -> Edge?
     {
         edgesByID[id]
+    }
+    
+    func containsEdge(from originID: NodeID,
+                      to destinationID: NodeID) -> Bool
+    {
+        contains(.init(originID, destinationID))
     }
     
     /**
