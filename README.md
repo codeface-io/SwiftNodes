@@ -10,8 +10,8 @@ SwiftNodes offers a concurrency safe [graph data structure](https://en.wikipedia
 
 ### Contents
 
-* [Why?](#Why?)
-* [How?](#How?)
+* [Why?](#Why)
+* [How?](#How)
 * [Included Algorithms](#Included-Algorithms)
 * [Architecture](#Architecture)
 * [Development Status](#Development-Status)
@@ -136,37 +136,41 @@ node.isSource       // whether node has no ancestors
 
 For the whole node API, see [Graph.swift](Code/Graph/Graph.swift) and [Graph+NodeAccess.swift](Code/Graph+CreateAndAccess/Graph+NodeAccess.swift).
 
-### Copy and Share a Graph 
+### Value Semantics and Concurrency
 
-🚧 *Disclaimer: From here on, this tutorial (section "How?") is particularly outdated and currently being rewritten.*
-
-Like the official Swift data structures, `Graph` is a pure `struct` and inherits the benefits of value types:
+Like official Swift data structures, `Graph` is a pure `struct` and inherits the benefits of value types:
 
 * You decide on mutability by using `var` or `let`.
 * You can use a `Graph` as a `@State` or `@Published` variable with SwiftUI.
 * You can use property observers like `didSet` to observe changes in a `Graph`.
 * You can easily copy a whole `Graph`.
 
-Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it. You copy a `Graph` like any other value. But right now, SwiftNodes lets you add and remove only edges – not nodes. So, to create a subgraph with a **subset** of the nodes of a `graph`, you can use `graph.subGraph(nodeIDs:...)`:
-
-```swift
-var graph = Graph<Int, Int>()
-	/* then add a bunch of nodes and edges ... */
-let subsetOfNodeIDs: Set<Int> = [0, 3, 6, 9, 12]
-let subGraph = graph.subGraph(nodeIDs: subsetOfNodeIDs)
-```
+Many algorithms produce a variant of a given graph. Rather than modifying the original graph, SwiftNodes suggests to copy it, and you can copy a `Graph` like any other value.
 
 A `Graph` is also `Sendable` **if** its value- and id type are. SwiftNodes is thereby ready for the strict concurrency safety of Swift 6. You can safely share `Sendable` `Graph` values between actors. Remember that, to declare a `Graph` property on a `Sendable` reference type, you need to make that property constant (use `let`).
 
-### Mark Nodes in Algorithms
+### Marking Nodes
 
 Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
 
-When we made SwiftNodes concurrency safe (to play well with the new Swift concurrency features), we removed the possibility to mark nodes directly, as that had lost its potential for performance optimization. See how the [included algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms) now use hashing to associate markings with nodes.
+When we made SwiftNodes concurrency safe (to play well with the new Swift concurrency features), we removed the possibility to mark nodes directly, as that had lost its potential for performance optimization. See how the [included algorithms](Code/Graph+Algorithms) now use hashing to associate markings with nodes.
 
 ## Included Algorithms
 
-SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/codeface-io/SwiftNodes/tree/master/Code/Graph%2BAlgorithms). The following overview also links to Wikipedia articles that explain what the algorithms do. We recommend also exploring them in code.
+SwiftNodes has begun to accumulate [some graph algorithms](Code/Graph+Algorithms). The following overview also links to Wikipedia articles that explain what the algorithms do. We recommend also exploring them in code.
+
+### Map and Filter
+
+You can map graph values and filter graphs by values, edges and nodes. Of course, the filters keep edges and node neighbour caches consistent and produce proper **subgraphs**.
+
+```swift
+let intGraph: Graph<Int, Int, Int> = [1, 2, 10, 20]
+
+let stringGraph = intGraph.map { "\($0)" }
+let oneDigitGraph = intGraph.filtered { $0 < 10 }
+```
+
+See all filters in [Graph+FilterAndMap.swift](Code/Graph+Algorithms/Graph+FilterAndMap.swift).
 
 ### Components
 
@@ -182,7 +186,7 @@ SwiftNodes has begun to accumulate [some graph algorithms](https://github.com/co
 
 ### Transitive Reduction
 
-`graph.findTransitiveReductionEdges()` finds all edges of the [transitive reduction (the minimum equivalent graph)](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. **You** can also use `filterTransitiveReduction()` and `filteredTransitiveReduction()` to create a graph's [minimum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction).
+`graph.findTransitiveReductionEdges()` finds all edges of the [transitive reduction (the minimum equivalent graph)](https://en.wikipedia.org/wiki/Transitive_reduction) of the `graph`. You can also use `filterTransitiveReduction()` and `filteredTransitiveReduction()` to create a graph's [minimum equivalent graph](https://en.wikipedia.org/wiki/Transitive_reduction).
 
 Right now, all this only works on acyclic graphs and might even hang or crash on cyclic ones.
 
@@ -196,7 +200,7 @@ Note that only edges of the condensation graph can be non-essential and so edges
 
 ### Ancestor Counts
 
-`graph.findNumberOfNodeAncestors()` returns a `[NodeID: Int]` containing the ancestor count for each node ID of the `graph`. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached.
+`graph.findNumberOfNodeAncestors()` returns a `Dictionary<NodeID, Int>` containing the ancestor count for each node ID of the `graph`. The ancestor count is the number of all (recursive) ancestors of the node. Basically, it's the number of other nodes from which the node can be reached.
 
 This only works on acyclic graphs right now and might return incorrect results for nodes in cycles.
 
