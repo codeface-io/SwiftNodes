@@ -32,7 +32,7 @@ We put the above qualities over performance. But that doesn't mean we neccessari
 
 ## How?
 
-This section is sort of a tutorial and touches only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](Tests) and [production code](Code). The code in particular is actually small, meaninfully organized and easy to grasp.
+This section is a tutorial and touches only parts of the SwiftNodes API. We recommend exploring the [DocC reference](https://swiftpackageindex.com/codeface-io/SwiftNodes/documentation), [unit tests](Tests) and [production code](Code). The code in particular is actually small, meaninfully organized and easy to grasp.
 
 ### Understand and Initialize Graphs
 
@@ -136,6 +136,12 @@ node.isSource       // whether node has no ancestors
 
 For the whole node API, see [Graph.swift](Code/Graph/Graph.swift) and [Graph+NodeAccess.swift](Code/Graph+CreateAndAccess/Graph+NodeAccess.swift).
 
+### Marking Nodes
+
+Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
+
+When we made SwiftNodes concurrency safe (to play well with the new Swift concurrency features), we removed the possibility to mark nodes directly, as that had lost its potential for performance optimization. See how the [included algorithms](Code/Graph+Algorithms) now use hashing to associate markings with nodes.
+
 ### Value Semantics and Concurrency
 
 Like official Swift data structures, `Graph` is a pure `struct` and inherits the benefits of value types:
@@ -149,17 +155,11 @@ Many algorithms produce a variant of a given graph. Rather than modifying the or
 
 A `Graph` is also `Sendable` **if** its value- and id type are. SwiftNodes is thereby ready for the strict concurrency safety of Swift 6. You can safely share `Sendable` `Graph` values between actors. Remember that, to declare a `Graph` property on a `Sendable` reference type, you need to make that property constant (use `let`).
 
-### Marking Nodes
-
-Many graph algorithms do associate little intermediate results with individual nodes. The literature often refers to this as "marking" a node. The most prominent example is marking a node as visited while traversing a potentially cyclic graph. Some algorithms write multiple different markings to nodes. 
-
-When we made SwiftNodes concurrency safe (to play well with the new Swift concurrency features), we removed the possibility to mark nodes directly, as that had lost its potential for performance optimization. See how the [included algorithms](Code/Graph+Algorithms) now use hashing to associate markings with nodes.
-
 ## Included Algorithms
 
 SwiftNodes has begun to accumulate [some graph algorithms](Code/Graph+Algorithms). The following overview also links to Wikipedia articles that explain what the algorithms do. We recommend also exploring them in code.
 
-### Map and Filter
+### Filter and Map 
 
 You can map graph values and filter graphs by values, edges and nodes. Of course, the filters keep edges and node neighbour caches consistent and produce proper **subgraphs**.
 
