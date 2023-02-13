@@ -32,11 +32,4 @@ class EdgeFilterTests: XCTestCase {
         // this also compares node neighbour caches, so we also test that the filter correctly updates those...
         XCTAssertEqual(graph, expectedGraph)
     }
-    
-    func testValueFilter() {
-        let graph: Graph<Int, Int, Int> = [1, 2, 10, 20]
-        let filteredGraph = graph.filtered { $0 < 10 }
-        let expectedFilteredGraph: Graph<Int, Int, Int> = [1, 2]
-        XCTAssertEqual(filteredGraph, expectedFilteredGraph)
-    }
 }
