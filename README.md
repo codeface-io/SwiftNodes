@@ -164,10 +164,10 @@ SwiftNodes has begun to accumulate [some graph algorithms](Code/Graph+Algorithms
 You can map graph values and filter graphs by values, edges and nodes. Of course, the filters keep edges and node neighbour caches consistent and produce proper **subgraphs**.
 
 ```swift
-let intGraph: Graph<Int, Int, Int> = [1, 2, 10, 20]
+let graph: Graph<Int, Int, Int> = [1, 2, 10, 20]
 
-let stringGraph = intGraph.map { "\($0)" }
-let oneDigitGraph = intGraph.filtered { $0 < 10 }
+let oneDigitGraph = graph.filtered { $0 < 10 }
+let stringGraph = graph.map { "\($0)" }
 ```
 
 See all filters in [Graph+FilterAndMap.swift](Code/Graph+Algorithms/Graph+FilterAndMap.swift).
