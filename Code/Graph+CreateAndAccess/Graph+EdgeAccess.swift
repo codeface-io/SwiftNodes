@@ -27,7 +27,20 @@ public extension Graph
     }
     
     /**
-     Add to weight of the edge with the given ID, create the edge if necessary
+     Add weight to the existing edge or create the edge with that weight
+     
+     - Returns: The new weight of the edge with the given ID
+     */
+    @discardableResult
+    mutating func add(_ weight: EdgeWeight,
+                      toEdgeFrom originID: NodeID,
+                      to destinationID: NodeID) -> EdgeWeight
+    {
+        add(weight, toEdgeWith: .init(originID, destinationID))
+    }
+    
+    /**
+     Add weight to the existing edge or create the edge with that weight
      
      - Returns: The new weight of the edge with the given ID
      */
