@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            exact: "0.4.0"
+            exact: "0.5.0"
         )
     ],
     targets: [
