@@ -9,36 +9,45 @@ public extension Graph
      */
     func findComponents() -> Set<NodeIDs>
     {
-        var markedNodes = NodeIDs()
+        var visitedNodes = NodeIDs()
         
         var components = Set<NodeIDs>()
 
         for node in nodeIDs
         {
-            if markedNodes.contains(node) { continue }
+            if visitedNodes.contains(node) { continue }
             
-            components += findLackingNodes(forComponent: [], startingAt: node)
+            // this node has not been visited yet
             
-            markedNodes.insert(node)
+            components += Set(findLackingNodes(forComponent: [],
+                                               startingAt: node,
+                                               visitedNodes: &visitedNodes))
+            
+            visitedNodes.insert(node)
         }
 
         return components
     }
     
-    private func findLackingNodes(forComponent incompleteComponent: NodeIDs,
-                                  startingAt startNode: NodeID) -> NodeIDs
+    /// startNode is connected to the incompleteComponent but not contained in it. both will be in the resulting actual component.
+    private func findLackingNodes(forComponent incompleteComponent: [NodeID],
+                                  startingAt startNode: NodeID,
+                                  visitedNodes: inout NodeIDs) -> [NodeID]
     {
-        guard !incompleteComponent.contains(startNode) else { return [] }
+        var lackingNodes = [startNode]
         
-        var lackingNodes: NodeIDs = [startNode]
+        visitedNodes += startNode
         
         let neighbours = node(with: startNode)?.neighbourIDs ?? []
         
         for neighbour in neighbours
         {
+            if visitedNodes.contains(neighbour) { continue }
+            
             let extendedComponent = incompleteComponent + lackingNodes
             lackingNodes += findLackingNodes(forComponent: extendedComponent,
-                                             startingAt: neighbour)
+                                             startingAt: neighbour,
+                                             visitedNodes: &visitedNodes)
         }
         
         return lackingNodes
